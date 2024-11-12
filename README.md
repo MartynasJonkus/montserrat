@@ -3,12 +3,12 @@ To run the react frontend
   npm install  
   npm run dev  
 
-To run ASP.NET api
-  dotnet run
+To run ASP.NET api  
+  dotnet run  
 
-Or inspect API with swagger
-  dotnet watch run
-
+Or inspect API with swagger  
+  dotnet watch run  
+  
 ## Installations
 - Visual Studio Code
 - Node.js
