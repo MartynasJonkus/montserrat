@@ -24,6 +24,7 @@
 
 To start the ASP.NET API, run:
    ```bash
+   cd api  
    dotnet run
    ```
 
@@ -31,6 +32,7 @@ To start the ASP.NET API, run:
 
 To view the API documentation with Swagger, run:
    ```bash
+   cd api  
    dotnet watch run
    ```
 
