@@ -1,18 +1,38 @@
-To run the react frontend  
-  cd \client\  
-  npm install  
-  npm run dev  
+# Project Setup Instructions
 
-To run ASP.NET api  
-  dotnet run  
-
-Or inspect API with swagger  
-  dotnet watch run  
-  
 ## Installations
 - Visual Studio Code
 - Node.js
 - .NET SDK 8.0
+
+## Running the React Frontend
+
+1. Navigate to the client directory:
+   ```bash
+   cd client
+   ```
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+3. Start the development server:
+   ```bash
+   npm run dev
+   ```
+
+## Running the ASP.NET API
+
+To start the ASP.NET API, run:
+   ```bash
+   dotnet run
+   ```
+
+## Inspecting the API with Swagger
+
+To view the API documentation with Swagger, run:
+   ```bash
+   dotnet watch run
+   ```
 
 ## VS code extensions  
 - c#
