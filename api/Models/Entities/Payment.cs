@@ -1,14 +1,14 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
 
 namespace api.Models.Entities
 {
     public class Payment
     {
-        public int Id { get; set; } // Primary Key
+        public int Id { get; set; }
+        public int? ReservationId { get; set; }
+        public int? OrderId { get; set; }
+        public int? GiftcardId { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
         public decimal TipAmount { get; set; }
         [Column(TypeName = "decimal(18, 2)")]
@@ -16,12 +16,10 @@ namespace api.Models.Entities
         public string Currency { get; set; } = string.Empty;
         public PaymentMethod Method { get; set; }
         public PaymentType PaymentType { get; set; }
-        public int? ReservationId { get; set; } // Foreign Key (optional)
-        public int? OrderId { get; set; } // Foreign Key (optional)
         public DateTime CreatedAt { get; set; }
 
-        // Navigation Properties
-        public Reservation Reservation { get; set; }
+        public Reservation? Reservation { get; set; }
+        public Order? Order { get; set; }
         public GiftCard? GiftCard { get; set; }
     }
 }

@@ -1,18 +1,13 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
 namespace api.Models.Entities
 {
     public class Category
     {
-        public int Id { get; set; } // Primary Key
-        public int MerchantId { get; set; } // Foreign Key
+        public int Id { get; set; }
+        public int MerchantId { get; set; }
         public string Title { get; set; } = string.Empty;
 
-        // Navigation Properties
-        public Product Product { get; set; }
-        public Service Service { get; set; }
+        public required Merchant Merchant { get; set; }
+        public List<Product> Products { get; set; } = [];
+        public List<Service> Services { get; set; } = [];
     }
 }
