@@ -10,7 +10,7 @@ namespace api.Models.Entities
         public int? OrderDiscountId { get; set; }
         public OrderStatus Status { get; set; }
         public Price TotalAmount { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
 
         public required Merchant Merchant { get; set; }

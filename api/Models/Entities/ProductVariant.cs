@@ -9,7 +9,7 @@ namespace api.Models.Entities
         public string Title { get; set; } = string.Empty;
         [Column(TypeName = "decimal(18, 2)")]
         public int Quantity { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
 
         public required Product Product { get; set; }

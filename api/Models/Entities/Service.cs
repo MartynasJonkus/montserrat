@@ -13,7 +13,7 @@ namespace api.Models.Entities
         public string Title { get; set; } = string.Empty;
         public Price Price { get; set; }
         public int Duration { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
 
         public required Merchant Merchant { get; set; }

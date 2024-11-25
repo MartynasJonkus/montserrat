@@ -15,7 +15,7 @@ namespace api.Models.Entities
         [Column(TypeName = "decimal(18, 2)")]
         public decimal Weight { get; set; }
         public string WeightUnit { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
 
         public required Merchant Merchant { get; set; }

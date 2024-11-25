@@ -13,7 +13,7 @@ namespace api.Models.Entities
         public decimal Balance { get; set; }
         public string Currency { get; set; } = string.Empty;
         public DateTime? ExpiresOn { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
 
         public required Merchant Merchant { get; set; }

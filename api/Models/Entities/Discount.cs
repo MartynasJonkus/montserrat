@@ -10,7 +10,7 @@ namespace api.Models.Entities
         [Column(TypeName = "decimal(5, 2)")]
         public decimal Percentage { get; set; }
         public DateTime ExpiresOn { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
 
         public required Merchant Merchant { get; set; }
