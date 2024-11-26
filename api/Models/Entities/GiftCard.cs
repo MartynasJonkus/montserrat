@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using api.Enums;
 
 namespace api.Models.Entities
 {
@@ -15,6 +16,7 @@ namespace api.Models.Entities
         public DateTime? ExpiresOn { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
+        public Status Status { get; set; }
 
         public required Merchant Merchant { get; set; }
         public List<Payment> Payments { get; set; } = [];

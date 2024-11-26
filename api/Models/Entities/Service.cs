@@ -1,3 +1,4 @@
+using api.Enums;
 using api.Models.Structs;
 
 namespace api.Models.Entities
@@ -15,6 +16,7 @@ namespace api.Models.Entities
         public int Duration { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
+        public Status Status { get; set; }
 
         public required Merchant Merchant { get; set; }
         public Employee? Employee { get; set; }

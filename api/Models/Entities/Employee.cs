@@ -13,6 +13,7 @@ namespace api.Models.Entities
         public string Password { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
+        public Status Status { get; set; }
 
         public required Merchant Merchant { get; set; }
         public List<Reservation> Reservations { get; set; } = [];

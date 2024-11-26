@@ -1,3 +1,4 @@
+using api.Enums;
 using api.Models.Structs;
 
 namespace api.Models.Entities
@@ -12,6 +13,7 @@ namespace api.Models.Entities
         public string Phone { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
+        public Status Status { get; set; }
 
         public List<Product> Products { get; set; } = [];
         public List<Employee> Employees { get; set; } = [];

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations.Schema;
+using api.Enums;
 
 namespace api.Models.Entities
 {
@@ -11,6 +12,7 @@ namespace api.Models.Entities
         public int Quantity { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
+        public Status Status { get; set; }
 
         public required Product Product { get; set; }
         public List<OrderItem> OrderItems { get; set; } = [];
