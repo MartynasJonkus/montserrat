@@ -1,0 +1,7 @@
+
+#payment-container {
+    display: flex;
+    background-color: #E4E4E4;
+    justify-content: space-between;
+    height: 100%;
+}

@@ -1,22 +1,15 @@
 
+import { useNavigate } from "react-router";
+import TopNav from './top-nav.tsx';
 import './order-page.css';
 
 
 function OrderPage() {
+    const navigate = useNavigate();
 
     return (
         <>
-            <div id="top-nav">
-                <div id="top-nav-left">
-                    <div className="circle" />
-                    <div className="page-button">Products</div>
-                    <div className="page-button">Reservations</div>
-                    <div className="page-button">Taxes</div>
-                </div>
-                <div id="top-nav-right">
-                    <div className="page-button">Employees</div>
-                </div>
-            </div>
+            <TopNav />
 
             <div id="order-container">
                 <div id="container-left">
@@ -84,8 +77,8 @@ function OrderPage() {
                         </div>
                     </div>
                     <div id="container-bottom">
-                        <div id="payment-split">Split</div>
-                        <div id="payment-pay">Pay</div>
+                        <button onClick={() => { } } id="payment-split">Split</button>
+                        <button onClick={() => navigate("/payment")} id="payment-pay">Pay</button>                  
                     </div>
                 </div>
 

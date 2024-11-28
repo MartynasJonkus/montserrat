@@ -1,0 +1,13 @@
+#top-nav {
+    display: flex;
+    background-color: #B1B1B1;
+    padding: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    justify-content: space-between;
+}
+
+#top-nav-left, #top-nav-right {
+    display: flex;
+    align-items: center;
+}
