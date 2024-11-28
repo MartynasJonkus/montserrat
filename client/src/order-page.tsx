@@ -1,11 +1,8 @@
-import { useState } from 'react'
-import { VscAccount } from "react-icons/vsc";
-//import reactLogo from './assets/react.svg'
-//import viteLogo from '/vite.svg'
-//import './App.css'
+
+import './order-page.css';
 
 
-function App() {
+function OrderPage() {
 
     return (
         <>
@@ -191,4 +188,4 @@ function App() {
     )
 }
 
-export default App
+export default OrderPage
