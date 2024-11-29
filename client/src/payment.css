@@ -92,6 +92,13 @@ hr {
     justify-content: space-around;
 }
 
+.tips:hover {
+    background-color: #E4E4E4;
+}
+.tips:active {
+    background-color: #B1B1B1;
+}
+
 #middle-left-payment {
     width: 670px;
     padding: 15px;
