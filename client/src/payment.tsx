@@ -1,12 +1,14 @@
 import { GoArrowLeft } from "react-icons/go";
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useState } from "react";
 import TopNav from './top-nav.tsx';
 import './payment.css';
 
 function Payment() {
     const navigate = useNavigate();
-    const flatPrice = 16.00;
+    const location = useLocation();
+
+    const flatPrice = location.state.amount;
 
     const [tipAmount, setTip] = useState("0.00");
     function handleClick(percentage:number) {

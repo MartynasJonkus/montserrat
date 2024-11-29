@@ -1,11 +1,18 @@
 
 import { useNavigate } from "react-router";
+import { useState } from "react";
 import TopNav from './top-nav.tsx';
 import './order-page.css';
 
 
 function OrderPage() {
     const navigate = useNavigate();
+
+    const [totalAmount, setTotal] = useState(20);
+
+    const navigateToPayment = () => {
+        navigate('/payment', { state: { amount: totalAmount } });
+    }
 
     return (
         <>
@@ -73,12 +80,12 @@ function OrderPage() {
                         <hr />
                         <div id="price-bottom">
                             <div className="component-name">Total</div>
-                            <div className="price-amount">$16.00</div>
+                            <div className="price-amount">${totalAmount.toFixed(2)}</div>
                         </div>
                     </div>
                     <div id="container-bottom">
                         <button onClick={() => { } } id="payment-split">Split</button>
-                        <button onClick={() => navigate("/payment")} id="payment-pay">Pay</button>                  
+                        <button onClick={() => navigateToPayment()} id="payment-pay">Pay</button>                  
                     </div>
                 </div>
 
