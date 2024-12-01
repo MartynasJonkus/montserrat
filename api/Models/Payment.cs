@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
 
-namespace api.Models.Entities
+namespace api.Models
 {
     public class Payment
     {
@@ -16,7 +16,7 @@ namespace api.Models.Entities
         public string Currency { get; set; } = string.Empty;
         public PaymentMethod Method { get; set; }
         public PaymentType PaymentType { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
 
         public Reservation? Reservation { get; set; }
         public Order? Order { get; set; }

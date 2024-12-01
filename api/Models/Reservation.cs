@@ -1,6 +1,6 @@
 using api.Enums;
 
-namespace api.Models.Entities
+namespace api.Models
 {
     public class Reservation
     {
@@ -12,7 +12,7 @@ namespace api.Models.Entities
         public DateTime EndTime { get; set; }
         public ReservationStatus Status { get; set; }
         public bool SendConfirmation { get; set; }
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
 
         public required Customer Customer { get; set; }

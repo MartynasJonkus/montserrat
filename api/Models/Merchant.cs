@@ -1,17 +1,18 @@
-using api.Models.Structs;
+using api.Enums;
 
-namespace api.Models.Entities
+namespace api.Models
 {
     public class Merchant
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
         public string VAT { get; set; } = string.Empty;
-        public Address Address { get; set; }
+        public required Address Address { get; set; }
         public string Email { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
+        public Status Status { get; set; }
 
         public List<Product> Products { get; set; } = [];
         public List<Employee> Employees { get; set; } = [];

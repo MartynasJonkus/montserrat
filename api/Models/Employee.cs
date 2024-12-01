@@ -1,6 +1,6 @@
 using api.Enums;
 
-namespace api.Models.Entities
+namespace api.Models
 {
     public class Employee
     {
@@ -11,8 +11,9 @@ namespace api.Models.Entities
         public EmployeeType EmployeeType { get; set; }
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
+        public Status Status { get; set; }
 
         public required Merchant Merchant { get; set; }
         public List<Reservation> Reservations { get; set; } = [];
