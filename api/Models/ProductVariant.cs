@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using api.Enums;
 
-namespace api.Models.Entities
+namespace api.Models
 {
     public class ProductVariant
     {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace api.Models.Entities
+namespace api.Models
 {
     public class Refund
     {

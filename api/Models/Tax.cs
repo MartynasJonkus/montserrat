@@ -1,6 +1,6 @@
 using api.Enums;
 
-namespace api.Models.Entities
+namespace api.Models
 {
     public class Tax
     {
