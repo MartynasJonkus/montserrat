@@ -9,6 +9,7 @@ namespace api.Models
         public int ProductId { get; set; }
         public string Title { get; set; } = string.Empty;
         [Column(TypeName = "decimal(18, 2)")]
+        public decimal AdditionalPrice { get; set; }
         public int Quantity { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         public DateTime UpdatedAt { get; set; }
