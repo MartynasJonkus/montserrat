@@ -6,13 +6,15 @@ import './main.css';
 
 import OrderPage from './order-page.tsx'
 import Payment from './payment.tsx';
+import Dashboard from './dashboard.tsx'
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <Router>
             <Routes>
-                {/*order page is being used as a home page for now*/}
-                <Route path="/" element={<OrderPage />} />
+                {/*Dashboard is being used as the home page for now, should be replaced to login*/}
+                <Route path="/" element={<Dashboard /> } />
+                <Route path="/ordercreation" element={<OrderPage />} />
                 <Route path="/payment" element={<Payment />} />
             </Routes>
         </Router>

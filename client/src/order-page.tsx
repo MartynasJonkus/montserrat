@@ -1,4 +1,4 @@
-
+import { GoArrowLeft } from "react-icons/go";
 import { useNavigate } from "react-router";
 import { useState } from "react";
 import TopNav from './top-nav.tsx';
@@ -20,7 +20,9 @@ function OrderPage() {
 
             <div id="order-container">
                 <div id="container-left">
-                    <div id="container-top" />
+                    <div className="container-top" id="back-to-dashboard">
+                        <GoArrowLeft id="back-arrow" size={30} onClick={() => navigate("/")} />
+                    </div>
                     <div id="order-details">
                         <div id="order-top"><b>CURRENT ORDER</b></div>
                         <hr />
@@ -91,7 +93,7 @@ function OrderPage() {
 
 
                 <div id="container-right">
-                    <div id="container-top">Products</div>
+                    <div className="container-top">Products</div>
                     <div id="products">
                         <div className="product-group">
                             <div className="group-name">Coffee</div>
