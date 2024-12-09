@@ -1,15 +1,60 @@
 import { GoTriangleLeft, GoTriangleRight } from "react-icons/go";
 import { FaSearch, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router";
+import { useState } from "react";
 import TopNav from './top-nav.tsx';
 import './dashboard.css';
 
+let weekOffset = 0;
 function Dashboard() {
     const navigate = useNavigate();
 
     const navigateToOrderCreation = () => {
         navigate('/ordercreation');
     }
+
+    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    const initialWeek = [
+        new Date(+new Date() - (86400000*3)),
+        new Date(+new Date() - (86400000*2)),
+        new Date(+new Date() - 86400000),
+        new Date(),
+        new Date(+new Date() + 86400000),
+        new Date(+new Date() + (86400000*2)),
+        new Date(+new Date() + (86400000*3))
+    ];
+
+    const [week, setWeek] = useState(initialWeek);
+    const [month, setMonth] = useState(monthNames[week[3].getMonth()]);
+    const [year, setYear] = useState(week[3].getFullYear());
+
+    function handleClickForward() {
+        weekOffset--;
+        updateWeek();
+    }
+
+    function handleClickBack() {
+        weekOffset++;
+        updateWeek();
+    }
+
+    function updateWeek() {
+        const newWeek = [
+            new Date(+new Date() - (86400000 * 3) - (86400000 * 7) * weekOffset),
+            new Date(+new Date() - (86400000 * 2) - (86400000 * 7) * weekOffset),
+            new Date(+new Date() - 86400000 - (86400000 * 7) * weekOffset),
+            new Date(+new Date() - (86400000 * 7) * weekOffset),
+            new Date(+new Date() + 86400000 - (86400000 * 7) * weekOffset),
+            new Date(+new Date() + (86400000 * 2) - (86400000 * 7) * weekOffset),
+            new Date(+new Date() + (86400000 * 3) - (86400000 * 7) * weekOffset)
+        ];
+
+        setWeek(newWeek);
+        setMonth(monthNames[newWeek[3].getMonth()]);
+        setYear(newWeek[3].getFullYear());
+    }
+
 
     return (
         <>
@@ -31,39 +76,17 @@ function Dashboard() {
 
                             <div id="reservations-calendar">
                                 <div id="calendar-top">
-                                    <GoTriangleLeft />
-                                    <div id="current-date">March 2024</div>
-                                    <GoTriangleRight />
+                                    <GoTriangleLeft onClick={handleClickBack} />
+                                    <div id="current-date">{month} {year}</div>
+                                    <GoTriangleRight onClick={handleClickForward} />
                                 </div>
                                 <div id="calendar-middle">
-                                    <div className="calendar-day">
-                                        <div className="weekday-abb">Mon</div>
-                                        <div className="weekday-num">8</div>
-                                    </div>
-                                    <div className="calendar-day">
-                                        <div className="weekday-abb">Tue</div>
-                                        <div className="weekday-num">9</div>
-                                    </div>
-                                    <div className="calendar-day">
-                                        <div className="weekday-abb">Wed</div>
-                                        <div className="weekday-num">9</div>
-                                    </div>
-                                    <div className="calendar-day" id="current-day">
-                                        <div className="weekday-abb">Thr</div>
-                                        <div className="weekday-num">10</div>
-                                    </div>
-                                    <div className="calendar-day">
-                                        <div className="weekday-abb">Fri</div>
-                                        <div className="weekday-num">11</div>
-                                    </div>
-                                    <div className="calendar-day">
-                                        <div className="weekday-abb">Sat</div>
-                                        <div className="weekday-num">12</div>
-                                    </div>
-                                    <div className="calendar-day">
-                                        <div className="weekday-abb">Sun</div>
-                                        <div className="weekday-num">13</div>
-                                    </div>
+                                    {week.map((date) =>
+                                        <div className="calendar-day">
+                                            <div className="weekday-abb">{dayNames[date.getDay()]}</div>
+                                            <div className="weekday-num">{date.getDate()}</div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
