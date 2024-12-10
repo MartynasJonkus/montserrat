@@ -11,8 +11,8 @@ namespace api.Models
         public EmployeeType EmployeeType { get; set; }
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public Status Status { get; set; }
 
         public required Merchant Merchant { get; set; }

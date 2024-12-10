@@ -13,8 +13,8 @@ namespace api.Models
         public string Title { get; set; } = string.Empty;
         public required Price Price { get; set; }
         public int Duration { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
         public Status Status { get; set; }
 
         public required Merchant Merchant { get; set; }

@@ -1,6 +1,5 @@
 using api.Dtos.Merchant;
 using api.Interfaces.Services;
-using api.Models;
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,12 +7,12 @@ namespace api.Controllers
 {
     [ApiController]
     [Route("api/merchants")]
-    public class MerchantsController : ControllerBase
+    public class MerchantController : ControllerBase
     {
         private readonly IMerchantService _merchantService;
         private readonly IMapper _mapper;
 
-        public MerchantsController(IMapper mapper, IMerchantService merchantService)
+        public MerchantController(IMapper mapper, IMerchantService merchantService)
         {
             _mapper = mapper;
             _merchantService = merchantService;
