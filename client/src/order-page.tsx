@@ -27,6 +27,7 @@ function OrderPage() {
                     <div id="order-details">
                         <div id="order-top"><b>CURRENT ORDER</b></div>
                         <hr />
+                        {/*this list need a way to remove items*/}
                         <div className="order-product">
                             <div id="order-product-amount">x2</div>
                             <div id="order-product-name">Chocolate chip cookie</div>
