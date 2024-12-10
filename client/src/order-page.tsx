@@ -21,7 +21,8 @@ function OrderPage() {
             <div id="order-container">
                 <div id="container-left">
                     <div className="container-top" id="back-to-dashboard">
-                        <GoArrowLeft id="back-arrow" size={30} onClick={() => navigate("/")} />
+                        {/*<GoArrowLeft id="back-arrow" size={30} onClick={() => navigate("/")} />*/}
+                        <button id="save-order-button" onClick={() => { } }>Save order</button>
                     </div>
                     <div id="order-details">
                         <div id="order-top"><b>CURRENT ORDER</b></div>

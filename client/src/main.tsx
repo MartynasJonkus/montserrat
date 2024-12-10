@@ -6,7 +6,8 @@ import './main.css';
 
 import OrderPage from './order-page.tsx'
 import Payment from './payment.tsx';
-import Dashboard from './dashboard.tsx'
+import Dashboard from './dashboard.tsx';
+import OrderManagement from './order-management.tsx';
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -16,6 +17,7 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/" element={<Dashboard /> } />
                 <Route path="/ordercreation" element={<OrderPage />} />
                 <Route path="/payment" element={<Payment />} />
+                <Route path="/ordermanagement" element={<OrderManagement /> } />
             </Routes>
         </Router>
     </StrictMode>,

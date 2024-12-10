@@ -133,7 +133,7 @@
 
 #active-order-list {
     height: 480px;
-    overflow-y: auto;
+    overflow: auto;
     padding: 10px;
     padding-top: 0px;
 }
