@@ -1,8 +1,9 @@
 using api.Enums;
+using api.Models;
 
-namespace api.Models
+namespace api.Dtos.Employee
 {
-    public class Employee
+    public class EmployeeDto
     {
         public int Id { get; set; }
         public int MerchantId { get; set; }
@@ -11,12 +12,8 @@ namespace api.Models
         public EmployeeType EmployeeType { get; set; }
         public string Username { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; } = DateTime.Now;
-        public Status Status { get; set; }
-
-        public required Merchant? Merchant { get; set; }
-        public List<Reservation> Reservations { get; set; } = [];
-        public List<Service> Services { get; set; } = [];
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
+        
     }
 }

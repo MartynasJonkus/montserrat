@@ -1,4 +1,6 @@
 using api.Dtos.Merchant;
+using api.Dtos.Employee;
+using api.Dtos.Customer;
 using api.Models;
 using AutoMapper;
 
@@ -9,6 +11,8 @@ namespace api.Mapping
     public MappingProfile()
     {
         CreateMap<Merchant, MerchantDto>();
+        CreateMap<Employee, EmployeeDto>();
+        CreateMap<Customer, CustomerDto>();
     }
 }
 }
