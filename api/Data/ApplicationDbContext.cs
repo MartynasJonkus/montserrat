@@ -47,6 +47,11 @@ namespace api.Data
                 .WithOne(o => o.Refund)
                 .HasForeignKey<Refund>(r => r.OrderId)
                 .IsRequired();
+
+            modelBuilder.Entity<Product>()
+                .HasMany(p => p.ProductVariants)
+                .WithOne(v => v.Product)
+                .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }

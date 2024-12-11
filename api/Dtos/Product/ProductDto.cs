@@ -18,6 +18,6 @@ namespace api.Dtos.Product
         public DateTime UpdatedAt { get; set; } = DateTime.Now;
         public Status Status { get; set; }
 
-        public List<ProductVariant> ProductVariants { get; set; } = [];
+        public List<ProductVariantDto> ProductVariants { get; set; } = [];
     }
 }

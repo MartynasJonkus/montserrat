@@ -74,7 +74,7 @@ namespace api.Controllers
                 return BadRequest(ModelState);
 
             var variant = await _variantService.AddVariantAsync(productId, createProductVariantDto);
-            return CreatedAtAction("GetVariantById", "Variant", new { productId, variantId = variant.Id }, variant);
+            return Created("", variant);
         }
 
         [HttpGet("{productId}/variants")]

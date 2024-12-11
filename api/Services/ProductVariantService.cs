@@ -44,7 +44,9 @@ namespace api.Services
                 return null;
 
             _mapper.Map(createProductVariantDto, existingVariant);
+            existingVariant.UpdatedAt = DateTime.UtcNow;
             await _repository.UpdateVariantAsync(existingVariant);
+
             return _mapper.Map<ProductVariantDto>(existingVariant);
         }
 

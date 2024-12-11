@@ -6,12 +6,19 @@ using AutoMapper;
 namespace api.Mapping
 {
     public class MappingProfile : Profile
-{
-    public MappingProfile()
     {
-        CreateMap<Merchant, MerchantDto>();
-        CreateMap<Product, ProductDto>().ReverseMap();
-        CreateMap<CreateProductDto, Product>();
+        public MappingProfile()
+        {
+            
+            CreateMap<Merchant, MerchantDto>();
+
+            CreateMap<CreateProductVariantDto, ProductVariant>();
+            CreateMap<ProductVariant, ProductVariantDto>();
+
+            CreateMap<CreateProductDto, Product>();
+            CreateMap<Product, ProductDto>()
+                .ForMember(dest => dest.ProductVariants, 
+                    opt => opt.MapFrom(src => src.ProductVariants));
+        }
     }
-}
 }

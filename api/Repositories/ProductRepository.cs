@@ -14,15 +14,17 @@ namespace api.Repositories
             _context = context;
         }
 
-        public async Task AddProductAsync(Product product)
+        public async Task<Product?> AddProductAsync(Product product)
         {
             await _context.Products.AddAsync(product);
             await _context.SaveChangesAsync();
+            return product;
         }
 
         public async Task<IEnumerable<Product>> GetAllProductsAsync(int pageNumber, int pageSize)
         {
             return await _context.Products
+                .Include(p => p.ProductVariants)
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
                 .ToListAsync();
@@ -31,6 +33,7 @@ namespace api.Repositories
         public async Task<Product?> GetProductByIdAsync(int id)
         {
             return await _context.Products
+                .Include(p => p.ProductVariants)
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 

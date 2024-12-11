@@ -1,4 +1,5 @@
 using api.Dtos.Product;
+using api.Enums;
 using api.Interfaces.Repositories;
 using api.Interfaces.Services;
 using api.Models;
@@ -9,19 +10,35 @@ namespace api.Services
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
+        private readonly IProductVariantService _variantService;
         private readonly IMapper _mapper;
+        
 
-        public ProductService(IProductRepository productRepository, IMapper mapper)
+        public ProductService(IProductRepository productRepository, IProductVariantService variantService, IMapper mapper)
         {
             _productRepository = productRepository;
+            _variantService = variantService;
             _mapper = mapper;
         }
 
         public async Task<ProductDto> AddProductAsync(CreateProductDto createProductDto)
         {
             var product = _mapper.Map<Product>(createProductDto);
-            await _productRepository.AddProductAsync(product);
-            return _mapper.Map<ProductDto>(product);
+
+            var createdProduct = await _productRepository.AddProductAsync(product)
+                ?? throw new InvalidOperationException("Failed to create the product in the database.");
+            
+            var defaultVariant = new CreateProductVariantDto
+            {
+                Title = "Default",
+                AdditionalPrice = 0,
+                Quantity = 0,
+                Status = Status.active
+            };
+            
+            await _variantService.AddVariantAsync(createdProduct.Id, defaultVariant);
+
+            return _mapper.Map<ProductDto>(createdProduct);
         }
 
         public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(int pageNumber, int pageSize)
@@ -43,6 +60,7 @@ namespace api.Services
                 return null;
 
             _mapper.Map(createProductDto, existingProduct);
+            existingProduct.UpdatedAt = DateTime.UtcNow;
             await _productRepository.UpdateProductAsync(existingProduct);
 
             return _mapper.Map<ProductDto>(existingProduct);

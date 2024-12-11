@@ -39,8 +39,8 @@ namespace api.Controllers
             if (existingVariant == null)
                 return NotFound(new { message = "Variant not found" });
 
-            var updatedVariant = await _variantService.UpdateVariantAsync(variantId, createProductVariantDto);
-            return Ok(updatedVariant);
+            await _variantService.UpdateVariantAsync(variantId, createProductVariantDto);
+            return Ok();
         }
     }
 }
