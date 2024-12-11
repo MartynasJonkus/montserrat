@@ -1,15 +1,13 @@
-using api.Dtos.Merchant;
 using api.Dtos.Product;
 using api.Models;
 using AutoMapper;
 
-namespace api.Mapping
+namespace api.MappingProfiles
 {
-    public class MappingProfile : Profile
+    public class ProductMappingProfile : Profile
 {
-    public MappingProfile()
+    public ProductMappingProfile()
     {
-        CreateMap<Merchant, MerchantDto>();
         CreateMap<Product, ProductDto>().ReverseMap();
         CreateMap<CreateProductDto, Product>();
     }
