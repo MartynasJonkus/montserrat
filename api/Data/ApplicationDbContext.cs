@@ -52,6 +52,11 @@ namespace api.Data
                 .HasMany(p => p.ProductVariants)
                 .WithOne(v => v.Product)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Employee>()
+                .HasIndex(e => e.Username)
+                .IsUnique()
+                .HasDatabaseName("IX_Employee_Username");
         }
     }
 }

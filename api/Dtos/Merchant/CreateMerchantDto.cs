@@ -1,3 +1,4 @@
+using api.Enums;
 using api.Models;
 
 namespace api.Dtos.Merchant
@@ -9,5 +10,6 @@ namespace api.Dtos.Merchant
         public required Address Address { get; set; }
         public string Email { get; set; } = string.Empty;
         public string Phone { get; set; } = string.Empty;
+        public Status Status { get; set; }
     }
 }

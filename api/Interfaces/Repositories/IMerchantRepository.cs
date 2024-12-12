@@ -4,10 +4,9 @@ namespace api.Interfaces.Repositories
 {
     public interface IMerchantRepository
     {
-        Task<Merchant?> GetByIdAsync(int id);
-        Task<IEnumerable<Merchant>> GetAllAsync();
-        Task AddAsync(Merchant merchant);
-        Task UpdateAsync(Merchant merchant);
-        Task DeleteAsync(int id);
+        Task<Merchant?> GetMerchantByIdAsync(int id);
+        Task<IEnumerable<Merchant>> GetAllMerchantsAsync();
+        Task AddMerchantAsync(Merchant merchant);
+        Task UpdateMerchantAsync(Merchant merchant);
     }
 }

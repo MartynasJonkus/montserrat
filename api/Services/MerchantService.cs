@@ -3,63 +3,58 @@ using api.Enums;
 using api.Interfaces.Repositories;
 using api.Interfaces.Services;
 using api.Models;
+using AutoMapper;
 
 namespace api.Services
 {
     public class MerchantService : IMerchantService
     {
         private readonly IMerchantRepository _merchantRepository;
+        private readonly IMapper _mapper;
 
-        public MerchantService(IMerchantRepository merchantRepository)
+        public MerchantService(IMerchantRepository merchantRepository, IMapper mapper)
         {
             _merchantRepository = merchantRepository;
+            _mapper = mapper;
         }
 
-        public async Task<Merchant?> GetMerchantAsync(int id)
+        public async Task<MerchantDto?> GetMerchantByIdAsync(int id)
         {
-            return await _merchantRepository.GetByIdAsync(id);
+            var merchant = await _merchantRepository.GetMerchantByIdAsync(id);
+            return _mapper.Map<MerchantDto>(merchant);
         }
 
-        public async Task<IEnumerable<Merchant>> GetAllMerchantsAsync()
+        public async Task<IEnumerable<MerchantDto>> GetAllMerchantsAsync()
         {
-            return await _merchantRepository.GetAllAsync();
+            var merchants = await _merchantRepository.GetAllMerchantsAsync();
+            return _mapper.Map<IEnumerable<MerchantDto>>(merchants);
         }
 
-        public async Task<Merchant> CreateMerchantAsync(CreateMerchantDto createMerchantDto)
+        public async Task<MerchantDto> AddMerchantAsync(CreateMerchantDto createMerchantDto)
         {
-            var merchant = new Merchant
+            var merchant = _mapper.Map<Merchant>(createMerchantDto);
+            await _merchantRepository.AddMerchantAsync(merchant);
+            return _mapper.Map<MerchantDto>(merchant);
+        }
+
+        public async Task<bool> UpdateMerchantAsync(int id, CreateMerchantDto createMerchantDto)
+        {
+            try
             {
-                Name = createMerchantDto.Name,
-                VAT = createMerchantDto.VAT,
-                Address = createMerchantDto.Address,
-                Email = createMerchantDto.Email,
-                Phone = createMerchantDto.Phone,
-                CreatedAt = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                Status = Status.active
-            };
-            await _merchantRepository.AddAsync(merchant);
-            return merchant;
-        }
+                var existingMerchant = await _merchantRepository.GetMerchantByIdAsync(id);
+                if (existingMerchant == null)
+                    throw new KeyNotFoundException("Merchant not found.");
 
-        public async Task<Merchant> UpdateMerchantAsync(int id, UpdateMerchantDto updatedMerchant)
-        {
-            var existingMerchant = await _merchantRepository.GetByIdAsync(id);
-            if (existingMerchant == null)
-            {
-                throw new KeyNotFoundException("Merchant not found.");
+                _mapper.Map(createMerchantDto, existingMerchant);
+                existingMerchant.UpdatedAt = DateTime.UtcNow;
+
+                await _merchantRepository.UpdateMerchantAsync(existingMerchant);
+                return true;
             }
-
-            existingMerchant.Name = updatedMerchant.Name;
-            existingMerchant.VAT = updatedMerchant.VAT;
-            existingMerchant.Address = updatedMerchant.Address;
-            existingMerchant.Email = updatedMerchant.Email;
-            existingMerchant.Phone = updatedMerchant.Phone;
-            existingMerchant.UpdatedAt = DateTime.UtcNow;
-            existingMerchant.Status = updatedMerchant.Status;
-
-            await _merchantRepository.UpdateAsync(existingMerchant);
-            return existingMerchant;
+            catch
+            {
+                return false;
+            }
         }
     }
 }
