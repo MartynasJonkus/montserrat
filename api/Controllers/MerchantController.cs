@@ -1,6 +1,6 @@
 using api.Dtos.Merchant;
 using api.Interfaces.Services;
-using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -10,55 +10,70 @@ namespace api.Controllers
     public class MerchantController : ControllerBase
     {
         private readonly IMerchantService _merchantService;
-        private readonly IMapper _mapper;
 
-        public MerchantController(IMapper mapper, IMerchantService merchantService)
+        public MerchantController(IMerchantService merchantService)
         {
-            _mapper = mapper;
             _merchantService = merchantService;
         }
 
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetMerchant(int id)
+        [HttpGet("my-merchant")]
+        public async Task<IActionResult> GetMyMerchant()
         {
-            var merchant = await _merchantService.GetMerchantAsync(id);
-            if (merchant == null)
-                return NotFound(new { message = "Merchant not found" });
+            var merchantIdClaim = User.FindFirst("MerchantId");
+            if (merchantIdClaim == null)
+                return Unauthorized(new { message = "MerchantId not found in token." });
 
-            var merchantDto = _mapper.Map<MerchantDto>(merchant);
+            if (!int.TryParse(merchantIdClaim.Value, out var merchantId))
+                return BadRequest(new { message = "Invalid MerchantId." });
+
+            var merchantDto = await _merchantService.GetMerchantByIdAsync(merchantId);
+            if (merchantDto == null)
+                return NotFound(new { message = "Merchant not found." });
+
             return Ok(merchantDto);
         }
 
+        [Authorize(Policy = "AdminOnly")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetMerchant(int id)
+        {
+            var merchantDto = await _merchantService.GetMerchantByIdAsync(id);
+            if (merchantDto == null)
+                return NotFound(new { message = "Merchant not found" });
+
+            return Ok(merchantDto);
+        }
+
+        [Authorize(Policy = "AdminOnly")]
         [HttpGet]
         public async Task<IActionResult> GetAllMerchants()
         {
-            var merchants = await _merchantService.GetAllMerchantsAsync();
-            var merchantDtos = _mapper.Map<IEnumerable<MerchantDto>>(merchants);
+            var merchantDtos = await _merchantService.GetAllMerchantsAsync();
             return Ok(merchantDtos);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost]
         public async Task<IActionResult> CreateMerchant([FromBody] CreateMerchantDto createMerchantDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var createdMerchant = await _merchantService.CreateMerchantAsync(createMerchantDto);
-            var merchantDto = _mapper.Map<MerchantDto>(createdMerchant);
-            return CreatedAtAction(nameof(GetMerchant), new { id = createdMerchant.Id }, merchantDto);
+            var createdMerchantDto = await _merchantService.AddMerchantAsync(createMerchantDto);
+            return CreatedAtAction(nameof(GetMerchant), new { id = createdMerchantDto.Id }, createdMerchantDto);
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMerchant(int id, [FromBody] UpdateMerchantDto updateMerchantDto)
+        public async Task<IActionResult> UpdateMerchant(int id, [FromBody] CreateMerchantDto createMerchantDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             try
             {
-                var merchant = await _merchantService.UpdateMerchantAsync(id, updateMerchantDto);
-                var merchantDto = _mapper.Map<MerchantDto>(merchant);
-                return Ok(merchantDto);
+                await _merchantService.UpdateMerchantAsync(id, createMerchantDto);
+                return Ok();
             }
             catch (KeyNotFoundException ex)
             {

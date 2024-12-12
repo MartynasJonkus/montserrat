@@ -1,3 +1,4 @@
+using api.Enums;
 using api.Models;
 
 namespace api.Dtos.Merchant
@@ -12,5 +13,6 @@ namespace api.Dtos.Merchant
         public string Phone { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
+        public Status Status { get; set; }
     }
 }

@@ -8,6 +8,7 @@ namespace api.MappingProfiles
     {
         public MerchantMappingProfile()
         {
+            CreateMap<CreateMerchantDto, Merchant>();
             CreateMap<Merchant, MerchantDto>();
         }
     }

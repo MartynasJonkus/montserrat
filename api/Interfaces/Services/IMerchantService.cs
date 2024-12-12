@@ -5,9 +5,9 @@ namespace api.Interfaces.Services
 {
     public interface IMerchantService
     {
-        Task<Merchant?> GetMerchantAsync(int id);
-        Task<IEnumerable<Merchant>> GetAllMerchantsAsync();
-        Task<Merchant> CreateMerchantAsync(CreateMerchantDto createMerchantDto);
-        Task<Merchant> UpdateMerchantAsync(int id, UpdateMerchantDto updatedMerchant);
+        Task<MerchantDto?> GetMerchantByIdAsync(int id);
+        Task<IEnumerable<MerchantDto>> GetAllMerchantsAsync();
+        Task<MerchantDto> AddMerchantAsync(CreateMerchantDto createMerchantDto);
+        Task<bool> UpdateMerchantAsync(int id, CreateMerchantDto createMerchantDto);
     }
 }

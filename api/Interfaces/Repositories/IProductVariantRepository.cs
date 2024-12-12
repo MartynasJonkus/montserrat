@@ -4,9 +4,9 @@ namespace api.Interfaces.Repositories
 {
     public interface IProductVariantRepository
     {
-        Task<ProductVariant> AddVariantAsync(ProductVariant productVariant);
-        Task<IEnumerable<ProductVariant>> GetVariantsByProductIdAsync(int productId);
         Task<ProductVariant?> GetVariantByIdAsync(int variantId);
+        Task<IEnumerable<ProductVariant>> GetVariantsByProductIdAsync(int productId);
+        Task<ProductVariant> AddVariantAsync(ProductVariant productVariant);
         Task UpdateVariantAsync(ProductVariant productVariant);
         Task DeleteVariantAsync(ProductVariant productVariant);
     }
