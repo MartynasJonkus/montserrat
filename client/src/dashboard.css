@@ -27,8 +27,16 @@
     height: 540px;
 }
 
-#reservations-title, #reservations-search, #reservations-calendar {
+#reservations-search, #reservations-calendar {
     margin-bottom: 20px;
+}
+
+#reservations-container-top {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
 }
 
 #reservations-title {

@@ -13,6 +13,11 @@ function Dashboard() {
         navigate('/ordercreation');
     }
 
+    const navigateToReservationCreation = () => {
+        navigate('/reservationcreation');
+    }
+
+
     const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     const initialWeek = [
@@ -68,7 +73,11 @@ function Dashboard() {
                 <div id="dashboard-middle">
                     <div id="dashboard-left">
                         <div id="reservations-container">
-                            <div id="reservations-title">Nearest reservations</div>
+                            <div id="reservations-container-top">
+                                <div id="reservations-title">Nearest reservations</div>
+                                <button onClick={() => navigateToReservationCreation()} className="page-button">Create new reservation</button>
+                            </div>
+
                             <div id="reservations-search">
                                 <FaSearch />
                                 <input type="search" placeholder="Search..." />
