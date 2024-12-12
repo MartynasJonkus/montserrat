@@ -1,11 +1,8 @@
-import { FaSearch, FaUser } from "react-icons/fa";
-import { useNavigate } from "react-router";
+import { FaSearch } from "react-icons/fa";
 import TopNav from './top-nav.tsx';
-import './reservation-management.css';
 
 
 function ReservationMng() {
-    const navigate = useNavigate();
 
     return (
         <>
