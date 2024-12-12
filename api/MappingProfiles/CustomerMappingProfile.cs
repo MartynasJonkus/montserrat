@@ -8,8 +8,8 @@ namespace api.MappingProfiles
     {
         public CustomerMappingProfile() 
         {
-        CreateMap<Customer, CustomerDto>();
-        CreateMap<CreateUpdateCustomerDto, Customer>();
+            CreateMap<Customer, CustomerDto>();
+            CreateMap<CreateUpdateCustomerDto, Customer>();
         }  
     }
 }
