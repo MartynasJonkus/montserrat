@@ -2,7 +2,6 @@ namespace api.Dtos.Order
 {
     public class CreateOrderDto
     {
-        public int MerchantId { get; set; }
         public List<CreateOrderItemDto> OrderItems { get; set; } = [];
     }
 

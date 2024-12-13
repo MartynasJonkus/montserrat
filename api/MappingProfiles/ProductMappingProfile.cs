@@ -13,8 +13,7 @@ namespace api.MappingProfiles
 
             CreateMap<CreateProductDto, Product>();
             CreateMap<Product, ProductDto>()
-                .ForMember(dest => dest.ProductVariants, 
-                    opt => opt.MapFrom(src => src.ProductVariants));
+                .ForMember(dest => dest.ProductVariants, opt => opt.MapFrom(src => src.ProductVariants));
         }
     }
 }

@@ -5,7 +5,6 @@ namespace api.Dtos.Product
 {
     public class CreateProductDto
     {
-        public int MerchantId { get; set; }
         public int? CategoryId { get; set; }
         public int? DiscountId { get; set; }
         public int? TaxId { get; set; }

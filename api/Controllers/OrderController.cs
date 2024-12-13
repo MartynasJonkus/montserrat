@@ -21,8 +21,14 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
+            
+            var merchantIdClaim = User.FindFirst("MerchantId");
+            if (merchantIdClaim == null || !int.TryParse(merchantIdClaim.Value, out var merchantId))
+            {
+                return Unauthorized("MerchantId is missing or invalid in the token.");
+            }
                 
-            var createdOrder = await _orderService.CreateOrderAsync(createOrderDto);
+            var createdOrder = await _orderService.CreateOrderAsync(merchantId, createOrderDto);
             if (createdOrder == null) return BadRequest("Invalid order data.");
             return CreatedAtAction(nameof(GetOrder), new { orderId = createdOrder.Id }, createdOrder);
         }

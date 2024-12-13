@@ -20,50 +20,48 @@ namespace api.Services
             _mapper = mapper;
         }
 
-        public async Task<Employee?> GetEmployeeAsync(int id)
+        public async Task<EmployeeDto?> GetEmployeeAsync(int id)
         {
-            return await _employeeRepository.GetByIdAsync(id);
+            var employee = await _employeeRepository.GetEmployeeByIdAsync(id);
+            return _mapper.Map<EmployeeDto>(employee);
         }
 
-        public async Task<IEnumerable<Employee>> GetAllEmployeesAsync()
+        public async Task<IEnumerable<EmployeeDto>> GetAllEmployeesAsync(int merchantId, EmployeeType employeeType, int pageNumber, int pageSize)
         {
-            return await _employeeRepository.GetAllAsync();
+            var employees = await _employeeRepository.GetAllEmployeesAsync(merchantId, employeeType, pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<EmployeeDto>>(employees);
         }
 
-        public async Task<Employee> CreateEmployeeAsync(CreateEmployeeDto createEmployeeDto)
+        public async Task<EmployeeDto> CreateEmployeeAsync(int merchantId, CreateUpdateEmployeeDto createEmployeeDto)
         {
-            var merchant = await _merchantRepository.GetByIdAsync(createEmployeeDto.MerchantId);
-            if (merchant == null)
-            {
-                throw new KeyNotFoundException("Merchant not found.");
-            }
-
             var employee = _mapper.Map<Employee>(createEmployeeDto);
-            employee.Merchant = merchant;
+            employee.MerchantId = merchantId;
 
-            await _employeeRepository.AddAsync(employee);
-            return employee;
+            await _employeeRepository.AddEmployeeAsync(employee);
+            return _mapper.Map<EmployeeDto>(employee);
         }
 
-        public async Task<Employee> UpdateEmployeeAsync(int id, UpdateEmployeeDto updatedEmployee)
+        public async Task<Employee> UpdateEmployeeAsync(int id, CreateUpdateEmployeeDto updatedEmployee)
         {
-            var existingEmployee = await _employeeRepository.GetByIdAsync(id);
+            var existingEmployee = await _employeeRepository.GetEmployeeByIdAsync(id);
             if (existingEmployee == null)
-            {
                 throw new KeyNotFoundException("Employee not found.");
-            }
-
-            var merchant = await _merchantRepository.GetByIdAsync(updatedEmployee.MerchantId);
-            if (merchant == null)
-            {
-                throw new KeyNotFoundException("Merchant not found.");
-            }
 
             _mapper.Map(updatedEmployee, existingEmployee);
-            existingEmployee.Merchant = merchant;
-
-            await _employeeRepository.UpdateAsync(existingEmployee);
+            existingEmployee.UpdatedAt = DateTime.UtcNow;
+            
+            await _employeeRepository.UpdateEmployeeAsync(existingEmployee);
             return existingEmployee;
+        }
+
+        public async Task<bool> DeleteEmployeeAsync(int id)
+        {
+            var existingEmployee = await _employeeRepository.GetEmployeeByIdAsync(id);
+            if (existingEmployee == null)
+                return false;
+
+            await _employeeRepository.DeleteEmployeeAsync(existingEmployee);
+            return true;
         }
     }
 }

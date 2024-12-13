@@ -37,24 +37,17 @@ namespace api.Services
             return _mapper.Map<MerchantDto>(merchant);
         }
 
-        public async Task<bool> UpdateMerchantAsync(int id, CreateMerchantDto createMerchantDto)
+        public async Task<Merchant> UpdateMerchantAsync(int id, CreateMerchantDto createMerchantDto)
         {
-            try
-            {
-                var existingMerchant = await _merchantRepository.GetMerchantByIdAsync(id);
-                if (existingMerchant == null)
-                    throw new KeyNotFoundException("Merchant not found.");
+            var existingMerchant = await _merchantRepository.GetMerchantByIdAsync(id);
+            if (existingMerchant == null)
+                throw new KeyNotFoundException("Merchant not found.");
 
-                _mapper.Map(createMerchantDto, existingMerchant);
-                existingMerchant.UpdatedAt = DateTime.UtcNow;
+            _mapper.Map(createMerchantDto, existingMerchant);
+            existingMerchant.UpdatedAt = DateTime.UtcNow;
 
-                await _merchantRepository.UpdateMerchantAsync(existingMerchant);
-                return true;
-            }
-            catch
-            {
-                return false;
-            }
+            await _merchantRepository.UpdateMerchantAsync(existingMerchant);
+            return existingMerchant;
         }
     }
 }
