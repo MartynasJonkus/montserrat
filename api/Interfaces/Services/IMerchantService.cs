@@ -8,6 +8,6 @@ namespace api.Interfaces.Services
         Task<MerchantDto?> GetMerchantByIdAsync(int id);
         Task<IEnumerable<MerchantDto>> GetAllMerchantsAsync();
         Task<MerchantDto> AddMerchantAsync(CreateMerchantDto createMerchantDto);
-        Task<bool> UpdateMerchantAsync(int id, CreateMerchantDto createMerchantDto);
+        Task<Merchant> UpdateMerchantAsync(int id, CreateMerchantDto createMerchantDto);
     }
 }

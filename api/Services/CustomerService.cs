@@ -1,4 +1,5 @@
 using api.Dtos.Customer;
+using api.Enums;
 using api.Interfaces.Repositories;
 using api.Interfaces.Services;
 using api.Models;
@@ -19,51 +20,46 @@ namespace api.Services
             _mapper = mapper;
         }
 
-        public async Task<Customer?> GetCustomerAsync(int id)
+        public async Task<CustomerDto?> GetCustomerAsync(int id)
         {
-            return await _customerRepository.GetByIdAsync(id);
+            var customer = await _customerRepository.GetCustomerByIdAsync(id);
+            return _mapper.Map<CustomerDto>(customer);
         }
 
-        public async Task<IEnumerable<Customer>> GetAllCustomersAsync()
+        public async Task<IEnumerable<CustomerDto>> GetAllCustomersAsync(int merchantId, EmployeeType employeeType, int pageNumber, int pageSize)
         {
-            return await _customerRepository.GetAllAsync();
+            var customers = await _customerRepository.GetAllCustomersAsync(merchantId, employeeType, pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<CustomerDto>>(customers);
         }
 
-        public async Task<Customer> CreateCustomerAsync(CreateUpdateCustomerDto createUpdateCustomerDto)
+        public async Task<CustomerDto> CreateCustomerAsync(int merchantId, CreateUpdateCustomerDto createUpdateCustomerDto)
         {
-            
-            var merchant = await _merchantRepository.GetByIdAsync(createUpdateCustomerDto.MerchantId);
-            if (merchant == null)
-            {
-                throw new KeyNotFoundException("Merchant not found.");
-            }
-
             var customer = _mapper.Map<Customer>(createUpdateCustomerDto);
-            customer.Merchant = merchant;
+            customer.MerchantId = merchantId;
 
-            await _customerRepository.AddAsync(customer);
-            return customer;
+            await _customerRepository.AddCustomerAsync(customer);
+            return _mapper.Map<CustomerDto>(customer);
         }
 
         public async Task<Customer> UpdateCustomerAsync(int id, CreateUpdateCustomerDto updatedCustomer)
         {
-            var existingCustomer = await _customerRepository.GetByIdAsync(id);
+            var existingCustomer = await _customerRepository.GetCustomerByIdAsync(id);
             if (existingCustomer == null)
-            {
                 throw new KeyNotFoundException("Customer not found.");
-            }
-
-            var merchant = await _merchantRepository.GetByIdAsync(updatedCustomer.MerchantId);
-            if (merchant == null)
-            {
-                throw new KeyNotFoundException("Merchant not found.");
-            }
 
             _mapper.Map(updatedCustomer, existingCustomer);
-            existingCustomer.Merchant = merchant;
-
-            await _customerRepository.UpdateAsync(existingCustomer);
+            await _customerRepository.UpdateCustomerAsync(existingCustomer);
             return existingCustomer;        
+        }
+
+        public async Task<bool> DeleteCustomerAsync(int id)
+        {
+            var existingCustomer = await _customerRepository.GetCustomerByIdAsync(id);
+            if (existingCustomer == null)
+                return false;
+
+            await _customerRepository.DeleteCustomerAsync(existingCustomer);
+            return true;
         }
     }
 }

@@ -3,6 +3,7 @@ using api.Enums;
 using api.Dtos.Order;
 using api.Interfaces.Repositories;
 using api.Interfaces.Services;
+using AutoMapper;
 
 namespace api.Services
 {
@@ -10,133 +11,130 @@ namespace api.Services
     {
         private readonly IOrderRepository _orderRepository;
         private readonly IMerchantRepository _merchantRepository;
+        private readonly IProductVariantRepository _productVariantRepository;
+        private readonly IMapper _mapper;
 
-        public OrderService(IOrderRepository orderRepository, IMerchantRepository merchantRepository)
+        public OrderService(IOrderRepository orderRepository,
+                            IMerchantRepository merchantRepository,
+                            IProductVariantRepository productVariantRepository,
+                            IMapper mapper)
         {
             _orderRepository = orderRepository;
             _merchantRepository = merchantRepository;
+            _productVariantRepository = productVariantRepository;
+            _mapper = mapper;
         }
 
-        public async Task<Order> CreateOrderAsync(CreateOrderDto dto)
+        public async Task<OrderDto> CreateOrderAsync(int merchantId, CreateOrderDto createOrderDto)
         {
-            // Step 1: Validate merchant
-            var merchant = await _merchantRepository.GetByIdAsync(dto.MerchantId);
-            if (merchant == null)
-            {
-                throw new InvalidOperationException("Merchant not found.");
-            }
-
-            // Step 2: Validate order items
-            if (dto.OrderItems == null || dto.OrderItems.Count == 0)
-            {
+            if (createOrderDto.OrderItems == null || createOrderDto.OrderItems.Count == 0)
                 throw new InvalidOperationException("Order must contain at least one item.");
-            }
 
-            // Step 3: Map DTO to Domain Model
+            var merchant = await _merchantRepository.GetMerchantByIdAsync(merchantId);
+            if (merchant == null)
+                throw new InvalidOperationException($"Merchant invalid.");
+
             var order = new Order
             {
                 Merchant = merchant,
-                MerchantId = dto.MerchantId,
+                MerchantId = merchantId,
                 Status = OrderStatus.opened,
                 TotalAmount = new Price{ Amount = 0, Currency = Currency.EUR },
             };
 
             decimal totalAmount = 0;
 
-            // foreach (var createOrderItemDto in dto.OrderItems)
-            // {
-            //     // Step 4: Validate ProductVariant
-            //     var productVariant = await _productVariantRepository.GetProductVariantByIdAsync(createOrderItemDto.ProductVariantId);
-            //     if (productVariant == null)
-            //     {
-            //         throw new InvalidOperationException($"ProductVariant with ID {createOrderItemDto.ProductVariantId} not found.");
-            //     }
-            //     if (productVariant.Quantity < createOrderItemDto.Quantity)
-            //     {
-            //         throw new InvalidOperationException($"Not enough stock for ProductVariant with ID {createOrderItemDto.ProductVariantId}.");
-            //     }
-
-            //     // Step 5: Create OrderItem and calculate the total amount
-            //     var orderItem = new OrderItem
-            //     {
-            //         OrderId = order.Id,
-            //         ProductVariantId = createOrderItemDto.ProductVariantId,
-            //         Quantity = createOrderItemDto.Quantity,
-            //         Price = new Price
-            //         {
-            //             Amount = productVariant.Product.Price.Amount + productVariant.AdditionalPrice,
-            //             Currency = productVariant.Product.Price.Currency
-            //         },
-
-            //         Order = order,
-            //         ProductVariant = productVariant
-            //     };
+            foreach (var createOrderItemDto in createOrderDto.OrderItems)
+            {
+                var productVariant = await _productVariantRepository.GetVariantByIdAsync(createOrderItemDto.ProductVariantId);
                 
-            //     order.OrderItems.Add(orderItem);
+                if (productVariant == null)
+                    throw new InvalidOperationException($"ProductVariant not found.");
 
-            //     // Add the price of the item to the total
-            //     totalAmount += orderItem.Price.Amount * orderItem.Quantity;
-            // }
+                if (productVariant.Quantity < createOrderItemDto.Quantity)
+                    throw new InvalidOperationException($"Not enough stock for ProductVariant with ID {createOrderItemDto.ProductVariantId}.");
 
-            // Step 7: Set the total amount and save the order
+                var orderItem = new OrderItem
+                {
+                    OrderId = order.Id,
+                    ProductVariantId = createOrderItemDto.ProductVariantId,
+                    Quantity = createOrderItemDto.Quantity,
+                    Price = new Price
+                    {
+                        Amount = productVariant.Product.Price.Amount + productVariant.AdditionalPrice,
+                        Currency = productVariant.Product.Price.Currency
+                    },
+
+                    Order = order,
+                    ProductVariant = productVariant
+                };
+                
+                order.OrderItems.Add(orderItem);
+
+                totalAmount += orderItem.Price.Amount * orderItem.Quantity;
+            }
+
             order.TotalAmount = new Price { Amount = totalAmount, Currency = Currency.EUR };
 
-            await _orderRepository.AddAsync(order);
+            await _orderRepository.AddOrderAsync(order);
 
-            // Step 8: Return the created order
-            return order;
+            return _mapper.Map<OrderDto>(order);
         }
 
         public async Task<IEnumerable<Order?>> GetAllOrdersAsync()
         {
-            return await _orderRepository.GetAllAsync();
+            return await _orderRepository.GetAllOrdersAsync();
         }
 
-        public async Task<Order?> GetOrderByIdAsync(int orderId)
+        public async Task<OrderDto?> GetOrderByIdAsync(int orderId)
         {
-            return await _orderRepository.GetByIdAsync(orderId);
+            var order = await _orderRepository.GetOrderByIdAsync(orderId);
+            return _mapper.Map<OrderDto>(order);
         }
 
         public async Task<Order?> UpdateOrderAsync(int orderId, Order orderUpdate)
         {
-            var existingOrder = await _orderRepository.GetByIdAsync(orderId);
+            var existingOrder = await _orderRepository.GetOrderByIdAsync(orderId);
             if (existingOrder == null) return null;
 
             existingOrder.Status = orderUpdate.Status;
             existingOrder.UpdatedAt = DateTime.Now;
 
-            return await _orderRepository.UpdateAsync(existingOrder);
+            await _orderRepository.UpdateOrderAsync(existingOrder);
+            return existingOrder;
         }
 
         public async Task<bool> DeleteOrderAsync(int orderId)
         {
-            var existingOrder = await _orderRepository.GetByIdAsync(orderId);
+            var existingOrder = await _orderRepository.GetOrderByIdAsync(orderId);
             if (existingOrder == null) return false;
 
-            await _orderRepository.DeleteAsync(orderId);
+            await _orderRepository.DeleteOrderAsync(orderId);
             return true;
         }
 
         public async Task<Order?> CancelOrderAsync(int orderId)
         {
-            var existingOrder = await _orderRepository.GetByIdAsync(orderId);
+            var existingOrder = await _orderRepository.GetOrderByIdAsync(orderId);
             if (existingOrder == null) return null;
 
             existingOrder.Status = OrderStatus.canceled;
             existingOrder.UpdatedAt = DateTime.Now;
 
-            return await _orderRepository.UpdateAsync(existingOrder);
+            await _orderRepository.UpdateOrderAsync(existingOrder);
+            return existingOrder;
         }
 
         public async Task<Order?> ApplyDiscountAsync(int orderId, int discountId)
         {
-            var existingOrder = await _orderRepository.GetByIdAsync(orderId);
+            var existingOrder = await _orderRepository.GetOrderByIdAsync(orderId);
             if (existingOrder == null) return null;
 
             existingOrder.OrderDiscountId = discountId;
             existingOrder.UpdatedAt = DateTime.Now;
 
-            return await _orderRepository.UpdateAsync(existingOrder);
+            await _orderRepository.UpdateOrderAsync(existingOrder);
+            return existingOrder;
         }
     }
 }

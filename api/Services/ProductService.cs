@@ -21,9 +21,22 @@ namespace api.Services
             _mapper = mapper;
         }
 
-        public async Task<ProductDto> AddProductAsync(CreateProductDto createProductDto)
+        public async Task<ProductDto?> GetProductByIdAsync(int id)
+        {
+            var product = await _productRepository.GetProductByIdAsync(id);
+            return product == null ? null : _mapper.Map<ProductDto>(product);
+        }
+
+        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(int merchantId, EmployeeType employeeType, int pageNumber, int pageSize)
+        {
+            var products = await _productRepository.GetAllProductsAsync(merchantId, employeeType, pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<ProductDto>>(products);
+        }
+
+        public async Task<ProductDto> AddProductAsync(int merchantId, CreateProductDto createProductDto)
         {
             var product = _mapper.Map<Product>(createProductDto);
+            product.MerchantId = merchantId;
 
             var createdProduct = await _productRepository.AddProductAsync(product)
                 ?? throw new InvalidOperationException("Failed to create the product in the database.");
@@ -39,18 +52,6 @@ namespace api.Services
             await _variantService.AddVariantAsync(createdProduct.Id, defaultVariant);
 
             return _mapper.Map<ProductDto>(createdProduct);
-        }
-
-        public async Task<IEnumerable<ProductDto>> GetAllProductsAsync(int pageNumber, int pageSize)
-        {
-            var products = await _productRepository.GetAllProductsAsync(pageNumber, pageSize);
-            return _mapper.Map<IEnumerable<ProductDto>>(products);
-        }
-
-        public async Task<ProductDto?> GetProductByIdAsync(int id)
-        {
-            var product = await _productRepository.GetProductByIdAsync(id);
-            return product == null ? null : _mapper.Map<ProductDto>(product);
         }
 
         public async Task<ProductDto?> UpdateProductAsync(int id, CreateProductDto createProductDto)

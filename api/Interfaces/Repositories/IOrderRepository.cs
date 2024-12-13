@@ -4,11 +4,10 @@ namespace api.Interfaces.Repositories
 {
     public interface IOrderRepository
     {
-        Task<Order?> GetByIdAsync(int id);
-        Task<IEnumerable<Order>> GetAllAsync();
-        Task<Order> AddAsync(Order order);
-        Task<Order> UpdateAsync(Order order);
-        Task DeleteAsync(int id);
-        Task SaveChangesAsync();
+        Task<Order?> GetOrderByIdAsync(int id);
+        Task<IEnumerable<Order>> GetAllOrdersAsync();
+        Task AddOrderAsync(Order order);
+        Task UpdateOrderAsync(Order order);
+        Task DeleteOrderAsync(int id);
     }
 }

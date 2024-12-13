@@ -20,11 +20,10 @@ namespace api.Controllers
         public async Task<IActionResult> GetMyMerchant()
         {
             var merchantIdClaim = User.FindFirst("MerchantId");
-            if (merchantIdClaim == null)
-                return Unauthorized(new { message = "MerchantId not found in token." });
-
-            if (!int.TryParse(merchantIdClaim.Value, out var merchantId))
-                return BadRequest(new { message = "Invalid MerchantId." });
+            if (merchantIdClaim == null || !int.TryParse(merchantIdClaim.Value, out var merchantId))
+            {
+                return Unauthorized("MerchantId is missing or invalid in the token.");
+            }
 
             var merchantDto = await _merchantService.GetMerchantByIdAsync(merchantId);
             if (merchantDto == null)
@@ -70,15 +69,11 @@ namespace api.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            try
-            {
-                await _merchantService.UpdateMerchantAsync(id, createMerchantDto);
-                return Ok();
-            }
-            catch (KeyNotFoundException ex)
-            {
-                return NotFound(new { message = ex.Message });
-            }
+            var updatedMerchant = await _merchantService.UpdateMerchantAsync(id, createMerchantDto);
+            if (updatedMerchant == null)
+                return NotFound(new { message = "Merchant not found" });
+
+            return Ok();
         }
     }
 }

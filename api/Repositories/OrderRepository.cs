@@ -13,32 +13,29 @@ namespace api.Repositories
             _context = context;
         }
 
-        public async Task<Order?> GetByIdAsync(int id)
+        public async Task<Order?> GetOrderByIdAsync(int id)
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
-                .Include(o => o.Payments)
                 .FirstOrDefaultAsync(o => o.Id == id);
         }
 
-        public async Task<IEnumerable<Order>> GetAllAsync()
+        public async Task<IEnumerable<Order>> GetAllOrdersAsync()
         {
             return await _context.Orders
                 .Include(o => o.OrderItems)
-                .Include(o => o.Payments)
                 .ToListAsync();
         }
 
-        public async Task<Order> AddAsync(Order order)
+        public async Task AddOrderAsync(Order order)
         {
             _context.Orders.Add(order);
-            await SaveChangesAsync();
-            return order;
+            await _context.SaveChangesAsync();
         }
 
-        public async Task<Order> UpdateAsync(Order order)
+        public async Task UpdateOrderAsync(Order order)
         {
-            var existingOrder = await GetByIdAsync(order.Id);
+            var existingOrder = await GetOrderByIdAsync(order.Id);
 
             if (existingOrder == null)
                 throw new KeyNotFoundException($"Order with ID {order.Id} not found.");
@@ -53,23 +50,17 @@ namespace api.Repositories
             existingOrder.OrderItems = order.OrderItems;
             existingOrder.Payments = order.Payments;
 
-            await SaveChangesAsync();
-            return existingOrder;
+            await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task DeleteOrderAsync(int id)
         {
-            var order = await GetByIdAsync(id);
+            var order = await GetOrderByIdAsync(id);
 
             if (order == null)
                 throw new KeyNotFoundException($"Order with ID {id} not found.");
 
             _context.Orders.Remove(order);
-            await SaveChangesAsync();
-        }
-
-        public async Task SaveChangesAsync()
-        {
             await _context.SaveChangesAsync();
         }
     }

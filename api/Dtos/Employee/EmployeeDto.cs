@@ -1,5 +1,4 @@
 using api.Enums;
-using api.Models;
 
 namespace api.Dtos.Employee
 {
@@ -14,6 +13,5 @@ namespace api.Dtos.Employee
         public string Password { get; set; } = string.Empty;
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        
     }
 }
