@@ -16,7 +16,7 @@ namespace api.Models
         public string Currency { get; set; } = string.Empty;
         public PaymentMethod Method { get; set; }
         public PaymentType PaymentType { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public Reservation? Reservation { get; set; }
         public Order? Order { get; set; }

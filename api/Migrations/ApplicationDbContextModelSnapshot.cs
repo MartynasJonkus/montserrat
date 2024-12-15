@@ -439,14 +439,17 @@ namespace api.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
+                    b.Property<decimal>("AdditionalPrice")
+                        .HasColumnType("decimal(18, 2)");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Quantity")
-                        .HasColumnType("decimal(18, 2)");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");

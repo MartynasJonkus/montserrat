@@ -12,8 +12,8 @@ namespace api.Models
         public DateTime EndTime { get; set; }
         public ReservationStatus Status { get; set; }
         public bool SendConfirmation { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.Now;
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         public required Customer Customer { get; set; }
         public required Service Service { get; set; }
