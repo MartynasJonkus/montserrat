@@ -1,16 +1,15 @@
-using System.ComponentModel.DataAnnotations.Schema;
-
 namespace api.Models
 {
     public class Refund
     {
         public int Id { get; set; }
-        public int OrderId { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        [Column(TypeName = "decimal(18, 2)")]
-        public decimal TotalAmount { get; set; }
+        public int MerchantId { get; set; }
+        public int PaymentId { get; set; }
+        public required Price RefundAmount { get; set; }
         public string Reason { get; set; } = string.Empty;
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
-        public required Order Order { get; set; }
+        public required Merchant Merchant { get; set; }
+        public required Payment Payment { get; set; }
     }
 }
