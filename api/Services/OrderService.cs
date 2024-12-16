@@ -124,13 +124,13 @@ namespace api.Services
                 totalAmount += orderItem.Price.Amount * orderItem.Quantity;
             }
 
-            if (order.OrderDiscount != null)
+            if(order.OrderDiscountId != null)
             {
-                var discountPercentage = order.OrderDiscount.Percentage;
-                if (discountPercentage < 0 || discountPercentage > 100)
-                    throw new InvalidOperationException("Invalid discount percentage.");
+                var orderDiscount = await _orderDiscountRepository.GetOrderDiscountByIdAsync(order.OrderDiscountId.Value);
+                if (orderDiscount == null)
+                    throw new InvalidOperationException($"OrderDiscount not found.");
 
-                var discountAmount = totalAmount * (discountPercentage / 100m);
+                var discountAmount = totalAmount * (orderDiscount.Percentage / 100m);
                 totalAmount -= discountAmount;
             }
 

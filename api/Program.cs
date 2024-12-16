@@ -68,7 +68,6 @@ builder.Services.AddAuthorization(options =>
     }));
 });
 
-// YOU CAN DISABLE AUTHENTICATION BY COMMENTING THIS OUT
 builder.Services.AddControllers(options =>
 {
     var policy = new AuthorizationPolicyBuilder()
@@ -76,7 +75,6 @@ builder.Services.AddControllers(options =>
         .Build();
     options.Filters.Add(new AuthorizeFilter(policy));
 });
-//**************************************************
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
