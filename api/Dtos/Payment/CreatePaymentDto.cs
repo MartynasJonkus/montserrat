@@ -12,6 +12,5 @@ namespace api.Dtos.Payment
         public string Currency { get; set; } = string.Empty;
         public PaymentMethod Method { get; set; }
         public PaymentType PaymentType { get; set; }
-        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
