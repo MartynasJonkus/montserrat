@@ -14,6 +14,9 @@ namespace api.MappingProfiles
             CreateMap<CreateOrderDto, Order>();
             CreateMap<Order, OrderDto>()
                 .ForMember(dest => dest.OrderItems, opt => opt.MapFrom(src => src.OrderItems));
+
+            CreateMap<CreateUpdateOrderDiscountDto, OrderDiscount>();
+            CreateMap<OrderDiscount, OrderDiscountDto>();
         }
     }
 }

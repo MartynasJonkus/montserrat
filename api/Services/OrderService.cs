@@ -10,16 +10,19 @@ namespace api.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IOrderDiscountRepository _orderDiscountRepository;
         private readonly IMerchantRepository _merchantRepository;
         private readonly IProductVariantRepository _productVariantRepository;
         private readonly IMapper _mapper;
 
         public OrderService(IOrderRepository orderRepository,
+                            IOrderDiscountRepository orderDiscountRepository,
                             IMerchantRepository merchantRepository,
                             IProductVariantRepository productVariantRepository,
                             IMapper mapper)
         {
             _orderRepository = orderRepository;
+            _orderDiscountRepository = orderDiscountRepository;
             _merchantRepository = merchantRepository;
             _productVariantRepository = productVariantRepository;
             _mapper = mapper;
@@ -90,6 +93,7 @@ namespace api.Services
         {
             decimal totalAmount = 0;
             order.OrderItems.Clear();
+
             foreach (var orderItemDto in createOrderItemDtos)
             {
                 var productVariant = await _productVariantRepository.GetVariantByIdAsync(orderItemDto.ProductVariantId);
@@ -119,6 +123,17 @@ namespace api.Services
 
                 totalAmount += orderItem.Price.Amount * orderItem.Quantity;
             }
+
+            if (order.OrderDiscount != null)
+            {
+                var discountPercentage = order.OrderDiscount.Percentage;
+                if (discountPercentage < 0 || discountPercentage > 100)
+                    throw new InvalidOperationException("Invalid discount percentage.");
+
+                var discountAmount = totalAmount * (discountPercentage / 100m);
+                totalAmount -= discountAmount;
+            }
+
             order.TotalAmount = new Price { Amount = totalAmount, Currency = Currency.EUR };
         }
     }
