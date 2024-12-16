@@ -63,6 +63,17 @@ namespace api.Controllers
             return CreatedAtAction(nameof(GetEmployee), new { id = employeeDto.Id }, employeeDto);
         }
 
+        [Authorize(Policy = "AdminOnly")]
+        [HttpPost("admin/{merchantId}")]
+        public async Task<IActionResult> CreateEmployeeAdmin([FromRoute] int merchantId, [FromBody] CreateUpdateEmployeeDto createUpdateEmployeeDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var employeeDto = await _employeeService.CreateEmployeeAsync(merchantId, createUpdateEmployeeDto);
+            return CreatedAtAction(nameof(GetEmployee), new { id = employeeDto.Id }, employeeDto);
+        }
+
         [Authorize(Policy = "OwnerOnly")]
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEmployee(int id, [FromBody] CreateUpdateEmployeeDto createUpdateEmployeeDto)

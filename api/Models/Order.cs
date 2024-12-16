@@ -14,7 +14,6 @@ namespace api.Models
 
         public required Merchant Merchant { get; set; }
         public OrderDiscount? OrderDiscount { get; set; }
-        public Refund? Refund { get; set; }
         public List<OrderItem> OrderItems { get; set; } = [];
         public List<Payment> Payments { get; set; } = [];
     }

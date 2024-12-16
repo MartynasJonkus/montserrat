@@ -10,19 +10,34 @@ namespace api.Services
     public class OrderService : IOrderService
     {
         private readonly IOrderRepository _orderRepository;
+        private readonly IOrderDiscountRepository _orderDiscountRepository;
         private readonly IMerchantRepository _merchantRepository;
         private readonly IProductVariantRepository _productVariantRepository;
         private readonly IMapper _mapper;
 
         public OrderService(IOrderRepository orderRepository,
+                            IOrderDiscountRepository orderDiscountRepository,
                             IMerchantRepository merchantRepository,
                             IProductVariantRepository productVariantRepository,
                             IMapper mapper)
         {
             _orderRepository = orderRepository;
+            _orderDiscountRepository = orderDiscountRepository;
             _merchantRepository = merchantRepository;
             _productVariantRepository = productVariantRepository;
             _mapper = mapper;
+        }
+
+        public async Task<OrderDto?> GetOrderByIdAsync(int orderId)
+        {
+            var order = await _orderRepository.GetOrderByIdAsync(orderId);
+            return _mapper.Map<OrderDto>(order);
+        }
+
+        public async Task<IEnumerable<OrderDto>> GetAllOrdersAsync(int merchantId, EmployeeType employeeType, OrderStatus? orderStatus, string sortOrder, int pageNumber, int pageSize)
+        {
+            var orders = await _orderRepository.GetAllOrdersAsync(merchantId, employeeType, orderStatus, sortOrder, pageNumber, pageSize);
+            return _mapper.Map<IEnumerable<OrderDto>>(orders);
         }
 
         public async Task<OrderDto> CreateOrderAsync(int merchantId, CreateOrderDto createOrderDto)
@@ -42,66 +57,27 @@ namespace api.Services
                 TotalAmount = new Price{ Amount = 0, Currency = Currency.EUR },
             };
 
-            decimal totalAmount = 0;
-
-            foreach (var createOrderItemDto in createOrderDto.OrderItems)
-            {
-                var productVariant = await _productVariantRepository.GetVariantByIdAsync(createOrderItemDto.ProductVariantId);
-                
-                if (productVariant == null)
-                    throw new InvalidOperationException($"ProductVariant not found.");
-
-                if (productVariant.Quantity < createOrderItemDto.Quantity)
-                    throw new InvalidOperationException($"Not enough stock for ProductVariant with ID {createOrderItemDto.ProductVariantId}.");
-
-                var orderItem = new OrderItem
-                {
-                    OrderId = order.Id,
-                    ProductVariantId = createOrderItemDto.ProductVariantId,
-                    Quantity = createOrderItemDto.Quantity,
-                    Price = new Price
-                    {
-                        Amount = productVariant.Product.Price.Amount + productVariant.AdditionalPrice,
-                        Currency = productVariant.Product.Price.Currency
-                    },
-
-                    Order = order,
-                    ProductVariant = productVariant
-                };
-                
-                order.OrderItems.Add(orderItem);
-
-                totalAmount += orderItem.Price.Amount * orderItem.Quantity;
-            }
-
-            order.TotalAmount = new Price { Amount = totalAmount, Currency = Currency.EUR };
+            await AddOrderItems(order, createOrderDto.OrderItems);
 
             await _orderRepository.AddOrderAsync(order);
 
             return _mapper.Map<OrderDto>(order);
         }
 
-        public async Task<IEnumerable<Order?>> GetAllOrdersAsync()
-        {
-            return await _orderRepository.GetAllOrdersAsync();
-        }
-
-        public async Task<OrderDto?> GetOrderByIdAsync(int orderId)
-        {
-            var order = await _orderRepository.GetOrderByIdAsync(orderId);
-            return _mapper.Map<OrderDto>(order);
-        }
-
-        public async Task<Order?> UpdateOrderAsync(int orderId, Order orderUpdate)
+        public async Task<OrderDto?> UpdateOrderAsync(int orderId, UpdateOrderDto updateOrderDto)
         {
             var existingOrder = await _orderRepository.GetOrderByIdAsync(orderId);
             if (existingOrder == null) return null;
 
-            existingOrder.Status = orderUpdate.Status;
-            existingOrder.UpdatedAt = DateTime.Now;
+            existingOrder.Status = updateOrderDto.Status;
+            existingOrder.OrderDiscountId = updateOrderDto.OrderDiscountId;
+            existingOrder.UpdatedAt = DateTime.UtcNow;
+
+            await AddOrderItems(existingOrder, updateOrderDto.OrderItems);
 
             await _orderRepository.UpdateOrderAsync(existingOrder);
-            return existingOrder;
+
+            return _mapper.Map<OrderDto>(existingOrder);
         }
 
         public async Task<bool> DeleteOrderAsync(int orderId)
@@ -113,28 +89,52 @@ namespace api.Services
             return true;
         }
 
-        public async Task<Order?> CancelOrderAsync(int orderId)
+        private async Task AddOrderItems(Order order, List<CreateOrderItemDto> createOrderItemDtos)
         {
-            var existingOrder = await _orderRepository.GetOrderByIdAsync(orderId);
-            if (existingOrder == null) return null;
+            decimal totalAmount = 0;
+            order.OrderItems.Clear();
 
-            existingOrder.Status = OrderStatus.canceled;
-            existingOrder.UpdatedAt = DateTime.Now;
+            foreach (var orderItemDto in createOrderItemDtos)
+            {
+                var productVariant = await _productVariantRepository.GetVariantByIdAsync(orderItemDto.ProductVariantId);
+                
+                if (productVariant == null)
+                    throw new InvalidOperationException($"ProductVariant not found.");
 
-            await _orderRepository.UpdateOrderAsync(existingOrder);
-            return existingOrder;
-        }
+                if (productVariant.Quantity < orderItemDto.Quantity)
+                    throw new InvalidOperationException($"Not enough stock for ProductVariant with ID {orderItemDto.ProductVariantId}.");
 
-        public async Task<Order?> ApplyDiscountAsync(int orderId, int discountId)
-        {
-            var existingOrder = await _orderRepository.GetOrderByIdAsync(orderId);
-            if (existingOrder == null) return null;
+                var orderItem = new OrderItem
+                {
+                    OrderId = order.Id,
+                    ProductVariantId = orderItemDto.ProductVariantId,
+                    Quantity = orderItemDto.Quantity,
+                    Price = new Price
+                    {
+                        Amount = productVariant.Product.Price.Amount + productVariant.AdditionalPrice,
+                        Currency = productVariant.Product.Price.Currency
+                    },
 
-            existingOrder.OrderDiscountId = discountId;
-            existingOrder.UpdatedAt = DateTime.Now;
+                    Order = order,
+                    ProductVariant = productVariant
+                };
 
-            await _orderRepository.UpdateOrderAsync(existingOrder);
-            return existingOrder;
+                order.OrderItems.Add(orderItem);
+
+                totalAmount += orderItem.Price.Amount * orderItem.Quantity;
+            }
+
+            if(order.OrderDiscountId != null)
+            {
+                var orderDiscount = await _orderDiscountRepository.GetOrderDiscountByIdAsync(order.OrderDiscountId.Value);
+                if (orderDiscount == null)
+                    throw new InvalidOperationException($"OrderDiscount not found.");
+
+                var discountAmount = totalAmount * (orderDiscount.Percentage / 100m);
+                totalAmount -= discountAmount;
+            }
+
+            order.TotalAmount = new Price { Amount = totalAmount, Currency = Currency.EUR };
         }
     }
 }

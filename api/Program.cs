@@ -21,6 +21,10 @@ builder.Services.AddScoped<IMerchantService, MerchantService>();
 builder.Services.AddScoped<IMerchantRepository, MerchantRepository>();
 builder.Services.AddScoped<IOrderRepository, OrderRepository>();
 builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IOrderDiscountRepository, OrderDiscountRepository>();
+builder.Services.AddScoped<IOrderDiscountService, OrderDiscountService>();
+builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
@@ -64,7 +68,6 @@ builder.Services.AddAuthorization(options =>
     }));
 });
 
-// YOU CAN DISABLE AUTHENTICATION BY COMMENTING THIS OUT
 builder.Services.AddControllers(options =>
 {
     var policy = new AuthorizationPolicyBuilder()
@@ -72,7 +75,6 @@ builder.Services.AddControllers(options =>
         .Build();
     options.Filters.Add(new AuthorizeFilter(policy));
 });
-//**************************************************
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>

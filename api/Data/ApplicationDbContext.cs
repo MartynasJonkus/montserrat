@@ -41,11 +41,13 @@ namespace api.Data
                 .OwnsOne(s => s.Price);
             modelBuilder.Entity<Product>()
                 .OwnsOne(p => p.Price);
+            modelBuilder.Entity<Refund>()
+                .OwnsOne(r => r.RefundAmount);
                 
             modelBuilder.Entity<Refund>()
-                .HasOne(r => r.Order)
-                .WithOne(o => o.Refund)
-                .HasForeignKey<Refund>(r => r.OrderId)
+                .HasOne(r => r.Payment)
+                .WithOne(p => p.Refund)
+                .HasForeignKey<Refund>(r => r.PaymentId)
                 .IsRequired();
 
             modelBuilder.Entity<Product>()
