@@ -1,0 +1,166 @@
+
+#dashboard-container {
+    background-color: #E4E4E4;
+    height: 100%;
+    padding: 10px;
+    padding-top: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
+}
+
+#dashboard-top {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 20px;
+}
+
+#dashboard-middle {
+    display: flex;
+    justify-content: space-evenly;
+    flex-direction: row;
+}
+
+#dashboard-left, #dashboard-right {
+    background-color: #CFCFCF;
+    padding: 10px;
+    border-radius: 5px;
+    height: 540px;
+}
+
+#reservations-search, #reservations-calendar {
+    margin-bottom: 20px;
+}
+
+#reservations-container-top {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 15px;
+}
+
+#reservations-title {
+    text-align: center;
+    margin-top: 5px;
+}
+
+#reservations-search {
+    height: 40px;
+}
+
+#reservations-search [type="search"] {
+    height: 100%;
+    width: 100%;
+    padding-left: 28px;
+    border-style: solid;
+    border-color: #666666;
+    border-width: 1px;
+    border-radius: 15px;
+}
+
+#reservations-search svg {
+    position: absolute;
+    margin-top: 12px;
+    margin-left: 8px;
+    color: #666666;
+}
+
+#reservations-calendar {
+    height: 80px;
+    min-width: 600px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    padding: 8px;
+    border-style: solid;
+    border-color: #666666;
+    border-width: 1px;
+    border-radius: 5px;
+}
+
+#reservations-calendar svg {
+    color: #666666;
+}
+
+#calendar-top {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+#calendar-middle {
+    margin-top: 8px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.calendar-day {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.weekday-num {
+    padding: 5px;
+}
+
+#current-day .weekday-num {
+    border-style: solid;
+    border-color: #666666;
+    border-width: 2px;
+    border-radius: 20px;
+}
+
+#reservation-list {
+    height: 275px;
+    overflow-y: auto;
+}
+
+#reservations-day {
+    text-align: center;
+}
+
+.reservations-by-hour {
+    padding: 8px;
+}
+
+.reservation {
+    display: flex;
+    justify-content: space-between;
+    background-color: white;
+    padding: 8px;
+    margin-top: 5px;
+}
+
+.reservation-right {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+
+#active-order-list {
+    height: 480px;
+    overflow: auto;
+    padding: 10px;
+    padding-top: 0px;
+}
+
+.active-order {
+    background-color: white;
+    margin-top: 7px;
+    border-style: solid;
+    border-color: #666666;
+    border-width: 1px;
+    border-radius: 3px;
+    min-width: 500px;
+    padding: 5px;
+}
+
+#active-orders-container-top {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
