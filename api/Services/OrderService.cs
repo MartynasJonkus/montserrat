@@ -13,18 +13,24 @@ namespace api.Services
         private readonly IOrderDiscountRepository _orderDiscountRepository;
         private readonly IMerchantRepository _merchantRepository;
         private readonly IProductVariantRepository _productVariantRepository;
+        private readonly ITaxRepository _taxRepository;
+        private readonly IDiscountRepository _discountRepository;
         private readonly IMapper _mapper;
 
         public OrderService(IOrderRepository orderRepository,
                             IOrderDiscountRepository orderDiscountRepository,
                             IMerchantRepository merchantRepository,
                             IProductVariantRepository productVariantRepository,
+                            ITaxRepository taxRepository,
+                            IDiscountRepository discountRepository,
                             IMapper mapper)
         {
             _orderRepository = orderRepository;
             _orderDiscountRepository = orderDiscountRepository;
             _merchantRepository = merchantRepository;
             _productVariantRepository = productVariantRepository;
+            _taxRepository = taxRepository;
+            _discountRepository = discountRepository;
             _mapper = mapper;
         }
 
@@ -104,6 +110,33 @@ namespace api.Services
                 if (productVariant.Quantity < orderItemDto.Quantity)
                     throw new InvalidOperationException($"Not enough stock for ProductVariant with ID {orderItemDto.ProductVariantId}.");
 
+                var basePrice = productVariant.Product.Price.Amount + productVariant.AdditionalPrice;
+                decimal taxAmount = 0;
+                decimal discountAmount = 0;
+
+                if (productVariant.Product.TaxId.HasValue)
+                {
+                    var tax = await _taxRepository.GetTaxByIdAsync(productVariant.Product.TaxId.Value);
+                    if (tax == null)
+                        throw new InvalidOperationException($"Tax not found for TaxId {productVariant.Product.TaxId.Value}.");
+
+                    taxAmount = basePrice * (tax.Percentage / 100m);
+                }
+
+                if (productVariant.Product.DiscountId.HasValue)
+                {
+                    var discount = await _discountRepository.GetDiscountByIdAsync(productVariant.Product.DiscountId.Value);
+                    if (discount == null)
+                        throw new InvalidOperationException($"Discount not found for DiscountId {productVariant.Product.DiscountId.Value}.");
+
+                    if (discount.Status == Status.active && discount.ExpiresOn > DateTime.UtcNow)
+                    {
+                        discountAmount = basePrice * (discount.Percentage / 100m);
+                    }
+                }
+
+                var finalPrice = basePrice + taxAmount - discountAmount;
+
                 var orderItem = new OrderItem
                 {
                     OrderId = order.Id,
@@ -111,7 +144,7 @@ namespace api.Services
                     Quantity = orderItemDto.Quantity,
                     Price = new Price
                     {
-                        Amount = productVariant.Product.Price.Amount + productVariant.AdditionalPrice,
+                        Amount = finalPrice,
                         Currency = productVariant.Product.Price.Currency
                     },
 
@@ -136,5 +169,9 @@ namespace api.Services
 
             order.TotalAmount = new Price { Amount = totalAmount, Currency = Currency.EUR };
         }
+    }
+
+    internal interface IDiscountRepository
+    {
     }
 }
