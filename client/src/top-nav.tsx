@@ -15,7 +15,7 @@ function TopNav() {
                         </div>
                     </div>
                     
-                    <button onClick={() => navigate("/")} className="page-button">Dashboard</button>
+                    <button onClick={() => navigate("/dashboard")} className="page-button">Dashboard</button>
                     <button onClick={() => navigate("/ordermanagement")} className="page-button">Orders</button>
                     <button onClick={() => navigate("/reservationmanagement")} className="page-button">Reservations</button>
                 </div>
