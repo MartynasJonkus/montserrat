@@ -1,6 +1,5 @@
-// src/Login.tsx
 import { useState } from "react";
-import { login } from "./authService"; // Assuming login is exported from authService
+import { login } from "./authService"; 
 
 const Login: React.FC = () => {
   const [username, setUsername] = useState("");
@@ -10,9 +9,9 @@ const Login: React.FC = () => {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const { token } = await login(username, password); // Call authService to login
-      localStorage.setItem("jwtToken", token); // Save the token in localStorage
-      window.location.href = "/dashboard"; // Redirect after successful login
+      const { token } = await login(username, password); 
+      localStorage.setItem("jwtToken", token);
+      window.location.href = "/dashboard"; 
     } catch (err) {
       setError("Invalid credentials");
       console.error(err);
