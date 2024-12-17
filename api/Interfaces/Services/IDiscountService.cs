@@ -8,7 +8,7 @@ namespace api.Interfaces.Services
     {
         Task<DiscountDto> CreateDiscountAsync(int merchantId, CreateUpdateDiscountDto createDiscountDto);
         Task<Discount> UpdateDiscountAsync(int id, CreateUpdateDiscountDto updatedDiscount);
-        Task<DiscountDto?> GetDiscountAsync(int id);
+        Task<DiscountDto?> GetDiscountByIdAsync(int id);
         Task<IEnumerable<DiscountDto>> GetAllDiscountsAsync(int merchantId, EmployeeType employeeType, int pageNumber, int pageSize);
         Task<bool> DeleteDiscountAsync(int id);
     }

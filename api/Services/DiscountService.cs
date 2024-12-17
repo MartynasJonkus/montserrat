@@ -7,16 +7,16 @@ using AutoMapper;
 
 namespace api.Services
 {
-        public class DiscountService : IDiscountService
+    public class DiscountService : IDiscountService
     {
         private readonly IDiscountRepository _discountRepository;
         private readonly IMapper _mapper;
-
         public DiscountService(IDiscountRepository discountRepository, IMapper mapper)
         {
             _discountRepository = discountRepository;
             _mapper = mapper;
         }
+        
         public async Task<DiscountDto> CreateDiscountAsync(int merchantId, CreateUpdateDiscountDto createDiscountDto)
         {
             var discount = _mapper.Map<Discount>(createDiscountDto);
@@ -37,7 +37,7 @@ namespace api.Services
             await _discountRepository.UpdateDiscountAsync(existingDiscount);
             return existingDiscount;  
         }
-        public async Task<DiscountDto?> GetDiscountAsync(int id)
+        public async Task<DiscountDto?> GetDiscountByIdAsync(int id)
         {
             var discount = await _discountRepository.GetDiscountByIdAsync(id);
             return _mapper.Map<DiscountDto>(discount);

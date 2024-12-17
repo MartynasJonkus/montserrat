@@ -45,7 +45,7 @@ namespace api.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDiscount(int id)
         {
-            var discountDto = await _discountService.GetDiscountAsync(id);
+            var discountDto = await _discountService.GetDiscountByIdAsync(id);
             if (discountDto == null)
                 return NotFound(new { message = "Discount not found" });
 

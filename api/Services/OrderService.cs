@@ -170,8 +170,4 @@ namespace api.Services
             order.TotalAmount = new Price { Amount = totalAmount, Currency = Currency.EUR };
         }
     }
-
-    internal interface IDiscountRepository
-    {
-    }
 }
