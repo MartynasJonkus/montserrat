@@ -1,0 +1,139 @@
+
+#order-container {
+    display: flex;
+    background-color: #E4E4E4;
+    justify-content: space-between;
+    height: 100%;
+}
+
+#container-left, #container-right {
+    display: flex;
+    padding: 10px;
+    padding-left: 30px;
+    padding-right: 30px;
+    flex-direction: column;
+}
+
+.container-top {
+    height: 35px;
+    font-size: 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+#back-to-dashboard {
+    justify-content: flex-start;
+}
+
+#container-bottom {
+    margin-top: 35px;
+    display: flex;
+    justify-content: space-between;
+}
+
+
+
+#order-details {
+    margin-top: 30px;
+    width: 376px;
+    height: 214px;
+    padding: 18px;
+    background-color: white;
+}
+
+.order-product {
+    display: flex;
+    justify-content: space-between;
+}
+
+#order-price {
+    padding: 18px;
+    margin-top: 45px;
+    height: 100px;
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+#order-details, #prices, #products {
+    overflow: auto;
+}
+
+.price-component, #price-bottom {
+    display: flex;
+    justify-content: space-between;
+}
+
+#price-bottom {
+    font-size: 25px;
+    font-weight: bold;
+}
+
+
+#payment-split, #payment-pay {
+    display: flex;
+    height: 40px;
+    color: white;
+    justify-content: center;
+    align-items: center;
+}
+
+#payment-split {
+    width: 125px;
+    background-color: #666666;
+    font-size: 16px;
+}
+
+#payment-pay {
+    width: 200px;
+    background-color: #4296FF;
+    font-size: 17px;
+}
+
+#products {
+    padding: 18px;
+    margin-top: 30px;
+    width: 960px;
+    height: 395px;
+    background-color: white;
+}
+
+.items {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.item {
+    margin: 10px;
+    width: 176px;
+    height: 60px;
+    border-style: solid;
+    border-color: black;
+    border-width: 1px;
+    padding: 16px;
+}
+
+.group-name {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#order-details, #order-price, #products {
+    border-radius: 5px;
+}
+
+#save-order-button {
+    display: flex;
+    width: 175px;
+    height: 25px;
+    background-color: #666666;
+    color: white;
+    font-size: 14px;
+    justify-content: center;
+    align-items: center;
+}

@@ -1,7 +1,6 @@
 using api.Dtos.Order;
 using api.Enums;
 using api.Interfaces.Services;
-using api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers

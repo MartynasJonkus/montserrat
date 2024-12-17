@@ -12,6 +12,7 @@ namespace api.Controllers
     {
         private readonly ICustomerService _customerService;
         private readonly IReservationService _reservationService;
+        
         public CustomerController(ICustomerService customerService, IReservationService reservationService)
         {
             _customerService = customerService;
@@ -72,7 +73,7 @@ namespace api.Controllers
             var updatedCustomer = await _customerService.UpdateCustomerAsync(id, createUpdateCustomerDto);
             if (updatedCustomer == null)
                 return NotFound(new { message = "Product not found" });
-
+                
             return Ok();
         }
 
