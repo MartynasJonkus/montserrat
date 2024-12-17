@@ -29,7 +29,7 @@ namespace api.Services
         {
             var existingTax = await _taxRepository.GetTaxByIdAsync(id);
             if (existingTax == null)
-                throw new KeyNotFoundException("Customer not found.");
+                throw new KeyNotFoundException("Tax not found.");
 
             _mapper.Map(updatedTax, existingTax);
             await _taxRepository.UpdateTaxAsync(existingTax);
