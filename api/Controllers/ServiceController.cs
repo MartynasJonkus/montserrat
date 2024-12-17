@@ -1,10 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using api.Dtos.Service;
 using api.Interfaces.Services;
-using api.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
 namespace api.Controllers
 {
@@ -20,62 +18,66 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateService([FromBody] CreateServiceDto createServiceDto)
+        public async Task<IActionResult> CreateService(CreateServiceDto createServiceDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var merchantIdClaim = User.FindFirst("MerchantId");
+            if (merchantIdClaim == null || !int.TryParse(merchantIdClaim.Value, out var merchantId))
+            {
+                return Unauthorized("MerchantId is missing or invalid in the token.");
+            }
 
-            var service = await _serviceService.CreateServiceAsync(createServiceDto);
-            return CreatedAtAction(nameof(GetService), new { serviceId = service.Id }, service);
+            var service = await _serviceService.CreateServiceAsync(merchantId, createServiceDto);
+            return CreatedAtAction(nameof(GetService), new { id = service.Id }, service);
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetServices([FromQuery] ServiceDto serviceDto)
+        public async Task<IActionResult> GetServices([FromQuery] string? category = null, [FromQuery] int limit = 10)
         {
-            var services = await _serviceService.GetServicesAsync(serviceDto);
+            if (limit <= 0)
+                return BadRequest("Limit must be greater than 0.");
+
+            var merchantIdClaim = User.FindFirst("MerchantId");
+            if (merchantIdClaim == null || !int.TryParse(merchantIdClaim.Value, out var merchantId))
+                return Unauthorized("MerchantId is missing or invalid in the token.");
+
+            var services = await _serviceService.GetServicesAsync(merchantId, category, limit);
             return Ok(services);
         }
 
-        [HttpGet("{serviceId}")]
-        public async Task<IActionResult> GetService([FromRoute] int serviceId)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetService(int id)
         {
-            var service = await _serviceService.GetServiceAsync(serviceId);
+            var service = await _serviceService.GetServiceAsync(id);
             if (service == null)
-                return NotFound(new { message = "Service not found" });
+                return NotFound();
 
             return Ok(service);
         }
 
-        [HttpPut("{serviceId}")]
-        public async Task<IActionResult> UpdateService([FromRoute] int serviceId, [FromBody] UpdateServiceDto updateServiceDto)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateService(int id, UpdateServiceDto updateServiceDto)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var service = await _serviceService.UpdateServiceAsync(id, updateServiceDto);
+            if (service == null)
+                return NotFound();
 
-            var updatedService = await _serviceService.UpdateServiceAsync(serviceId, updateServiceDto);
-            if (updatedService == null)
-                return NotFound(new { message = "Service not found" });
-
-            return Ok(updatedService);
+            return Ok(service);
         }
 
-        [HttpDelete("{serviceId}")]
-        public async Task<IActionResult> DeleteService([FromRoute] int serviceId)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteService(int id)
         {
-            var deleted = await _serviceService.DeleteServiceAsync(serviceId);
-            if (!deleted)
-                return NotFound(new { message = "Service not found" });
+            var isDeleted = await _serviceService.DeleteServiceAsync(id);
+            if (!isDeleted)
+                return NotFound();
 
             return NoContent();
         }
 
         [HttpGet("{serviceId}/available-times")]
-        public async Task<IActionResult> CheckAvailableTimes([FromRoute] int serviceId, [FromQuery] DateTime date)
+        public async Task<IActionResult> CheckAvailableTimes(int serviceId, [FromQuery] DateTime date)
         {
             var availableTimes = await _serviceService.CheckAvailableTimesAsync(serviceId, date);
-            if (availableTimes == null)
-                return NotFound(new { message = "Service not found or no available times" });
-
             return Ok(availableTimes);
         }
     }

@@ -12,7 +12,7 @@ namespace api.Dtos.Reservation
         public DateTime EndTime { get; set; }
         public ReservationStatus Status { get; set; }
         public bool SendConfirmation { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
     }
 }

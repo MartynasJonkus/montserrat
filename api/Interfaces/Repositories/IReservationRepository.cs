@@ -9,5 +9,6 @@ namespace api.Interfaces.Repositories
         Task<Reservation?> GetByIdAsync(int reservationId);
         Task UpdateAsync(Reservation reservation);
         Task DeleteAsync(Reservation reservation);
+        Task<IEnumerable<Reservation>> GetReservationsByCustomerIdAsync(int customerId);
     }
 }

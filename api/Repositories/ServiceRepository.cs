@@ -20,32 +20,23 @@ namespace api.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Service>> GetServicesAsync(string category, int limit)
+        public async Task<IEnumerable<Service>> GetServicesAsync(int merchantId, string? category, int limit)
         {
-            var query = _context.Services.Include(s => s.Category).AsQueryable();
+            var query = _context.Services.AsQueryable();
+
+            query = query.Where(s => s.MerchantId == merchantId);
 
             if (!string.IsNullOrEmpty(category))
             {
                 query = query.Where(s => s.Category != null && s.Category.Title == category);
             }
 
-            if (limit > 0)
-            {
-                query = query.Take(limit);
-            }
-
-            return await query.ToListAsync();
+            return await query.Take(limit).ToListAsync();
         }
 
         public async Task<Service?> GetByIdAsync(int serviceId)
         {
-            return await _context.Services
-                .Include(s => s.Category)
-                .Include(s => s.Merchant)
-                .Include(s => s.Employee)
-                .Include(s => s.Discount)
-                .Include(s => s.Tax)
-                .FirstOrDefaultAsync(s => s.Id == serviceId);
+            return await _context.Services.FindAsync(serviceId);
         }
 
         public async Task UpdateAsync(Service service)
@@ -62,14 +53,37 @@ namespace api.Repositories
 
         public async Task<IEnumerable<DateTime>> CheckAvailableTimesAsync(int serviceId, DateTime date)
         {
-            // Implement the logic to check available times
-            // This is just a placeholder implementation
-            return await Task.FromResult(new List<DateTime>
+            var service = await _context.Services.FindAsync(serviceId);
+            if (service == null)
             {
-                date.AddHours(9),
-                date.AddHours(10),
-                date.AddHours(11)
-            });
+                return Enumerable.Empty<DateTime>();
+            }
+
+            var reservations = await _context.Reservations
+                .Where(r => r.ServiceId == serviceId && r.StartTime.Date == date.Date)
+                .ToListAsync();
+
+            var availableTimes = CalculateAvailableTimes(service.DurationMins, reservations, date);
+            return availableTimes;
+        }
+
+        private IEnumerable<DateTime> CalculateAvailableTimes(int durationMins, List<Reservation> reservations, DateTime date)
+        {
+            var availableTimes = new List<DateTime>();
+            var startOfDay = date.Date.AddHours(8); // Assuming the service starts at 8 AM
+            var endOfDay = date.Date.AddHours(18); // Assuming the service ends at 6 PM
+
+            var currentTime = startOfDay;
+            while (currentTime.AddMinutes(durationMins) <= endOfDay)
+            {
+                if (!reservations.Any(r => r.StartTime < currentTime.AddMinutes(durationMins) && r.EndTime > currentTime))
+                {
+                    availableTimes.Add(currentTime);
+                }
+                currentTime = currentTime.AddMinutes(durationMins);
+            }
+
+            return availableTimes;
         }
     }
 }

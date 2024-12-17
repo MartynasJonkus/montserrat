@@ -1,6 +1,7 @@
 using api.Dtos.Customer;
 using api.Enums;
 using api.Interfaces.Services;
+using api.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -8,11 +9,13 @@ namespace api.Controllers
     [Route("api/customers")]
     [ApiController]
     public class CustomerController : ControllerBase
-       {
+    {
         private readonly ICustomerService _customerService;
-        public CustomerController(ICustomerService customerService)
+        private readonly IReservationService _reservationService;
+        public CustomerController(ICustomerService customerService, IReservationService reservationService)
         {
             _customerService = customerService;
+            _reservationService = reservationService;
         }
 
         [HttpGet("{id}")]
@@ -39,7 +42,7 @@ namespace api.Controllers
 
             if (!Enum.TryParse(employeeTypeClaim.Value, out EmployeeType employeeType))
                 return Unauthorized("EmployeeType is invalid.");
-            
+
             var customerDtos = await _customerService.GetAllCustomersAsync(merchantId, employeeType, pageNumber, pageSize);
             return Ok(customerDtos);
         }
@@ -69,7 +72,7 @@ namespace api.Controllers
             var updatedCustomer = await _customerService.UpdateCustomerAsync(id, createUpdateCustomerDto);
             if (updatedCustomer == null)
                 return NotFound(new { message = "Product not found" });
-            
+
             return Ok();
         }
 
@@ -86,9 +89,8 @@ namespace api.Controllers
         [HttpGet("{id}/reservations")]
         public async Task<IActionResult> GetCustomerReservations(int id)
         {
-            //var reservations = await _reservationService.GetReservationsByCustomerIdAsync(id);
-            //return Ok(reservations);
-            return Ok();
+            var reservations = await _reservationService.GetReservationsByCustomerIdAsync(id);
+            return Ok(reservations);
         }
     }
 }

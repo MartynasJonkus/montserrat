@@ -49,5 +49,13 @@ namespace api.Repositories
             _context.Reservations.Remove(reservation);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<Reservation>> GetReservationsByCustomerIdAsync(int customerId)
+        {
+            return await _context.Reservations
+                .Where(r => r.CustomerId == customerId)
+                .ToListAsync();
+        }
+
     }
 }
