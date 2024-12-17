@@ -13,16 +13,13 @@ namespace api.Repositories
         {
             _context = context;
         }
-        public async Task AddTaxAsync(Tax tax)
+
+        public async Task<Tax?> GetTaxByIdAsync(int id)
         {
-            _context.Taxes.Add(tax);
-            await _context.SaveChangesAsync();
+            return await _context.Taxes
+                .FirstOrDefaultAsync(c => c.Id == id);
         }
-        public async Task UpdateTaxAsync(Tax tax)
-        {
-            _context.Taxes.Update(tax);
-            await _context.SaveChangesAsync();
-        }
+
         public async Task<IEnumerable<Tax>> GetAllTaxesAsync(int merchantId, EmployeeType employeeType, int pageNumber, int pageSize)
         {
             var query = _context.Taxes
@@ -38,11 +35,18 @@ namespace api.Repositories
                 .Take(pageSize)
                 .ToListAsync();
         }
-        public async Task<Tax?> GetTaxByIdAsync(int id)
+
+        public async Task AddTaxAsync(Tax tax)
         {
-            return await _context.Taxes
-                .FirstOrDefaultAsync(c => c.Id == id);
+            _context.Taxes.Add(tax);
+            await _context.SaveChangesAsync();
         }
+        public async Task UpdateTaxAsync(Tax tax)
+        {
+            _context.Taxes.Update(tax);
+            await _context.SaveChangesAsync();
+        }
+        
         public async Task DeleteTaxAsync(Tax tax)
         {
             _context.Taxes.Remove(tax);

@@ -14,34 +14,17 @@ namespace api.Controllers
         {
             _taxService = taxService;
         }
-        [HttpPost]
-        public async Task<IActionResult> CreateTax([FromBody] CreateUpdateTaxDto createUpdateTaxDto)
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetTax([FromRoute] int id)
         {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+            var taxDto = await _taxService.GetTaxByIdAsync(id);
+            if (taxDto == null)
+                return NotFound(new { message = "Product not found" });
 
-            var merchantIdClaim = User.FindFirst("MerchantId");
-            if (merchantIdClaim == null || !int.TryParse(merchantIdClaim.Value, out var merchantId))
-            {
-                return Unauthorized("MerchantId is missing or invalid in the token.");
-            }
-
-            var taxDto = await _taxService.CreateTaxAsync(merchantId, createUpdateTaxDto);
-            return Created("", taxDto);
+            return Ok(taxDto);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateTax(int id, [FromBody] CreateUpdateTaxDto createUpdateTaxDto)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
-
-            var updatedTax = await _taxService.UpdateTaxAsync(id, createUpdateTaxDto);
-            if (updatedTax == null)
-                return NotFound(new { message = "Tax not found" });
-            
-            return Ok();
-        }
         [HttpGet]
         public async Task<IActionResult> GetAllTaxes([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10)
         {
@@ -60,8 +43,38 @@ namespace api.Controllers
             var taxDtos = await _taxService.GetAllTaxesAsync(merchantId, employeeType, pageNumber, pageSize);
             return Ok(taxDtos);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateTax([FromBody] CreateUpdateTaxDto createUpdateTaxDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var merchantIdClaim = User.FindFirst("MerchantId");
+            if (merchantIdClaim == null || !int.TryParse(merchantIdClaim.Value, out var merchantId))
+            {
+                return Unauthorized("MerchantId is missing or invalid in the token.");
+            }
+
+            var taxDto = await _taxService.CreateTaxAsync(merchantId, createUpdateTaxDto);
+            return Created("", taxDto);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateTax([FromRoute] int id, [FromBody] CreateUpdateTaxDto createUpdateTaxDto)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var updatedTax = await _taxService.UpdateTaxAsync(id, createUpdateTaxDto);
+            if (updatedTax == null)
+                return NotFound(new { message = "Tax not found" });
+            
+            return Ok();
+        }
+
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteTax(int id)
+        public async Task<IActionResult> DeleteTax([FromRoute] int id)
         {
             var isDeleted = await _taxService.DeleteTaxAsync(id);
             if (!isDeleted)
