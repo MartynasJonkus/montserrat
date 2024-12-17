@@ -4,8 +4,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './index.css';
 import App from './App.tsx';
 import Login from './Login.tsx';
-import ProductManagement from './ProductManagement.tsx'; // Import Product Management
-import ProductDetails from './ProductDetails.tsx'; // Import Product Details
+import ProductManagement from './ProductManagement.tsx'; 
+import ProductDetails from './ProductDetails.tsx'; 
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

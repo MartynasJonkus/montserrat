@@ -14,19 +14,16 @@ const ProductManagement: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [error, setError] = useState<string | null>(null);
 
-  // State for displaying product details in read-only mode
   const [viewProduct, setViewProduct] = useState<Product | null>(null);
 
-  // State for the new product form
   const [newProduct, setNewProduct] = useState({
     title: '',
     price: { amount: 0, currency: '' },
     weight: 0,
     weightUnit: '',
-    status: 0, // Assuming status is an integer (replace with correct value if needed)
+    status: 0, 
   });
 
-  // Fetch the list of products from the backend
   const fetchProducts = async () => {
     const token = localStorage.getItem('jwt') || sessionStorage.getItem('jwt');
     if (!token) {
@@ -53,15 +50,13 @@ const ProductManagement: React.FC = () => {
       setError(err.message);
     }
   };
-  const navigate = useNavigate(); // This gives you the navigate function
+  const navigate = useNavigate(); 
 
-  // Handle the View Details button click
   const handleViewDetailsClick = (product: Product) => {
     navigate(`/product-details/${product.id}`);
   };
   
 
-  // Handle adding a new product
   const handleAddProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -71,23 +66,21 @@ const ProductManagement: React.FC = () => {
       return;
     }
 
-    // Prepare the data to send in the request based on the DTO structure
     const newProductData = {
-      categoryId: null, // You can leave this null if you're not using categories
-      discountId: null, // Leave as null if no discount
-      taxId: null, // Leave as null if no tax
+      categoryId: null, 
+      discountId: null, 
+      taxId: null, 
       title: newProduct.title,
       price: {
         amount: newProduct.price.amount,
-        currency: 0, // Assuming 0 is valid for EUR, update if needed
+        currency: 0, 
       },
       weight: newProduct.weight,
       weightUnit: newProduct.weightUnit,
-      status: newProduct.status, // Assuming status is an integer (check the valid enum value)
+      status: newProduct.status, 
     };
 
-    console.log('Product data being sent:', newProductData);  // Log product data for debugging
-
+    console.log('Product data being sent:', newProductData);  
     try {
       const response = await fetch('http://localhost:5282/api/products', {
         method: 'POST',
@@ -103,7 +96,6 @@ const ProductManagement: React.FC = () => {
         throw new Error(errorData.message || 'Failed to add product');
       }
 
-      // Clear the new product form after successful submission
       setNewProduct({
         title: '',
         price: { amount: 0, currency: '' },
@@ -112,14 +104,13 @@ const ProductManagement: React.FC = () => {
         status: 0,
       });
 
-      fetchProducts(); // Refresh product list
+      fetchProducts(); 
       alert('Product added successfully!');
     } catch (err: any) {
       setError(err.message);
     }
   };
 
-  // Handle delete product
   const handleDeleteProduct = async (productId: number) => {
     const token = localStorage.getItem('jwt') || sessionStorage.getItem('jwt');
     if (!token) {
@@ -141,7 +132,7 @@ const ProductManagement: React.FC = () => {
         throw new Error(errorData.message || 'Failed to delete product');
       }
 
-      fetchProducts(); // Refresh product list after deletion
+      fetchProducts(); 
       alert('Product deleted successfully!');
     } catch (err: any) {
       setError(err.message);
