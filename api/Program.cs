@@ -34,6 +34,8 @@ builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IMerchantService, MerchantService>();
 builder.Services.AddScoped<IMerchantRepository, MerchantRepository>();
+builder.Services.AddScoped<ITaxService, TaxService>();
+builder.Services.AddScoped<ITaxRepository, TaxRepository>();
 
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddControllers();
