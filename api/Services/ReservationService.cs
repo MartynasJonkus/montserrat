@@ -29,7 +29,33 @@ namespace api.Services
 
         public async Task<ReservationDto> CreateReservationAsync(CreateReservationDto createReservationDto)
         {
+            var service = await _serviceRepository.GetByIdAsync(createReservationDto.ServiceId);
+            if (service == null)
+            {
+                throw new ArgumentException("Invalid ServiceId");
+            }
+
             var reservation = _mapper.Map<Reservation>(createReservationDto);
+            reservation.EndTime = reservation.StartTime.AddMinutes(service.DurationMins);
+
+            // Check for overlapping reservations for the same employee
+            var overlappingEmployeeReservations = await _reservationRepository.GetOverlappingReservationsForEmployeeAsync(
+                createReservationDto.EmployeeId, reservation.StartTime, reservation.EndTime);
+
+            if (overlappingEmployeeReservations.Any())
+            {
+                throw new InvalidOperationException("The employee is already booked for this time slot.");
+            }
+
+            // Check for overlapping reservations for the same service
+            var overlappingServiceReservations = await _reservationRepository.GetOverlappingReservationsForServiceAsync(
+                createReservationDto.ServiceId, reservation.StartTime, reservation.EndTime);
+
+            if (overlappingServiceReservations.Any())
+            {
+                throw new InvalidOperationException("The service is already booked for this time slot.");
+            }
+
             await _reservationRepository.AddAsync(reservation);
             return _mapper.Map<ReservationDto>(reservation);
         }
@@ -40,7 +66,7 @@ namespace api.Services
             return _mapper.Map<IEnumerable<ReservationDto>>(reservations);
         }
 
-        public async Task<ReservationDto?> GetReservationAsync(int reservationId)
+        public async Task<ReservationDto?> GetReservationByIdAsync(int reservationId)
         {
             var reservation = await _reservationRepository.GetByIdAsync(reservationId);
             return _mapper.Map<ReservationDto>(reservation);
@@ -52,7 +78,33 @@ namespace api.Services
             if (reservation == null)
                 return null;
 
+            var service = await _serviceRepository.GetByIdAsync(updateReservationDto.ServiceId);
+            if (service == null)
+            {
+                throw new ArgumentException("Invalid ServiceId");
+            }
+
             _mapper.Map(updateReservationDto, reservation);
+            reservation.EndTime = reservation.StartTime.AddMinutes(service.DurationMins);
+
+            // Check for overlapping reservations for the same employee
+            var overlappingEmployeeReservations = await _reservationRepository.GetOverlappingReservationsForEmployeeAsync(
+                updateReservationDto.EmployeeId, reservation.StartTime, reservation.EndTime);
+
+            if (overlappingEmployeeReservations.Any())
+            {
+                throw new InvalidOperationException("The employee is already booked for this time slot.");
+            }
+
+            // Check for overlapping reservations for the same service
+            var overlappingServiceReservations = await _reservationRepository.GetOverlappingReservationsForServiceAsync(
+                updateReservationDto.ServiceId, reservation.StartTime, reservation.EndTime);
+
+            if (overlappingServiceReservations.Any())
+            {
+                throw new InvalidOperationException("The service is already booked for this time slot.");
+            }
+
             await _reservationRepository.UpdateAsync(reservation);
             return _mapper.Map<ReservationDto>(reservation);
         }

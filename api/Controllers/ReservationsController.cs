@@ -35,7 +35,7 @@ namespace api.Controllers
         [HttpGet("{reservationId}")]
         public async Task<IActionResult> GetReservation([FromRoute] int reservationId)
         {
-            var reservation = await _reservationService.GetReservationAsync(reservationId);
+            var reservation = await _reservationService.GetReservationByIdAsync(reservationId);
             if (reservation == null)
                 return NotFound(new { message = "Reservation not found" });
 
