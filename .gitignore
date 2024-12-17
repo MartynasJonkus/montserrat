@@ -1,0 +1,4 @@
+api/obj/
+api/bin/
+api/dbsettings.json
+.vscode/

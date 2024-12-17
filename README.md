@@ -22,19 +22,34 @@
 
 ## Running the ASP.NET API
 
-To start the ASP.NET API, run:
+1. Navigate to the API directory:
    ```bash
-   cd api  
+   cd api
+   ```
+2. Install dependencies:
+   ```bash
+   dotnet restore
+   ```
+3. Start the server:
+   ```bash
    dotnet run
    ```
-
-## Inspecting the API with Swagger
-
-To view the API documentation with Swagger, run:
+4. (Optional) Inspect the API with Swagger:
    ```bash
-   cd api  
    dotnet watch run
    ```
+   
+## Database setup
+
+1. Insert dbsettings.json in to the montserrat/api/ directory:
+   ```bash
+   {
+     "ConnectionStrings": {
+       "DefaultConnection": "Host=host; Port=port; Database=database; Username=username; Password=password"
+     }
+   }
+   ```
+2. Replace with specific database details
 
 ## VS code extensions  
 - c#
