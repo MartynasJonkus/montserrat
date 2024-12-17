@@ -8,7 +8,7 @@ import './order-page.css';
 function OrderPage() {
     const navigate = useNavigate();
 
-    const [totalAmount, setTotal] = useState(20);
+    const [totalAmount, setTotal] = useState(0);
 
     const navigateToPayment = () => {
         navigate('/payment', { state: { amount: totalAmount } });

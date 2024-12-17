@@ -6,14 +6,25 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 
 const API_BASE_URL = "http://localhost:5282";
+
+interface Item {
+    id: number;
+    price: {
+        amount: number;
+        currency: number;
+    }
+    productVariant: number;
+    quantity: number;
+}
 interface OrderResponse {
     id: number;
     merchantId: number;
     orderDiscountId?: number;
-    //orderItems[]: Item;
+    orderItems: Item[];
     status: number;
-    updatedAt: Date;
+    updatedAt: string;
 }
+
 
 const fetchOrderData = async (pageNumber: number, pageSize: number, sortOrder: string, orderStatus?: number): Promise<OrderResponse[]> => {
     const token = localStorage.getItem("jwtToken");
@@ -34,12 +45,12 @@ const fetchOrderData = async (pageNumber: number, pageSize: number, sortOrder: s
         id: order.id,
         merchantId: order.merchantId,
         orderDiscountId: order.orderDiscountId,
+        orderItems: order.orderItems,
         status: order.status,
         updatedAt: order.updatedAt,
     }));
 }
 
-//untested
 const deleteOrder = async (orderId: number): Promise<void> => {
     const token = localStorage.getItem("jwtToken");
     const responce = await axios.delete<void>(`${API_BASE_URL}/api/orders/${orderId}`, {
@@ -50,12 +61,31 @@ const deleteOrder = async (orderId: number): Promise<void> => {
     });
 
     console.log("order deleted" + responce.data);
+    window.location.reload();
 }
 
-function OrderMng() {
-    const navigate = useNavigate();
+//401 unauthorized
+const changeStatus = async (order: OrderResponse, newStatus: number): Promise<void> => {
+    const token = localStorage.getItem("jwtToken");
+    const responce = await axios.put<void>(`${API_BASE_URL}/api/orders/${order.id}`, {
+        params: {
+            orderDiscountId: order.orderDiscountId,
+            status: newStatus,
+            orderItems: order.orderItems,
+        },
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
 
+    console.log("order status updated" + responce.data);
+}
+
+
+function OrderMng() {
     const [orders, setOrders] = useState<OrderResponse[]>([]);
+
+    const navigate = useNavigate();
 
     const navigateToOrderPage = (orderId: number) => {
         navigate('/ordercreation', { state: { id: orderId } });
@@ -72,6 +102,20 @@ function OrderMng() {
         } catch (err) {
             console.error(err);
         }
+    }
+
+    const handleStatusChange = async (orderId: number) => {
+        const input = prompt("New order status:");
+
+        if (input.length <= 0 || isNaN(input)) {
+            alert("Invalid input");
+        }
+        else {
+            const orderToEdit = orders.find((order) => order.id === orderId);
+            if (orderToEdit != undefined) {
+                await changeStatus(orderToEdit, parseInt(input));
+            }   
+        }
         
     }
 
@@ -82,11 +126,12 @@ function OrderMng() {
                 <div className="order-detail">Merchant: {order.merchantId}</div>
                 <div className="order-detail">Discount: {order.orderDiscountId}</div>
                 <div className="order-detail">Status: {order.status}</div>
+                <div className="order-detail">Items: {order.orderItems.map(item => <div className="item-list">ID: {item.id} x{item.quantity} </div> )} </div>
                 <div className="order-detail">Last updated: {order.updatedAt}</div>
             </div>
             <div className="active-order-right">
                 <button onClick={() => navigateToOrderPage(order.id)} className="page-button">Edit</button>
-                <button className="page-button">Change status</button>
+                <button onClick={() => handleStatusChange(order.id) } className="page-button">Change status</button>
                 <button onClick={() => deleteOrder(order.id)} className="page-button">Delete</button>
             </div>
         </div>
