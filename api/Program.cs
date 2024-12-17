@@ -2,6 +2,7 @@ using System.Text;
 using api.Data;
 using api.Interfaces.Repositories;
 using api.Interfaces.Services;
+using api.Models;
 using api.Repositories;
 using api.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -20,6 +21,9 @@ builder.Services.AddScoped<IProductVariantRepository, ProductVariantRepository>(
 
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+
+builder.Services.AddScoped<IDiscountService, DiscountService>();
+builder.Services.AddScoped<IDiscountRepository, DiscountRepository>();
 
 builder.Services.AddScoped<ICustomerRepository, CustomerRepository>();
 builder.Services.AddScoped<ICustomerService, CustomerService>();
