@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import './main.css';
 
-import LoginPage from './login-page.tsx';
+import LoginPage from './Login.tsx';
 import OrderPage from './order-page.tsx'
 import Payment from './payment.tsx';
 import Dashboard from './dashboard.tsx';
