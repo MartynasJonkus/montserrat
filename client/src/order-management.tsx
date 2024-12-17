@@ -25,7 +25,6 @@ interface OrderResponse {
     updatedAt: string;
 }
 
-
 const fetchOrderData = async (pageNumber: number, pageSize: number, sortOrder: string, orderStatus?: number): Promise<OrderResponse[]> => {
     const token = localStorage.getItem("jwtToken");
     const responce = await axios.get<OrderResponse[]>(`${API_BASE_URL}/api/orders`, {
@@ -64,21 +63,23 @@ const deleteOrder = async (orderId: number): Promise<void> => {
     window.location.reload();
 }
 
-//401 unauthorized
 const changeStatus = async (order: OrderResponse, newStatus: number): Promise<void> => {
     const token = localStorage.getItem("jwtToken");
-    const responce = await axios.put<void>(`${API_BASE_URL}/api/orders/${order.id}`, {
-        params: {
-            orderDiscountId: order.orderDiscountId,
-            status: newStatus,
-            orderItems: order.orderItems,
-        },
+
+    const data = {
+        orderDiscountId: order.orderDiscountId,
+        status: newStatus,
+        orderItems: order.orderItems,
+    }
+
+    const responce = await axios.put<void>(`${API_BASE_URL}/api/orders/${order.id}`, data, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     });
 
     console.log("order status updated" + responce.data);
+    window.location.reload();
 }
 
 
