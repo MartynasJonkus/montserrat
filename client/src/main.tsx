@@ -4,6 +4,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import './main.css';
 
+import LoginPage from './login-page.tsx';
 import OrderPage from './order-page.tsx'
 import Payment from './payment.tsx';
 import Dashboard from './dashboard.tsx';
@@ -15,8 +16,9 @@ createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <Router>
             <Routes>
+                <Route path="/" element={<LoginPage />} /> {/* Login Page as default */}
                 {/*Dashboard is being used as the home page for now, should be replaced to login*/}
-                <Route path="/" element={<Dashboard /> } />
+                <Route path="/dashboard" element={<Dashboard /> } />
                 <Route path="/ordercreation" element={<OrderPage />} />
                 <Route path="/reservationcreation" element={<ReservationPage />} />
                 <Route path="/payment" element={<Payment />} />
