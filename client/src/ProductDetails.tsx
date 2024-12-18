@@ -14,13 +14,12 @@ interface ProductDetails {
 }
 
 const ProductDetails: React.FC = () => {
-  const { id } = useParams(); // Get product ID from URL params
+  const { id } = useParams(); 
   const [product, setProduct] = useState<ProductDetails | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [updatedProduct, setUpdatedProduct] = useState<ProductDetails | null>(null);
 
-  // Fetch the details of the selected product
   const fetchProductDetails = async (productId: string) => {
     const token = localStorage.getItem('jwt') || sessionStorage.getItem('jwt');
     if (!token) {
@@ -43,7 +42,7 @@ const ProductDetails: React.FC = () => {
 
       const data = await response.json();
       setProduct(data);
-      setUpdatedProduct(data); // Initialize the updatedProduct state
+      setUpdatedProduct(data); 
     } catch (err: any) {
       setError(err.message);
     }
@@ -61,7 +60,7 @@ const ProductDetails: React.FC = () => {
 
   const handleCancelEdit = () => {
     setIsEditing(false);
-    setUpdatedProduct(product); // Reset to original product details
+    setUpdatedProduct(product); 
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
@@ -104,7 +103,7 @@ const ProductDetails: React.FC = () => {
       }
 
       setIsEditing(false);
-      setProduct(updatedProduct); // Update product with the new data
+      setProduct(updatedProduct); 
       alert('Product updated successfully!');
     } catch (err: any) {
       setError(err.message);
@@ -173,7 +172,6 @@ const ProductDetails: React.FC = () => {
             </>
           )}
   
-          {/* Tax Info */}
           <div>
             <h3>Tax</h3>
             {product.tax ? (
@@ -183,7 +181,6 @@ const ProductDetails: React.FC = () => {
             )}
           </div>
   
-          {/* Discount Info */}
           <div>
             <h3>Discount</h3>
             {product.discount ? (
@@ -193,7 +190,6 @@ const ProductDetails: React.FC = () => {
             )}
           </div>
   
-          {/* Edit and Save/Cancel buttons */}
           {isEditing ? (
             <>
               <button onClick={handleSaveChanges}>Save Changes</button>
