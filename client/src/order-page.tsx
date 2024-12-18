@@ -14,7 +14,7 @@ interface Item {
         amount: number;
         currency: number;
     }
-    productVariant: number;
+    productVariantId: number;
     quantity: number;
 }
 interface OrderResponse {
@@ -72,7 +72,7 @@ const fetchOrderItems = async (orderId: number): Promise<Item[]> => {
             amount: item.price.amount,
             currency: item.price.currency,
         },
-        productVariant: item.productVariant,
+        productVariantId: item.productVariantId,
         quantity: item.quantity,
     }));
 }
@@ -104,16 +104,20 @@ const saveOrder = async (orderId: number, orderItems: Item[]): Promise<void> => 
             Authorization: `Bearer ${token}`,
         },
     });
+    console.log(orderResponse.data);
 
+    console.log(JSON.stringify(orderItems));
     const data = {
         orderDiscountId: orderResponse.data.orderDiscountId,
         status: orderResponse.data.status,
-        orderItems: orderItems,
+        orderItems: orderItems.map((item) => ({
+            productVariantId: item.productVariantId,
+            quantity: item.quantity,
+        }))
     }
 
-    console.log("data:" + data.orderItems);
-    console.log("data:" + data.status);
-    console.log("data:" + data.orderDiscountId);
+    console.log(JSON.stringify(data));
+
     const updateResponse = await axios.put<void>(`${API_BASE_URL}/api/orders/${orderId}`, data, {
         headers: {
             Authorization: `Bearer ${token}`,
@@ -127,10 +131,14 @@ const saveOrder = async (orderId: number, orderItems: Item[]): Promise<void> => 
 const createOrder = async (orderItems: Item[]): Promise<void> => {
     const token = localStorage.getItem("jwtToken");
 
-    const data = orderItems.map(item => ({
-        productVariant: item.id,
-        quantity: item.quantity,
-    }));
+    const data = {
+        orderItems: orderItems.map(item => ({
+            productVariantId: item.productVariantId,
+            quantity: item.quantity,
+        }))
+    };
+
+    console.log(JSON.stringify(data));
 
     const response = await axios.post<void>(`${API_BASE_URL}/api/orders`, data, {
         headers: {
@@ -196,10 +204,10 @@ function OrderPage() {
                         amount: productToAdd.price.amount,
                         currency: productToAdd.price.currency,
                     },
-                    productVariant: variantId,
+                    productVariantId: variantId,
                     quantity: 1,
                 }
-                console.log(newItem.id + "variant:" + newItem.productVariant);
+                console.log(newItem.id + "variant:" + newItem.productVariantId);
                 setOrder(prevItems => [...prevItems, newItem]);
             }
         }
@@ -222,6 +230,7 @@ function OrderPage() {
 
     const handleSaveOrder = () => {
         if (orderId != undefined) {
+            console.log(JSON.stringify(orderItems));
             saveOrder(orderId, orderItems);
         } else {
             createOrder(orderItems);
@@ -233,7 +242,7 @@ function OrderPage() {
             <hr />
             <div className="order-product">
                 <div id="order-product-amount">x{item.quantity}</div>
-                <div id="order-product-name">ID: {item.id}</div>
+                <div id="order-product-name">ID: {item.productVariantId}</div>
                 <div id="order-product-price">${item.price.amount}</div>
                 <ImCross onClick={() => handleItemRemove(item.id)} />
             </div>
