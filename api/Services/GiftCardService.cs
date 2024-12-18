@@ -21,6 +21,7 @@ namespace api.Services
         {
             var giftCard = _mapper.Map<GiftCard>(createGiftCardDto);
             giftCard.MerchantId = merchantId;
+            giftCard.Balance = giftCard.InitialBalance;
 
             await _giftCardRepository.CreateGiftCardAsync(giftCard);
             return _mapper.Map<GiftCardDto>(giftCard);

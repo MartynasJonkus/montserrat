@@ -11,11 +11,18 @@ namespace api.Services
     {
         private readonly IPaymentRepository _paymentRepository;
         private readonly IOrderRepository _orderRepository;
+        private readonly IGiftCardRepository _giftCardRepository;
+        private readonly IReservationRepository _reservationRepository;
+        private readonly IServiceRepository _serviceRepository;
         private readonly IMapper _mapper;
-        public PaymentService(IPaymentRepository paymentRepository, IOrderRepository orderRepository, IMapper mapper)
+
+        public PaymentService(IPaymentRepository paymentRepository, IOrderRepository orderRepository, IGiftCardRepository giftCardRepository, IReservationRepository reservationRepository, IServiceRepository serviceRepository, IMapper mapper)
         {
             _paymentRepository = paymentRepository;
             _orderRepository = orderRepository;
+            _giftCardRepository = giftCardRepository;
+            _reservationRepository = reservationRepository;
+            _serviceRepository = serviceRepository;
             _mapper = mapper;
         }
 
@@ -50,15 +57,49 @@ namespace api.Services
 
                 if (order.Status == OrderStatus.canceled)
                     throw new InvalidOperationException($"Order with ID {createPaymentDto.OrderId} is canceled and cannot accept payments.");
+
+                if (createPaymentDto.ReservationId.HasValue)
+                    throw new InvalidOperationException($"Payments of type Order cannot have a ReservationId.");
             }
             else if (createPaymentDto.PaymentType == PaymentType.Reservation)
             {
                 if (!createPaymentDto.ReservationId.HasValue)
                     throw new InvalidOperationException("ReservationId is required for payments of type Reservation.");
 
-                // var reservation = await _reservationRepository.GetReservationByIdAsync(createPaymentDto.ReservationId.Value);
-                // if (reservation == null || reservation.MerchantId != merchantId)
-                throw new InvalidOperationException($"Reservation with ID {createPaymentDto.ReservationId} does not exist or is not associated with the merchant.");
+                var reservation = await _reservationRepository.GetByIdAsync(createPaymentDto.ReservationId.Value);
+
+                if (reservation == null)
+                    throw new InvalidOperationException($"Reservation with ID {createPaymentDto.ReservationId} does not exist.");
+
+                var service = await _serviceRepository.GetByIdAsync(reservation.ServiceId);
+                
+                if (service == null || service.MerchantId != merchantId)
+                    throw new InvalidOperationException($"Reservation with ID {createPaymentDto.ReservationId} is not associated with the merchant.");
+
+            }
+
+            if (createPaymentDto.Method == PaymentMethod.GiftCard)
+            {
+                if (!createPaymentDto.GiftcardId.HasValue)
+                    throw new InvalidOperationException("GiftcardId is required when the payment method is GiftCard.");
+
+                var giftCard = await _giftCardRepository.GetGiftCardByIdAsync(createPaymentDto.GiftcardId.Value);
+                if (giftCard == null || giftCard.MerchantId != merchantId)
+                    throw new InvalidOperationException($"GiftCard with ID {createPaymentDto.GiftcardId} does not exist or is not associated with the merchant.");
+
+                if (giftCard.Balance < createPaymentDto.TotalAmount)
+                    throw new InvalidOperationException($"GiftCard with ID {createPaymentDto.GiftcardId} does not have sufficient balance.");
+                
+                if(giftCard.ExpiresOn < DateTime.UtcNow)
+                    throw new InvalidOperationException($"GiftCard with ID {createPaymentDto.GiftcardId} has expired.");
+
+                giftCard.Balance -= createPaymentDto.TotalAmount;
+                await _giftCardRepository.UpdateGiftCardAsync(giftCard);
+            }
+            else if (createPaymentDto.Method != PaymentMethod.GiftCard)
+            {
+                if (createPaymentDto.GiftcardId.HasValue)
+                    throw new InvalidOperationException("GiftcardId is not needed when the payment method is not GiftCard.");
             }
 
             var payment = _mapper.Map<Payment>(createPaymentDto);
