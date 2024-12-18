@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://localhost:5282"; // Your backend API URL
+const API_BASE_URL = "http://localhost:5282";
 
 interface LoginResponse {
     token: string;
@@ -11,5 +11,6 @@ export const login = async (username: string, password: string): Promise<LoginRe
         username,
         password,
     });
+
     return response.data;
 };
