@@ -176,8 +176,8 @@ function OrderPage() {
         }
     }
 
-    const handleItemAdd = (productId: number, variantId?: number) => {
-        console.log("a" + variantId+":"+productId);
+    const handleItemAdd = (productId: number, variantId: number) => {
+        console.log(variantId + ":" + productId);
         const productToAdd = products.find(product => product.id == productId);
 
         if (productToAdd != undefined) {
@@ -196,8 +196,7 @@ function OrderPage() {
                         amount: productToAdd.price.amount,
                         currency: productToAdd.price.currency,
                     },
-                    //add correct variant
-                    productVariant: productToAdd.productVariants[0].id,
+                    productVariant: variantId,
                     quantity: 1,
                 }
                 console.log(newItem.id + "variant:" + newItem.productVariant);
@@ -211,14 +210,14 @@ function OrderPage() {
     }
 
     const navigateToPayment = () => {
-        navigate('/payment', { state: { amount: totalAmount } });
+        navigate('/payment', { state: { amount: totalAmount, id: orderId } });
     }
 
     useEffect(() => {
         const sum = orderItems.reduce((aggr, current) => aggr + (current.price.amount * current.quantity), 0);
         setSubtotal(sum);
         setTotal(subtotalAmount - discountAmount);
-    }, [discountAmount, orderItems, subtotalAmount]); 
+    }, [discountAmount, orderItems, subtotalAmount]);
 
 
     const handleSaveOrder = () => {
@@ -228,7 +227,7 @@ function OrderPage() {
             createOrder(orderItems);
         }
     }
-    
+
     const itemList = orderItems.map(item =>
         <>
             <hr />
@@ -241,14 +240,16 @@ function OrderPage() {
         </>
     );
 
+    const [selectedValues, setSelectedValues] = useState(0);
 
     const productList = products.map(product =>
-        <div onClick={() => handleItemAdd(product.id)} className="item">
-            <div className="item-name">{product.title}</div>
+        <div className="item">
+            <div className="item-name">{product.title} <FaRegPlusSquare onClick={() => handleItemAdd(product.id, selectedValues)} /></div>
             <div className="item-price">${product.price.amount}</div>
-            <select>
+            <select value={selectedValues} onChange={(e) => setSelectedValues(parseInt(e.target.value))}>
+                <option value="">-</option>
                 {product.productVariants.reverse().map(variant =>
-                    <option value={variant.additionalPrice}>{variant.title} +${variant.additionalPrice}</option>
+                    <option value={variant.id}>{variant.title} +${variant.additionalPrice}</option>
                 )}
             </select>
         </div>
@@ -261,7 +262,7 @@ function OrderPage() {
             <div id="order-container">
                 <div id="container-left">
                     <div className="container-top" id="back-to-dashboard">
-                        <button id="save-order-button" onClick={() => handleSaveOrder() }>Save order</button>
+                        <button id="save-order-button" onClick={() => handleSaveOrder()}>Save order</button>
                     </div>
                     <div id="order-details">
                         <div id="order-top"><b>CURRENT ORDER</b></div>
@@ -286,8 +287,8 @@ function OrderPage() {
                         </div>
                     </div>
                     <div id="container-bottom">
-                        <button onClick={() => { } } id="payment-split">Split</button>
-                        <button onClick={() => navigateToPayment()} id="payment-pay">Pay</button>                  
+                        <button onClick={() => { }} id="payment-split">Split</button>
+                        <button onClick={() => navigateToPayment()} id="payment-pay">Pay</button>
                     </div>
                 </div>
 

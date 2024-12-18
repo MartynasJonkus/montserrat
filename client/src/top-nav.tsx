@@ -24,7 +24,7 @@ function TopNav() {
                     <div id="dropdown-menu" className="page-button">
                         <div id="menu-title">Catalog</div>
                         <div id="dropdown-content">
-                            <button onClick={() => navigate("/")} className="menu-button">Product management</button>
+                            <button onClick={() => navigate("/productmanagement")} className="menu-button">Product management</button>
                             <button onClick={() => navigate("/")} className="menu-button">Service management</button>
                             <button onClick={() => navigate("/")} className="menu-button">Employee management</button>
                             <button onClick={() => navigate("/")} className="menu-button">Giftcard management</button>

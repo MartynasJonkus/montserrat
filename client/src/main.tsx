@@ -27,6 +27,7 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/reservationmanagement" element={<ReservationManagement />} />
                 <Route path="/productmanagement" element={<ProductManagement />} /> 
                 <Route path="/productdetails/:productId" element={<ProductDetails />} />
+            </Routes>
         </Router>
     </StrictMode>,
 );
