@@ -14,7 +14,7 @@ createRoot(document.getElementById('root')!).render(
         <Route path="/" element={<App />} />
         <Route path="/login" element={<Login />} />
         <Route path="/products" element={<ProductManagement />} /> {/* Product Management route */}
-        <Route path="/product-details/:id" element={<ProductDetails />} /> {/* Product Details route */}
+        <Route path="/product-details/:id" element={<ProductDetails />} /> Product Details route
       </Routes>
     </Router>
   </StrictMode>
