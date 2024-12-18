@@ -27,7 +27,7 @@ interface OrderResponse {
 
 const fetchOrderData = async (pageNumber: number, pageSize: number, sortOrder: string, orderStatus?: number): Promise<OrderResponse[]> => {
     const token = localStorage.getItem("jwtToken");
-    const responce = await axios.get<OrderResponse[]>(`${API_BASE_URL}/api/orders`, {
+    const response = await axios.get<OrderResponse[]>(`${API_BASE_URL}/api/orders`, {
         params: {
             pageNumber,
             pageSize,
@@ -39,8 +39,8 @@ const fetchOrderData = async (pageNumber: number, pageSize: number, sortOrder: s
         },
     });
 
-    console.log(responce.data);
-    return responce.data.map((order) => ({
+    console.log(response.data);
+    return response.data.map((order) => ({
         id: order.id,
         merchantId: order.merchantId,
         orderDiscountId: order.orderDiscountId,
@@ -52,14 +52,14 @@ const fetchOrderData = async (pageNumber: number, pageSize: number, sortOrder: s
 
 const deleteOrder = async (orderId: number): Promise<void> => {
     const token = localStorage.getItem("jwtToken");
-    const responce = await axios.delete<void>(`${API_BASE_URL}/api/orders/${orderId}`, {
+    const response = await axios.delete<void>(`${API_BASE_URL}/api/orders/${orderId}`, {
         params: { orderId },
         headers: {
             Authorization: `Bearer ${token}`,
         },
     });
 
-    console.log("order deleted" + responce.data);
+    console.log("order deleted" + response.data);
     window.location.reload();
 }
 
@@ -72,13 +72,13 @@ const changeStatus = async (order: OrderResponse, newStatus: number): Promise<vo
         orderItems: order.orderItems,
     }
 
-    const responce = await axios.put<void>(`${API_BASE_URL}/api/orders/${order.id}`, data, {
+    const response = await axios.put<void>(`${API_BASE_URL}/api/orders/${order.id}`, data, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
     });
 
-    console.log("order status updated" + responce.data);
+    console.log("order status updated" + response.data);
     window.location.reload();
 }
 
