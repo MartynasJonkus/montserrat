@@ -94,8 +94,8 @@ namespace api.Migrations
                     b.Property<int>("MerchantId")
                         .HasColumnType("integer");
 
-                    b.Property<decimal>("Percentage")
-                        .HasColumnType("decimal(5, 2)");
+                    b.Property<int>("Percentage")
+                        .HasColumnType("integer");
 
                     b.Property<int>("Status")
                         .HasColumnType("integer");
@@ -574,7 +574,7 @@ namespace api.Migrations
                     b.Property<int?>("DiscountId")
                         .HasColumnType("integer");
 
-                    b.Property<int>("Duration")
+                    b.Property<int>("DurationMins")
                         .HasColumnType("integer");
 
                     b.Property<int?>("EmployeeId")

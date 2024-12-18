@@ -1,7 +1,6 @@
 using api.Dtos.Order;
 using api.Enums;
 using api.Interfaces.Services;
-using api.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace api.Controllers
@@ -11,10 +10,12 @@ namespace api.Controllers
     public class OrderController : ControllerBase
     {
         private readonly IOrderService _orderService;
+        private readonly IReceiptService _receiptService;
 
-        public OrderController(IOrderService orderService)
+        public OrderController(IOrderService orderService, IReceiptService receiptService)
         {
             _orderService = orderService;
+            _receiptService = receiptService;
         }
 
         [HttpGet("{orderId}")]
@@ -52,13 +53,13 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             var merchantIdClaim = User.FindFirst("MerchantId");
             if (merchantIdClaim == null || !int.TryParse(merchantIdClaim.Value, out var merchantId))
             {
                 return Unauthorized("MerchantId is missing or invalid in the token.");
             }
-                
+
             var createdOrder = await _orderService.CreateOrderAsync(merchantId, createOrderDto);
             if (createdOrder == null) return BadRequest("Invalid order data.");
             return CreatedAtAction(nameof(GetOrder), new { orderId = createdOrder.Id }, createdOrder);
@@ -69,7 +70,7 @@ namespace api.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            
+
             var updatedOrder = await _orderService.UpdateOrderAsync(orderId, updateOrderDto);
             if (updatedOrder == null) return NotFound();
 
@@ -82,6 +83,22 @@ namespace api.Controllers
             var success = await _orderService.DeleteOrderAsync(orderId);
             if (!success) return NotFound();
             return NoContent();
+        }
+
+        [HttpGet("{orderId}/receipt")]
+        public async Task<IActionResult> GetReceiptByOrderId(int orderId)
+        {
+            var merchantIdClaim = User.FindFirst("MerchantId");
+            if (merchantIdClaim == null || !int.TryParse(merchantIdClaim.Value, out var merchantId))
+            {
+                return Unauthorized("MerchantId is missing or invalid in the token.");
+            }
+
+            var receipt = await _receiptService.GetReceiptByOrderIdAsync(merchantId, orderId);
+            if (receipt == null)
+                return NotFound(new { message = "Receipt not found for the order" });
+
+            return Ok(receipt);
         }
     }
 }
