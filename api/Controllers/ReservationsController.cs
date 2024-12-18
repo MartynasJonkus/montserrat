@@ -9,10 +9,12 @@ namespace api.Controllers
     public class ReservationsController : ControllerBase
     {
         private readonly IReservationService _reservationService;
+        private readonly IReceiptService _receiptService;
 
-        public ReservationsController(IReservationService reservationService)
+        public ReservationsController(IReservationService reservationService, IReceiptService receiptService)
         {
             _reservationService = reservationService;
+            _receiptService = receiptService;
         }
 
         [HttpPost]
@@ -63,6 +65,22 @@ namespace api.Controllers
                 return NotFound(new { message = "Reservation not found" });
 
             return NoContent();
+        }
+
+        [HttpGet("{reservationId}/receipt")]
+        public async Task<IActionResult> GetReceiptByReservationId(int reservationId)
+        {
+            var merchantIdClaim = User.FindFirst("MerchantId");
+            if (merchantIdClaim == null || !int.TryParse(merchantIdClaim.Value, out var merchantId))
+            {
+                return Unauthorized("MerchantId is missing or invalid in the token.");
+            }
+
+            var receipt = await _receiptService.GetReceiptByReservationIdAsync(merchantId, reservationId);
+            if (receipt == null)
+                return NotFound(new { message = "Receipt not found for the reservation" });
+
+            return Ok(receipt);
         }
     }
 }
