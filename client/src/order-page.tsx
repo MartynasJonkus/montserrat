@@ -1,4 +1,4 @@
-import { GoArrowLeft } from "react-icons/go";
+import { FaRegPlusSquare } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useEffect, useState } from "react";
 import { ImCross } from "react-icons/im";
@@ -54,7 +54,7 @@ interface ProductResponse {
     }]
 }
 
-const fetchOrderById = async (orderId: number): Promise<Item[]> => {
+const fetchOrderItems = async (orderId: number): Promise<Item[]> => {
     const token = localStorage.getItem("jwtToken");
     const response = await axios.get<OrderResponse>(`${API_BASE_URL}/api/orders/${orderId}`, {
         params: {
@@ -93,6 +93,54 @@ const fetchProducts = async (pageNumber: number, pageSize: number): Promise<Prod
     return response.data;
 }
 
+const saveOrder = async (orderId: number, orderItems: Item[]): Promise<void> => {
+
+    const token = localStorage.getItem("jwtToken");
+    const orderResponse = await axios.get<OrderResponse>(`${API_BASE_URL}/api/orders/${orderId}`, {
+        params: {
+            orderId,
+        },
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    const data = {
+        orderDiscountId: orderResponse.data.orderDiscountId,
+        status: orderResponse.data.status,
+        orderItems: orderItems,
+    }
+
+    console.log("data:" + data.orderItems);
+    console.log("data:" + data.status);
+    console.log("data:" + data.orderDiscountId);
+    const updateResponse = await axios.put<void>(`${API_BASE_URL}/api/orders/${orderId}`, data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    console.log("order status updated" + updateResponse.data);
+    window.location.reload();
+}
+
+const createOrder = async (orderItems: Item[]): Promise<void> => {
+    const token = localStorage.getItem("jwtToken");
+
+    const data = orderItems.map(item => ({
+        productVariant: item.id,
+        quantity: item.quantity,
+    }));
+
+    const response = await axios.post<void>(`${API_BASE_URL}/api/orders`, data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    console.log("order created" + response.data);
+}
+
 function OrderPage() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -112,7 +160,7 @@ function OrderPage() {
 
     const handleFetchOrderById = async () => {
         try {
-            const data = await fetchOrderById(orderId);
+            const data = await fetchOrderItems(orderId);
             setOrder(data);
         } catch (err) {
             console.error(err);
@@ -128,7 +176,8 @@ function OrderPage() {
         }
     }
 
-    const handleItemAdd = (productId: number) => {
+    const handleItemAdd = (productId: number, variantId?: number) => {
+        console.log("a" + variantId+":"+productId);
         const productToAdd = products.find(product => product.id == productId);
 
         if (productToAdd != undefined) {
@@ -147,9 +196,11 @@ function OrderPage() {
                         amount: productToAdd.price.amount,
                         currency: productToAdd.price.currency,
                     },
+                    //add correct variant
                     productVariant: productToAdd.productVariants[0].id,
                     quantity: 1,
                 }
+                console.log(newItem.id + "variant:" + newItem.productVariant);
                 setOrder(prevItems => [...prevItems, newItem]);
             }
         }
@@ -169,6 +220,15 @@ function OrderPage() {
         setTotal(subtotalAmount - discountAmount);
     }, [discountAmount, orderItems, subtotalAmount]); 
 
+
+    const handleSaveOrder = () => {
+        if (orderId != undefined) {
+            saveOrder(orderId, orderItems);
+        } else {
+            createOrder(orderItems);
+        }
+    }
+    
     const itemList = orderItems.map(item =>
         <>
             <hr />
@@ -182,12 +242,12 @@ function OrderPage() {
     );
 
 
-    const productList = products.map(product => 
+    const productList = products.map(product =>
         <div onClick={() => handleItemAdd(product.id)} className="item">
             <div className="item-name">{product.title}</div>
             <div className="item-price">${product.price.amount}</div>
             <select>
-                {product.productVariants.reverse().map(variant => 
+                {product.productVariants.reverse().map(variant =>
                     <option value={variant.additionalPrice}>{variant.title} +${variant.additionalPrice}</option>
                 )}
             </select>
@@ -201,7 +261,7 @@ function OrderPage() {
             <div id="order-container">
                 <div id="container-left">
                     <div className="container-top" id="back-to-dashboard">
-                        <button id="save-order-button" onClick={() => { } }>Save order</button>
+                        <button id="save-order-button" onClick={() => handleSaveOrder() }>Save order</button>
                     </div>
                     <div id="order-details">
                         <div id="order-top"><b>CURRENT ORDER</b></div>
