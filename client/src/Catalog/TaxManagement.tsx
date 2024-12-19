@@ -1,280 +1,344 @@
-import React, { useState, useEffect } from 'react';
-
-interface Tax {
-  id: number;
-  title: string;
-  percentage: number;
-  status: number; // 1 is Active, 0 is Inactive
-}
+import React, { useState, useEffect } from "react"
+import { Container, Button, Table } from "reactstrap"
+import TopNav from "../top-nav"
+import { Status } from "../Enums/Status"
+import { Tax, CreateTaxDto } from "../Interfaces/Tax"
 
 const TaxManagement: React.FC = () => {
-  const [taxes, setTaxes] = useState<Tax[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [editableTax, setEditableTax] = useState<Tax | null>(null); // Track tax being edited
-
-  const [newTax, setNewTax] = useState({
-    title: '',
+  const [taxes, setTaxes] = useState<Tax[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [editableTax, setEditableTax] = useState<Tax | null>(null)
+  const [newTax, setNewTax] = useState<CreateTaxDto>({
+    title: "",
     percentage: 0,
-    status: 1, // Default to Active
-  });
+    status: Status.Active,
+  })
 
   // Fetch the list of taxes
   const fetchTaxes = async () => {
-    const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+    const token =
+      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
-      setError('No JWT token found. Please log in.');
-      return;
+      setError("No JWT token found. Please log in.")
+      return
     }
 
     try {
-      const response = await fetch('http://localhost:5282/api/taxes', {
+      const response = await fetch("http://localhost:5282/api/taxes", {
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch taxes');
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to fetch taxes")
       }
 
-      const data = await response.json();
-      setTaxes(data);
-    } catch (err: any) {
-      setError(err.message);
+      const data = await response.json()
+      setTaxes(data)
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
-  };
+  }
 
-  // Handle the start of editing a tax's details
+  // Handle editing a tax's details
   const handleEditClick = (tax: Tax) => {
-    setEditableTax(tax); // Set the tax to be edited
-  };
+    setEditableTax(tax) // Set tax for editing
+  }
 
-  // Handle submitting the updated tax form
-  const handleSaveTax = async (tax: Tax) => {
-    const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+  // Save updated tax
+  const handleSaveTax = async () => {
+    if (!editableTax) return
+
+    const token =
+      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
-      setError('No JWT token found. Please log in.');
-      return;
+      setError("No JWT token found. Please log in.")
+      return
     }
 
     try {
-      const response = await fetch(`http://localhost:5282/api/taxes/${tax.id}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(tax),
-      });
+      const response = await fetch(
+        `http://localhost:5282/api/taxes/${editableTax.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(editableTax),
+        }
+      )
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save tax');
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to save tax")
       }
 
-      fetchTaxes(); // Fetch updated list of taxes
-      setEditableTax(null); // Stop editing mode
-      alert('Tax updated successfully!');
-    } catch (err: any) {
-      setError(err.message);
+      fetchTaxes() // Fetch updated taxes
+      setEditableTax(null) // Reset editing mode
+      alert("Tax updated successfully!")
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
-  };
+  }
 
-  // Handle canceling the edit
+  // Cancel editing
   const handleCancelEdit = () => {
-    setEditableTax(null); // Cancel editing
-  };
+    setEditableTax(null)
+  }
 
-  // Handle submitting the new tax form
+  // Add a new tax
   const handleAddTaxSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+    const token =
+      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
-      setError('No JWT token found. Please log in.');
-      return;
+      setError("No JWT token found. Please log in.")
+      return
     }
 
-    const newTaxData = {
+    const newTaxData: CreateTaxDto = {
       title: newTax.title,
       percentage: newTax.percentage,
       status: newTax.status,
-    };
+    }
 
     try {
-      const response = await fetch('http://localhost:5282/api/taxes', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5282/api/taxes", {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(newTaxData),
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add tax');
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to add tax")
       }
 
       setNewTax({
-        title: '',
+        title: "",
         percentage: 0,
-        status: 1, // Reset to Active by default
-      });
+        status: Status.Active,
+      })
 
-      fetchTaxes(); // Fetch updated list of taxes
-      alert('Tax added successfully!');
-    } catch (err: any) {
-      setError(err.message);
+      fetchTaxes() // Fetch updated taxes
+      alert("Tax added successfully!")
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
-  };
+  }
 
-  // Handle deleting a tax
+  // Delete a tax
   const handleDeleteTax = async (taxId: number) => {
-    const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+    const token =
+      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
-      setError('No JWT token found. Please log in.');
-      return;
+      setError("No JWT token found. Please log in.")
+      return
     }
 
     try {
       const response = await fetch(`http://localhost:5282/api/taxes/${taxId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete tax');
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to delete tax")
       }
 
-      fetchTaxes(); // Fetch updated list of taxes
-      alert('Tax deleted successfully!');
-    } catch (err: any) {
-      setError(err.message);
+      fetchTaxes() // Fetch updated taxes
+      alert("Tax deleted successfully!")
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
-  };
+  }
 
-  // UseEffect to fetch taxes on component mount
   useEffect(() => {
-    fetchTaxes();
-  }, []);
+    fetchTaxes()
+  }, [])
 
   return (
     <div>
-      <h1>Tax Management</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <TopNav />
+      <Container>
+        <h1>Tax Management</h1>
+        {error && <p style={{ color: "red" }}>{error}</p>}
 
-      {/* Tax List */}
-      {taxes.length > 0 ? (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Title</th>
-              <th>Percentage</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {taxes.map((tax) => (
-              <tr key={tax.id}>
-                <td>{tax.id}</td>
-                <td>
-                  {editableTax?.id === tax.id ? (
-                    <input
-                      type="text"
-                      value={editableTax.title}
-                      onChange={(e) => setEditableTax({ ...editableTax, title: e.target.value })}
-                    />
-                  ) : (
-                    tax.title
-                  )}
-                </td>
-                <td>
-                  {editableTax?.id === tax.id ? (
-                    <input
-                      type="number"
-                      value={editableTax.percentage}
-                      onChange={(e) => setEditableTax({ ...editableTax, percentage: parseFloat(e.target.value) })}
-                    />
-                  ) : (
-                    tax.percentage
-                  )}
-                </td>
-                <td>
-                  {editableTax?.id === tax.id ? (
-                    <select
-                      value={editableTax.status}
-                      onChange={(e) => setEditableTax({ ...editableTax, status: parseInt(e.target.value) })}
-                    >
-                      <option value={1}>Active</option>
-                      <option value={0}>Inactive</option>
-                    </select>
-                  ) : (
-                    tax.status === 1 ? 'Active' : 'Inactive'
-                  )}
-                </td>
-                <td>
-                  {editableTax?.id === tax.id ? (
-                    <>
-                      <button onClick={() => handleSaveTax(editableTax)}>Save</button>
-                      <button onClick={handleCancelEdit}>Cancel</button>
-                    </>
-                  ) : (
-                    <>
-                      <button onClick={() => handleEditClick(tax)}>Edit</button>
-                      <button onClick={() => handleDeleteTax(tax.id)}>Delete</button>
-                    </>
-                  )}
-                </td>
+        {/* Tax List */}
+        {taxes.length > 0 ? (
+          <Table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Title</th>
+                <th>Percentage</th>
+                <th>Status</th>
+                <th>Created At</th>
+                <th>Updated At</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>No taxes found.</p>
-      )}
+            </thead>
+            <tbody>
+              {taxes.map((tax) => (
+                <tr key={tax.id}>
+                  <td>{tax.id}</td>
+                  <td>
+                    {editableTax?.id === tax.id ? (
+                      <input
+                        type="text"
+                        value={editableTax.title}
+                        onChange={(e) =>
+                          setEditableTax({
+                            ...editableTax,
+                            title: e.target.value,
+                          })
+                        }
+                      />
+                    ) : (
+                      tax.title
+                    )}
+                  </td>
+                  <td>
+                    {editableTax?.id === tax.id ? (
+                      <input
+                        type="number"
+                        value={editableTax.percentage}
+                        onChange={(e) =>
+                          setEditableTax({
+                            ...editableTax,
+                            percentage: parseFloat(e.target.value),
+                          })
+                        }
+                      />
+                    ) : (
+                      tax.percentage
+                    )}
+                  </td>
+                  <td>
+                    {editableTax?.id === tax.id ? (
+                      <select
+                        value={editableTax.status}
+                        onChange={(e) =>
+                          setEditableTax({
+                            ...editableTax,
+                            status: parseInt(e.target.value),
+                          })
+                        }
+                      >
+                        <option value={Status.Active}>Active</option>
+                        <option value={Status.Inactive}>Inactive</option>
+                        <option value={Status.Archived}>Archived</option>
+                      </select>
+                    ) : (
+                      Status[tax.status]
+                    )}
+                  </td>
+                  <td>{tax.createdAt}</td>
+                  <td>{tax.updatedAt}</td>
+                  <td>
+                    {editableTax?.id === tax.id ? (
+                      <>
+                        <Button color="primary" onClick={handleSaveTax}>
+                          Save
+                        </Button>
+                        <Button color="secondary" onClick={handleCancelEdit}>
+                          Cancel
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button
+                          color="warning"
+                          onClick={() => handleEditClick(tax)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          color="danger"
+                          onClick={() => handleDeleteTax(tax.id)}
+                        >
+                          Delete
+                        </Button>
+                      </>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          <p>No taxes found.</p>
+        )}
 
-      {/* Add Tax Form */}
-      <h2>Add New Tax</h2>
-      <form onSubmit={handleAddTaxSubmit}>
-        <div>
-          <label>Title:</label>
-          <input
-            type="text"
-            value={newTax.title}
-            onChange={(e) => setNewTax({ ...newTax, title: e.target.value })}
-          />
-        </div>
-        <div>
-          <label>Percentage:</label>
-          <input
-            type="number"
-            value={newTax.percentage}
-            onChange={(e) => setNewTax({ ...newTax, percentage: parseFloat(e.target.value) })}
-          />
-        </div>
-        <div>
-          <label>Status:</label>
-          <select
-            value={newTax.status}
-            onChange={(e) => setNewTax({ ...newTax, status: parseInt(e.target.value) })}
-          >
-            <option value={1}>Active</option>
-            <option value={0}>Inactive</option>
-          </select>
-        </div>
-        <button type="submit">Add Tax</button>
-      </form>
+        {/* Add New Tax Form */}
+        <h2>Add New Tax</h2>
+        <form onSubmit={handleAddTaxSubmit}>
+          <div>
+            <label>Title:</label>
+            <input
+              type="text"
+              value={newTax.title}
+              onChange={(e) => setNewTax({ ...newTax, title: e.target.value })}
+            />
+          </div>
+          <div>
+            <label>Percentage:</label>
+            <input
+              type="number"
+              value={newTax.percentage}
+              onChange={(e) =>
+                setNewTax({ ...newTax, percentage: parseFloat(e.target.value) })
+              }
+            />
+          </div>
+          <div>
+            <label>Status:</label>
+            <select
+              value={newTax.status}
+              onChange={(e) =>
+                setNewTax({ ...newTax, status: parseInt(e.target.value) })
+              }
+            >
+              <option value={Status.Active}>Active</option>
+              <option value={Status.Inactive}>Inactive</option>
+              <option value={Status.Archived}>Archived</option>
+            </select>
+          </div>
+          <Button type="submit" color="primary">
+            Add Tax
+          </Button>
+        </form>
+      </Container>
     </div>
-  );
-};
+  )
+}
 
-export default TaxManagement;
+export default TaxManagement

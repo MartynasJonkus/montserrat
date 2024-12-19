@@ -8,3 +8,9 @@ export interface Tax {
   updatedAt: string
   status: Status
 }
+
+export interface CreateTaxDto {
+  title: string
+  percentage: number
+  status: Status
+}
