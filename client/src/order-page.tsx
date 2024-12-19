@@ -263,7 +263,7 @@ function OrderPage() {
             <div className="order-product" >
                 <div id="order-product-amount">x{item.quantity}</div>
                 <div id="order-product-name">ID: {item.productVariantId}</div>
-                <div id="order-product-price">${handleItemPrice(item)}</div>
+                <div id="order-product-price">{handleItemPrice(item)} &euro;</div>
                 <ImCross onClick={() => handleItemRemove(item.id)} />
             </div>
         </>
@@ -276,7 +276,7 @@ function OrderPage() {
                     {product.title} {variant.title}
                     {variant.quantity != 0 ? <FaRegPlusSquare onClick={() => handleItemAdd(product.id, variant.id)} /> : null}
                 </div>
-                <div className="item-price">${product.price.amount + variant.additionalPrice}</div>
+                <div className="item-price">{product.price.amount + variant.additionalPrice} &euro;</div>
             </div>
         )
     );
@@ -297,17 +297,17 @@ function OrderPage() {
                         <div id="prices">
                             <div className="price-component">
                                 <div className="component-name">Subtotal</div>
-                                <div className="price-amount">${subtotalAmount.toFixed(2)}</div>
+                                <div className="price-amount">{subtotalAmount.toFixed(2)} &euro;</div>
                             </div>
                             <div className="price-component">
                                 <div className="component-name">Discount</div>
-                                <div className="price-amount">${discountAmount.toFixed(2)}</div>
+                                <div className="price-amount">{discountAmount.toFixed(2)} &euro;</div>
                             </div>
                         </div>
                         <hr />
                         <div id="price-bottom">
                             <div className="component-name">Total</div>
-                            <div className="price-amount">${totalAmount.toFixed(2)}</div>
+                            <div className="price-amount">{totalAmount.toFixed(2)} &euro;</div>
                         </div>
                     </div>
                     <div id="container-bottom">
