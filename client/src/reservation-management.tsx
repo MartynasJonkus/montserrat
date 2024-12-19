@@ -39,6 +39,18 @@ const changeStatus = async (reservation: ReservationResponse, newStatus: number)
     window.location.reload();
 }
 
+const deleteReservation = async (reservationId: number): Promise<void> => {
+    const token = localStorage.getItem("jwtToken");
+    const response = await axios.delete<void>(`${API_BASE_URL}/api/reservations/${reservationId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    console.log("reservation deleted" + response.data);
+    window.location.reload();
+}
+
 const fetchReservationData = async (): Promise<ReservationResponse[]> => {
     const token = localStorage.getItem("jwtToken");
     const response = await axios.get<ReservationResponse[]>(`${API_BASE_URL}/api/reservations`, {
@@ -92,9 +104,8 @@ function ReservationMng() {
                 <div className="reservation-detail">Status: {reservation.status}</div>
             </div>
             <div className="active-order-right">
-                <button onClick={() => { }} className="page-button">Edit</button>
                 <button onClick={() => { handleStatusChange(reservation.id) } } className="page-button">Change status</button>
-                <button className="page-button">Delete</button>
+                <button onClick={() => { deleteReservation(reservation.id)} } className="page-button">Delete</button>
             </div>
         </div>
     )
