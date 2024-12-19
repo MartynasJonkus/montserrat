@@ -67,7 +67,7 @@ const EmployeeManagement: React.FC = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:5282/api/employee/${employee.id}`, {
+      const response = await fetch(`http://localhost:5282/api/employees/${employee.id}`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${token}`,

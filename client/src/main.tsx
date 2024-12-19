@@ -22,6 +22,8 @@ import TaxManagement from './Catalog/TaxManagement.tsx';
 import CustomerManagement from './Catalog/CustomerManagement.tsx';
 import MerchantManagement from './Catalog/MerchantManagement.tsx';
 import EditProduct from './Catalog/EditProduct.tsx';
+import ServiceDetails from './Catalog/ServiceDetails.tsx';
+import EditService from './Catalog/EditService.tsx';
 
 
 createRoot(document.getElementById('root')!).render(
@@ -35,14 +37,20 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/payment" element={<Payment />} />
                 <Route path="/ordermanagement" element={<OrderManagement />} />
                 <Route path="/reservationmanagement" element={<ReservationManagement />} />
-                <Route path="/productmanagement" element={<ProductManagement />} /> 
+
+                <Route path="/productmanagement" element={<ProductManagement />} />
                 <Route path="/product-details/:productId" element={<ProductDetails />} />
                 <Route path="/edit-product/:productId" element={<EditProduct />} />
+
                 <Route path="/servicemanagement" element={<ServiceManagement /> } />
+                <Route path="/service-details/:serviceId" element={<ServiceDetails /> } />
+                <Route path="/edit-service/:serviceId" element={<EditService /> } />
+
+                <Route path="/taxmanagement" element={<TaxManagement /> } />
+
                 <Route path="/employeemanagement" element={<EmployeeManagement /> } />
                 <Route path="/discountmanagement" element={<DiscountManagement /> } />
                 <Route path="/giftcardmanagement" element={<GiftCardManagement /> } />
-                <Route path="/taxmanagement" element={<TaxManagement /> } />
                 <Route path="/customermanagement" element={<CustomerManagement /> } />
                 <Route path="/merchantmanagement" element={<MerchantManagement /> } />
             </Routes>

@@ -1,4 +1,5 @@
 using api.Dtos.Service;
+using api.Enums;
 using api.Interfaces.Repositories;
 using api.Interfaces.Services;
 using api.Models;
@@ -28,9 +29,9 @@ namespace api.Services
             return _mapper.Map<ServiceDto>(service);
         }
 
-        public async Task<IEnumerable<ServiceDto>> GetServicesAsync(int merchantId, string? category, int limit)
+        public async Task<IEnumerable<ServiceDto>> GetServicesAsync(int merchantId, EmployeeType employeeType, string? category, int pageNumber, int pageSize)
         {
-            var services = await _serviceRepository.GetServicesAsync(merchantId, category, limit);
+            var services = await _serviceRepository.GetServicesAsync(merchantId, employeeType, category, pageNumber, pageSize);
             return _mapper.Map<IEnumerable<ServiceDto>>(services);
         }
 

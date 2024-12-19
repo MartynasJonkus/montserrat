@@ -147,40 +147,6 @@ const TaxManagement: React.FC = () => {
     }
   }
 
-  // Delete a tax
-  const handleDeleteTax = async (taxId: number) => {
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
-    if (!token) {
-      setError("No JWT token found. Please log in.")
-      return
-    }
-
-    try {
-      const response = await fetch(`http://localhost:5282/api/taxes/${taxId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to delete tax")
-      }
-
-      fetchTaxes() // Fetch updated taxes
-      alert("Tax deleted successfully!")
-    } catch (err) {
-      if (err instanceof Error) {
-        setError(err.message)
-      } else {
-        setError("An unknown error occurred.")
-      }
-    }
-  }
-
   useEffect(() => {
     fetchTaxes()
   }, [])
@@ -280,12 +246,6 @@ const TaxManagement: React.FC = () => {
                           onClick={() => handleEditClick(tax)}
                         >
                           Edit
-                        </Button>
-                        <Button
-                          color="danger"
-                          onClick={() => handleDeleteTax(tax.id)}
-                        >
-                          Delete
                         </Button>
                       </>
                     )}
