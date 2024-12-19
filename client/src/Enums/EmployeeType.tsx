@@ -1,5 +1,5 @@
 export enum EmployeeType {
-    regular,
-    admin,
-    owner
+  regular,
+  admin,
+  owner,
 }
