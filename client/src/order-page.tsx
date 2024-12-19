@@ -183,15 +183,15 @@ function OrderPage() {
     }
 
     const handleItemAdd = (productId: number, variantId: number) => {
-        console.log(variantId+":"+productId);
+        console.log(variantId + ":" + productId);
         const productToAdd = products.find(product => product.id == productId);
 
         if (productToAdd != undefined) {
-            const existingItem = orderItems.find(item => item.id == productId);
+            const existingItem = orderItems.find(item => (/*(item.id == productId) && */(item.productVariantId == variantId)));
             if (existingItem != undefined) {
                 setOrder(prevItems =>
                     prevItems.map(item =>
-                        item.id == productId ? { ...item, quantity: item.quantity + 1 } : item
+                        (/*(item.id == productId) && */(item.productVariantId == variantId)) ? { ...item, quantity: item.quantity + 1 } : item
                     )
                 );
             }
@@ -202,7 +202,6 @@ function OrderPage() {
                         amount: productToAdd.price.amount,
                         currency: productToAdd.price.currency,
                     },
-                    //add correct variant
                     productVariantId: variantId,
                     quantity: 1,
                 }
@@ -224,7 +223,7 @@ function OrderPage() {
         const sum = orderItems.reduce((aggr, current) => aggr + (current.price.amount * current.quantity), 0);
         setSubtotal(sum);
         setTotal(subtotalAmount - discountAmount);
-    }, [discountAmount, orderItems, subtotalAmount]); 
+    }, [discountAmount, orderItems, subtotalAmount]);
 
 
     const handleSaveOrder = () => {
@@ -235,33 +234,54 @@ function OrderPage() {
             createOrder(orderItems);
         }
     }
-    
+
+    const handleItemPrice = (item: Item) => {
+        const price = products.find(product => product.id == item.id)?.productVariants.find(variant => variant.id == item.productVariantId)?.additionalPrice
+
+        if (price != undefined) {
+            return item.price.amount + price;
+        }
+        return item.price.amount;
+
+    }
+
+
     const itemList = orderItems.map(item =>
         <>
             <hr />
             <div className="order-product">
                 <div id="order-product-amount">x{item.quantity}</div>
                 <div id="order-product-name">ID: {item.productVariantId}</div>
-                <div id="order-product-price">${item.price.amount}</div>
+                <div id="order-product-price">${handleItemPrice(item)}</div>
                 <ImCross onClick={() => handleItemRemove(item.id)} />
             </div>
         </>
     );
 
-    const [selectedValues, setSelectedValues] = useState(0);
+    //const [selectedValues, setSelectedValues] = useState(0);
+
+    //const productList = products.map(product =>
+    //    <div className="item">
+    //        <div className="item-name">{product.title} <FaRegPlusSquare onClick={() => handleItemAdd(product.id, selectedValues)} /></div>
+    //        <div className="item-price">${product.price.amount}</div>
+    //        <select value={selectedValues} onChange={(e) => setSelectedValues(parseInt(e.target.value))}>
+    //            <option value="">-</option>
+    //            {product.productVariants.reverse().map(variant =>
+    //                <option value={variant.id}>{variant.title} +${variant.additionalPrice}</option>
+    //            )}
+    //        </select>
+    //    </div>
+    //);
 
     const productList = products.map(product =>
-        <div className="item">
-            <div className="item-name">{product.title} <FaRegPlusSquare onClick={() => handleItemAdd(product.id, selectedValues)} /></div>
-            <div className="item-price">${product.price.amount}</div>
-            <select value={selectedValues} onChange={(e) => setSelectedValues(parseInt(e.target.value))}>
-                <option value="">-</option>
-                {product.productVariants.reverse().map(variant =>
-                    <option value={variant.id}>{variant.title} +${variant.additionalPrice}</option>
-                )}
-            </select>
-        </div>
+        product.productVariants.reverse().map(variant =>
+            <div className="item">
+                <div className="item-name">{product.title} {variant.title} <FaRegPlusSquare onClick={() => handleItemAdd(product.id, variant.id)} /></div>
+                <div className="item-price">${product.price.amount + variant.additionalPrice}</div>
+            </div>
+        )
     );
+
 
     return (
         <>
@@ -274,7 +294,6 @@ function OrderPage() {
                     </div>
                     <div id="order-details">
                         <div id="order-top"><b>CURRENT ORDER</b></div>
-                        {/*this list need a way to remove items*/}
                         {itemList}
                     </div>
                     <div id="order-price">
