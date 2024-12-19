@@ -31,6 +31,6 @@ button:hover {
 }
 
 .page-content {
-  margin-top: 60px;
-  padding: 20px;
+    margin-top: 60px;
+    height: 100%;
 }
