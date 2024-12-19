@@ -56,6 +56,7 @@ const ServiceDetails: React.FC = () => {
     if (serviceId) {
       fetchServiceDetails()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serviceId])
 
   const handleBackToServices = () => {

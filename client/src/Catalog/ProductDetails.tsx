@@ -53,6 +53,7 @@ const ProductDetails: React.FC = () => {
     if (productId) {
       fetchProductDetails()
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productId])
 
   const handleBackToProducts = () => {

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 
 interface Customer {
   id: number;
@@ -42,8 +41,12 @@ const CustomerManagement: React.FC = () => {
 
       const data = await response.json();
       setCustomers(data);
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
   };
 
@@ -78,8 +81,12 @@ const CustomerManagement: React.FC = () => {
       fetchCustomers(); // Fetch updated list of customers
       setEditableCustomer(null); // Stop editing mode
       alert('Customer updated successfully!');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
   };
 
@@ -127,8 +134,12 @@ const CustomerManagement: React.FC = () => {
 
       fetchCustomers(); // Fetch updated list of customers
       alert('Customer added successfully!');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
   };
 
@@ -156,8 +167,12 @@ const CustomerManagement: React.FC = () => {
 
       fetchCustomers(); // Fetch updated list of customers
       alert('Customer deleted successfully!');
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
   };
 

@@ -12,6 +12,7 @@ import {
 import { Employee, CreateEmployeeDto } from "../Interfaces/Employee"
 import { Status } from "../Enums/Status"
 import TopNav from "../top-nav"
+import { EmployeeType } from "../Enums/EmployeeType"
 
 const EmployeeManagement: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([])
@@ -114,6 +115,7 @@ const EmployeeManagement: React.FC = () => {
 
   useEffect(() => {
     fetchEmployees()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNumber])
 
   return (
@@ -143,15 +145,12 @@ const EmployeeManagement: React.FC = () => {
                   <td>{employee.id}</td>
                   <td>{employee.firstName}</td>
                   <td>{employee.lastName}</td>
-                  <td>{employee.employeeType}</td>
+                  <td>{EmployeeType[employee.employeeType]}</td>
                   <td>{employee.username}</td>
                   <td>{Status[employee.status]}</td>
                   <td>
-                    <Button size="sm" color="primary" className="me-2">
-                      Edit
-                    </Button>
-                    <Button size="sm" color="danger">
-                      Delete
+                    <Button size="sm" color="info">
+                      View details
                     </Button>
                   </td>
                 </tr>

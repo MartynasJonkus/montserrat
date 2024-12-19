@@ -37,6 +37,7 @@ const EditService: React.FC = () => {
     fetchTaxes()
     fetchDiscounts()
     fetchEmployees()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [serviceId])
 
   const fetchServiceDetails = async () => {

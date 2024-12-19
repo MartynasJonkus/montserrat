@@ -48,6 +48,7 @@ const EditProduct: React.FC = () => {
     fetchCategories()
     fetchTaxes()
     fetchDiscounts()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [productId])
 
   const fetchProductDetails = async () => {

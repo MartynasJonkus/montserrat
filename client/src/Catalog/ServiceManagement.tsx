@@ -128,6 +128,7 @@ const ServiceManagement: React.FC = () => {
 
   useEffect(() => {
     fetchServices();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNumber]);
 
   return (

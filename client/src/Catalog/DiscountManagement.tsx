@@ -1,34 +1,37 @@
-import React, { useState, useEffect } from "react";
-import { Container, Button, Table } from "reactstrap";
-import TopNav from "../top-nav";
-import { Status } from "../Enums/Status";
-import { Discount, CreateDiscountDto } from "../Interfaces/Discount";
+import React, { useState, useEffect } from "react"
+import { Container, Button, Table } from "reactstrap"
+import TopNav from "../top-nav"
+import { Status } from "../Enums/Status"
+import { Discount, CreateDiscountDto } from "../Interfaces/Discount"
 
 const DiscountManagement: React.FC = () => {
-  const [discounts, setDiscounts] = useState<Discount[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [editableDiscount, setEditableDiscount] = useState<Discount | null>(null);
+  const [discounts, setDiscounts] = useState<Discount[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [editableDiscount, setEditableDiscount] = useState<Discount | null>(
+    null
+  )
 
   const [newDiscount, setNewDiscount] = useState<CreateDiscountDto>({
     title: "",
     percentage: 0,
-    expiresOn: "", 
-    status: Status.Active, 
-  });
+    expiresOn: "",
+    status: Status.Active,
+  })
 
   // Function to set time to 00:00:00.000 and adjust to UTC
   const normalizeDateToUTC = (date: string): string => {
-    const d = new Date(date);
-    d.setUTCHours(0, 0, 0, 0); // Set time to 00:00:00.000 UTC
-    return d.toISOString(); // Returns date in ISO format (UTC)
-  };
+    const d = new Date(date)
+    d.setUTCHours(0, 0, 0, 0) // Set time to 00:00:00.000 UTC
+    return d.toISOString() // Returns date in ISO format (UTC)
+  }
 
   // Fetch Discounts
   const fetchDiscounts = async () => {
-    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+    const token =
+      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
-      setError("No JWT token found. Please log in.");
-      return;
+      setError("No JWT token found. Please log in.")
+      return
     }
 
     try {
@@ -37,78 +40,94 @@ const DiscountManagement: React.FC = () => {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
         },
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to fetch discounts");
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to fetch discounts")
       }
 
-      const data: Discount[] = await response.json();
-      setDiscounts(data);
-    } catch (err: any) {
-      setError(err.message);
+      const data: Discount[] = await response.json()
+      setDiscounts(data)
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
-  };
+  }
 
   // Edit Discount
   const handleEditClick = (discount: Discount) => {
-    setEditableDiscount(discount);
-  };
+    setEditableDiscount(discount)
+  }
 
   // Save Edited Discount
   const handleSaveDiscount = async () => {
-    if (!editableDiscount) return;
+    if (!editableDiscount) return
 
-    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+    const token =
+      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
-      setError("No JWT token found. Please log in.");
-      return;
+      setError("No JWT token found. Please log in.")
+      return
     }
 
     try {
       // Normalize the expiresOn date before sending it to the backend
-      const normalizedDate = normalizeDateToUTC(editableDiscount.expiresOn);
-      const response = await fetch(`http://localhost:5282/api/discounts/${editableDiscount.id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...editableDiscount, expiresOn: normalizedDate }),
-      });
+      const normalizedDate = normalizeDateToUTC(editableDiscount.expiresOn)
+      const response = await fetch(
+        `http://localhost:5282/api/discounts/${editableDiscount.id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            ...editableDiscount,
+            expiresOn: normalizedDate,
+          }),
+        }
+      )
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to save discount");
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to save discount")
       }
 
-      fetchDiscounts();
-      setEditableDiscount(null);
-      alert("Discount updated successfully!");
-    } catch (err: any) {
-      setError(err.message);
+      fetchDiscounts()
+      setEditableDiscount(null)
+      alert("Discount updated successfully!")
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
-  };
+  }
 
   // Cancel Edit
   const handleCancelEdit = () => {
-    setEditableDiscount(null);
-  };
+    setEditableDiscount(null)
+  }
 
   // Add Discount
   const handleAddDiscountSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+    const token =
+      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
-      setError("No JWT token found. Please log in.");
-      return;
+      setError("No JWT token found. Please log in.")
+      return
     }
 
     try {
       // Normalize the expiresOn date before sending it to the backend
-      const normalizedDate = normalizeDateToUTC(newDiscount.expiresOn);
+      const normalizedDate = normalizeDateToUTC(newDiscount.expiresOn)
       const response = await fetch("http://localhost:5282/api/discounts", {
         method: "POST",
         headers: {
@@ -116,55 +135,72 @@ const DiscountManagement: React.FC = () => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ ...newDiscount, expiresOn: normalizedDate }),
-      });
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to add discount");
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to add discount")
       }
 
       // Reset newDiscount after successful addition
-      setNewDiscount({ title: "", percentage: 0, expiresOn: "", status: Status.Active });
-      fetchDiscounts();
-      alert("Discount added successfully!");
-    } catch (err: any) {
-      setError(err.message);
+      setNewDiscount({
+        title: "",
+        percentage: 0,
+        expiresOn: "",
+        status: Status.Active,
+      })
+      fetchDiscounts()
+      alert("Discount added successfully!")
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
-  };
+  }
 
   // Delete Discount
   const handleDeleteDiscount = async (discountId: number) => {
-    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken");
+    const token =
+      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
-      setError("No JWT token found. Please log in.");
-      return;
+      setError("No JWT token found. Please log in.")
+      return
     }
 
     try {
-      const response = await fetch(`http://localhost:5282/api/discounts/${discountId}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `http://localhost:5282/api/discounts/${discountId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Failed to delete discount");
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to delete discount")
       }
 
-      fetchDiscounts();
-      alert("Discount deleted successfully!");
-    } catch (err: any) {
-      setError(err.message);
+      fetchDiscounts()
+      alert("Discount deleted successfully!")
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
+      }
     }
-  };
+  }
 
   // UseEffect to fetch discounts on component mount
   useEffect(() => {
-    fetchDiscounts();
-  }, []);
+    fetchDiscounts()
+  }, [])
 
   return (
     <div>
@@ -195,7 +231,10 @@ const DiscountManagement: React.FC = () => {
                         type="text"
                         value={editableDiscount.title}
                         onChange={(e) =>
-                          setEditableDiscount({ ...editableDiscount, title: e.target.value })
+                          setEditableDiscount({
+                            ...editableDiscount,
+                            title: e.target.value,
+                          })
                         }
                       />
                     ) : (
@@ -249,10 +288,16 @@ const DiscountManagement: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <Button color="warning" onClick={() => handleEditClick(discount)}>
+                        <Button
+                          color="warning"
+                          onClick={() => handleEditClick(discount)}
+                        >
                           Edit
                         </Button>
-                        <Button color="danger" onClick={() => handleDeleteDiscount(discount.id)}>
+                        <Button
+                          color="danger"
+                          onClick={() => handleDeleteDiscount(discount.id)}
+                        >
                           Delete
                         </Button>
                       </>
@@ -274,7 +319,9 @@ const DiscountManagement: React.FC = () => {
             <input
               type="text"
               value={newDiscount.title}
-              onChange={(e) => setNewDiscount({ ...newDiscount, title: e.target.value })}
+              onChange={(e) =>
+                setNewDiscount({ ...newDiscount, title: e.target.value })
+              }
             />
           </div>
           <div>
@@ -283,7 +330,10 @@ const DiscountManagement: React.FC = () => {
               type="number"
               value={newDiscount.percentage}
               onChange={(e) =>
-                setNewDiscount({ ...newDiscount, percentage: parseFloat(e.target.value) })
+                setNewDiscount({
+                  ...newDiscount,
+                  percentage: parseFloat(e.target.value),
+                })
               }
             />
           </div>
@@ -292,7 +342,10 @@ const DiscountManagement: React.FC = () => {
             <select
               value={newDiscount.status}
               onChange={(e) =>
-                setNewDiscount({ ...newDiscount, status: parseInt(e.target.value) })
+                setNewDiscount({
+                  ...newDiscount,
+                  status: parseInt(e.target.value),
+                })
               }
             >
               <option value={Status.Active}>Active</option>
@@ -305,7 +358,9 @@ const DiscountManagement: React.FC = () => {
             <input
               type="date"
               value={newDiscount.expiresOn}
-              onChange={(e) => setNewDiscount({ ...newDiscount, expiresOn: e.target.value })}
+              onChange={(e) =>
+                setNewDiscount({ ...newDiscount, expiresOn: e.target.value })
+              }
             />
           </div>
           <Button type="submit" color="primary">
@@ -314,8 +369,7 @@ const DiscountManagement: React.FC = () => {
         </form>
       </Container>
     </div>
-  );
-};
+  )
+}
 
-export default DiscountManagement;
-
+export default DiscountManagement
