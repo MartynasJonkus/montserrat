@@ -1,349 +1,273 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-
-interface Employee {
-  id: number;
-  firstName: string;
-  lastName: string;
-  employeeType: number;
-  username: string;
-  password: string;
-  status: number;
-}
+import React, { useState, useEffect } from "react"
+import {
+  Table,
+  Button,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Alert,
+  Container,
+} from "reactstrap"
+import { Employee, CreateEmployeeDto } from "../Interfaces/Employee"
+import { Status } from "../Enums/Status"
+import TopNav from "../top-nav"
 
 const EmployeeManagement: React.FC = () => {
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [editableEmployee, setEditableEmployee] = useState<Employee | null>(null);
-
-  const [newEmployee, setNewEmployee] = useState({
-    firstName: '',
-    lastName: '',
+  const [employees, setEmployees] = useState<Employee[]>([])
+  const [error, setError] = useState<string | null>(null)
+  const [newEmployee, setNewEmployee] = useState<CreateEmployeeDto>({
+    firstName: "",
+    lastName: "",
     employeeType: 0,
-    username: '',
-    password: '',
+    username: "",
+    password: "",
     status: 0,
-  });
+  })
 
-  // Fetch the list of employees
+  const [pageNumber, setPageNumber] = useState(1)
+  const [pageSize] = useState(10)
+
   const fetchEmployees = async () => {
-    const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+    const token =
+      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
-      setError('No JWT token found. Please log in.');
-      return;
+      setError("No JWT token found. Please log in.")
+      return
     }
 
     try {
-      const response = await fetch('http://localhost:5282/api/employee', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
+      const response = await fetch(
+        `http://localhost:5282/api/employees?pageNumber=${pageNumber}&pageSize=${pageSize}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch employees');
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to fetch employees")
       }
 
-      const data = await response.json();
-      setEmployees(data);
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  // Handle the start of editing an employee's details
-  const handleEditClick = (employee: Employee) => {
-    setEditableEmployee(employee); // Set the employee to be edited
-  };
-
-  // Handle submitting the updated employee form
-  const handleSaveEmployee = async (employee: Employee) => {
-    const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
-    if (!token) {
-      setError('No JWT token found. Please log in.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`http://localhost:5282/api/employees/${employee.id}`, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(employee),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to save employee');
+      const data = await response.json()
+      setEmployees(data)
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
       }
-
-      fetchEmployees(); // Fetch updated list of employees
-      setEditableEmployee(null); // Stop editing mode
-      alert('Employee updated successfully!');
-    } catch (err: any) {
-      setError(err.message);
     }
-  };
+  }
 
-  // Handle canceling the edit
-  const handleCancelEdit = () => {
-    setEditableEmployee(null); // Cancel editing
-  };
-
-  // Handle submitting the new employee form
   const handleAddEmployeeSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+    const token =
+      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
-      setError('No JWT token found. Please log in.');
-      return;
+      setError("No JWT token found. Please log in.")
+      return
     }
 
-    const newEmployeeData = {
-      firstName: newEmployee.firstName,
-      lastName: newEmployee.lastName,
-      employeeType: newEmployee.employeeType,
-      username: newEmployee.username,
-      password: newEmployee.password,
-      status: newEmployee.status,
-    };
-
     try {
-      const response = await fetch('http://localhost:5282/api/employee', {
-        method: 'POST',
+      const response = await fetch("http://localhost:5282/api/employees", {
+        method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify(newEmployeeData),
-      });
+        body: JSON.stringify(newEmployee),
+      })
 
       if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add employee');
+        const errorData = await response.json()
+        throw new Error(errorData.message || "Failed to add employee")
       }
 
       setNewEmployee({
-        firstName: '',
-        lastName: '',
+        firstName: "",
+        lastName: "",
         employeeType: 0,
-        username: '',
-        password: '',
+        username: "",
+        password: "",
         status: 0,
-      });
+      })
 
-      fetchEmployees(); // Fetch updated list of employees
-      alert('Employee added successfully!');
-    } catch (err: any) {
-      setError(err.message);
-    }
-  };
-
-  // Handle deleting an employee
-  const handleDeleteEmployee = async (employeeId: number) => {
-    const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
-    if (!token) {
-      setError('No JWT token found. Please log in.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`http://localhost:5282/api/employee/${employeeId}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete employee');
+      fetchEmployees()
+      alert("Employee added successfully!")
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message)
+      } else {
+        setError("An unknown error occurred.")
       }
-
-      fetchEmployees(); // Fetch updated list of employees
-      alert('Employee deleted successfully!');
-    } catch (err: any) {
-      setError(err.message);
     }
-  };
+  }
 
-  // UseEffect to fetch employees on component mount
+  const handlePageChange = (newPageNumber: number) => {
+    setPageNumber(newPageNumber)
+  }
+
   useEffect(() => {
-    fetchEmployees();
-  }, []);
+    fetchEmployees()
+  }, [pageNumber])
 
   return (
     <div>
-      <h1>Employee List</h1>
-      {error && <p style={{ color: 'red' }}>{error}</p>}
+      <TopNav />
+      <Container>
+        <h1 className="mt-4">Employee Management</h1>
 
-      {/* Employee List */}
-      {employees.length > 0 ? (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>First Name</th>
-              <th>Last Name</th>
-              <th>Employee Type</th>
-              <th>Username</th>
-              <th>Password</th>
-              <th>Status</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {employees.map((employee) => (
-              <tr key={employee.id}>
-                <td>{employee.id}</td>
-                <td>
-                  {editableEmployee?.id === employee.id ? (
-                    <input
-                      type="text"
-                      value={editableEmployee.firstName}
-                      onChange={(e) => setEditableEmployee({ ...editableEmployee, firstName: e.target.value })}
-                    />
-                  ) : (
-                    employee.firstName
-                  )}
-                </td>
-                <td>
-                  {editableEmployee?.id === employee.id ? (
-                    <input
-                      type="text"
-                      value={editableEmployee.lastName}
-                      onChange={(e) => setEditableEmployee({ ...editableEmployee, lastName: e.target.value })}
-                    />
-                  ) : (
-                    employee.lastName
-                  )}
-                </td>
-                <td>
-                  {editableEmployee?.id === employee.id ? (
-                    <input
-                      type="number"
-                      value={editableEmployee.employeeType}
-                      onChange={(e) => setEditableEmployee({ ...editableEmployee, employeeType: parseInt(e.target.value) })}
-                    />
-                  ) : (
-                    employee.employeeType
-                  )}
-                </td>
-                <td>
-                  {editableEmployee?.id === employee.id ? (
-                    <input
-                      type="text"
-                      value={editableEmployee.username}
-                      onChange={(e) => setEditableEmployee({ ...editableEmployee, username: e.target.value })}
-                    />
-                  ) : (
-                    employee.username
-                  )}
-                </td>
-                <td>
-                  {editableEmployee?.id === employee.id ? (
-                    <input
-                      type="text"
-                      value={editableEmployee.password}
-                      onChange={(e) => setEditableEmployee({ ...editableEmployee, password: e.target.value })}
-                    />
-                  ) : (
-                    employee.password
-                  )}
-                </td>
-                <td>
-                  {editableEmployee?.id === employee.id ? (
-                    <input
-                      type="number"
-                      value={editableEmployee.status}
-                      onChange={(e) => setEditableEmployee({ ...editableEmployee, status: parseInt(e.target.value) })}
-                    />
-                  ) : (
-                    employee.status
-                  )}
-                </td>
-                <td>
-                  {editableEmployee?.id === employee.id ? (
-                    <>
-                      <button onClick={() => handleSaveEmployee(editableEmployee)}>Save</button>
-                      <button onClick={handleCancelEdit}>Cancel</button>
-                    </>
-                  ) : (
-                    <>
-                      <button onClick={() => handleEditClick(employee)}>Edit</button>
-                      <button onClick={() => handleDeleteEmployee(employee.id)}>Delete</button>
-                    </>
-                  )}
-                </td>
+        {error && <Alert color="danger">{error}</Alert>}
+
+        {employees.length > 0 ? (
+          <Table striped className="mt-4">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Type</th>
+                <th>Username</th>
+                <th>Status</th>
+                <th>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p>No employees found.</p>
-      )}
+            </thead>
+            <tbody>
+              {employees.map((employee) => (
+                <tr key={employee.id}>
+                  <td>{employee.id}</td>
+                  <td>{employee.firstName}</td>
+                  <td>{employee.lastName}</td>
+                  <td>{employee.employeeType}</td>
+                  <td>{employee.username}</td>
+                  <td>{Status[employee.status]}</td>
+                  <td>
+                    <Button size="sm" color="primary" className="me-2">
+                      Edit
+                    </Button>
+                    <Button size="sm" color="danger">
+                      Delete
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        ) : (
+          <Alert color="info" className="mt-4">
+            No employees found.
+          </Alert>
+        )}
 
-      {/* Add Employee Form */}
-      <h2>Add New Employee</h2>
-      <form onSubmit={handleAddEmployeeSubmit}>
-        <div>
-          <label>First Name:</label>
-          <input
-            type="text"
-            value={newEmployee.firstName}
-            onChange={(e) => setNewEmployee({ ...newEmployee, firstName: e.target.value })}
-          />
+        <div className="mt-4">
+          <p>Page {pageNumber}</p>
+          <Button
+            color="secondary"
+            onClick={() => handlePageChange(pageNumber - 1)}
+            disabled={pageNumber === 1}
+          >
+            Previous
+          </Button>{" "}
+          <Button
+            color="secondary"
+            onClick={() => handlePageChange(pageNumber + 1)}
+          >
+            Next
+          </Button>
         </div>
-        <div>
-          <label>Last Name:</label>
-          <input
-            type="text"
-            value={newEmployee.lastName}
-            onChange={(e) => setNewEmployee({ ...newEmployee, lastName: e.target.value })}
-          />
-        </div>
-        <div>
-          <label>Employee Type:</label>
-          <input
-            type="number"
-            value={newEmployee.employeeType}
-            onChange={(e) => setNewEmployee({ ...newEmployee, employeeType: parseInt(e.target.value) })}
-          />
-        </div>
-        <div>
-          <label>Username:</label>
-          <input
-            type="text"
-            value={newEmployee.username}
-            onChange={(e) => setNewEmployee({ ...newEmployee, username: e.target.value })}
-          />
-        </div>
-        <div>
-          <label>Password:</label>
-          <input
-            type="text"
-            value={newEmployee.password}
-            onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
-          />
-        </div>
-        <div>
-          <label>Status:</label>
-          <input
-            type="number"
-            value={newEmployee.status}
-            onChange={(e) => setNewEmployee({ ...newEmployee, status: parseInt(e.target.value) })}
-          />
-        </div>
-        <button type="submit">Add Employee</button>
-      </form>
+
+        <Form className="mt-4" onSubmit={handleAddEmployeeSubmit}>
+          <h2>Add New Employee</h2>
+          <FormGroup>
+            <Label for="firstName">First Name</Label>
+            <Input
+              type="text"
+              id="firstName"
+              value={newEmployee.firstName}
+              onChange={(e) =>
+                setNewEmployee({ ...newEmployee, firstName: e.target.value })
+              }
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="lastName">Last Name</Label>
+            <Input
+              type="text"
+              id="lastName"
+              value={newEmployee.lastName}
+              onChange={(e) =>
+                setNewEmployee({ ...newEmployee, lastName: e.target.value })
+              }
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="employeeType">Employee Type</Label>
+            <Input
+              type="number"
+              id="employeeType"
+              value={newEmployee.employeeType}
+              onChange={(e) =>
+                setNewEmployee({
+                  ...newEmployee,
+                  employeeType: parseInt(e.target.value, 10),
+                })
+              }
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="username">Username</Label>
+            <Input
+              type="text"
+              id="username"
+              value={newEmployee.username}
+              onChange={(e) =>
+                setNewEmployee({ ...newEmployee, username: e.target.value })
+              }
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="password">Password</Label>
+            <Input
+              type="password"
+              id="password"
+              value={newEmployee.password}
+              onChange={(e) =>
+                setNewEmployee({ ...newEmployee, password: e.target.value })
+              }
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="status">Status</Label>
+            <Input
+              type="select"
+              id="status"
+              value={newEmployee.status}
+              onChange={(e) =>
+                setNewEmployee({
+                  ...newEmployee,
+                  status: parseInt(e.target.value, 10),
+                })
+              }
+            >
+              {Object.entries(Status).map(([key, value]) => (
+                <option key={value} value={value}>
+                  {key}
+                </option>
+              ))}
+            </Input>
+          </FormGroup>
+          <Button color="primary" type="submit">
+            Add Employee
+          </Button>
+        </Form>
+      </Container>
     </div>
-  );
-};
+  )
+}
 
-export default EmployeeManagement;
+export default EmployeeManagement
