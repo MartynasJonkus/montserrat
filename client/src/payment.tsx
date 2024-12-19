@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { GoArrowLeft } from "react-icons/go";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-import TopNav from "./top-nav.tsx";
 import "./payment.css";
 
 const API_BASE_URL = "http://localhost:5282";
@@ -272,8 +271,6 @@ function Payment() {
 
     return (
         <>
-            <TopNav />
-
             <div id="payment-container">
                 <div id="payment-container-top">
                     <div id="payment-title">
