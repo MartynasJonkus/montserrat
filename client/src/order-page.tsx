@@ -1,6 +1,6 @@
 import { FaRegPlusSquare } from "react-icons/fa";
 import { useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ImCross } from "react-icons/im";
 import TopNav from './top-nav.tsx';
 import './order-page.css';
@@ -53,100 +53,6 @@ interface ProductResponse {
         status: number;
     }]
 }
-
-const fetchOrderItems = async (orderId: number): Promise<Item[]> => {
-    const token = localStorage.getItem("jwtToken");
-    const response = await axios.get<OrderResponse>(`${API_BASE_URL}/api/orders/${orderId}`, {
-        params: {
-            orderId,
-        },
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    console.log(response.data);
-    return response.data.orderItems.map((item) => ({
-        id: item.id,
-        price: {
-            amount: item.price.amount,
-            currency: item.price.currency,
-        },
-        productVariantId: item.productVariantId,
-        quantity: item.quantity,
-    }));
-}
-
-const fetchProducts = async (pageNumber: number, pageSize: number): Promise<ProductResponse[]> => {
-    const token = localStorage.getItem("jwtToken");
-    const response = await axios.get<ProductResponse[]>(`${API_BASE_URL}/api/products`, {
-        params: {
-            pageNumber,
-            pageSize,
-        },
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    console.log(response.data);
-    return response.data;
-}
-
-const saveOrder = async (orderId: number, orderItems: Item[]): Promise<void> => {
-
-    const token = localStorage.getItem("jwtToken");
-    const orderResponse = await axios.get<OrderResponse>(`${API_BASE_URL}/api/orders/${orderId}`, {
-        params: {
-            orderId,
-        },
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-    console.log(orderResponse.data);
-
-    console.log(JSON.stringify(orderItems));
-    const data = {
-        orderDiscountId: orderResponse.data.orderDiscountId,
-        status: orderResponse.data.status,
-        orderItems: orderItems.map((item) => ({
-            productVariantId: item.productVariantId,
-            quantity: item.quantity,
-        }))
-    }
-
-    console.log(JSON.stringify(data));
-    const updateResponse = await axios.put<void>(`${API_BASE_URL}/api/orders/${orderId}`, data, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    console.log("order status updated" + updateResponse.data);
-    window.location.reload();
-}
-
-const createOrder = async (orderItems: Item[]): Promise<void> => {
-    const token = localStorage.getItem("jwtToken");
-
-    const data = {
-        orderItems: orderItems.map(item => ({
-            productVariantId: item.productVariantId,
-            quantity: item.quantity,
-        }))
-    };
-    console.log(JSON.stringify(data));
-
-    const response = await axios.post<void>(`${API_BASE_URL}/api/orders`, data, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
-
-    console.log("order created" + response.data);
-}
-
 function OrderPage() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -159,28 +65,46 @@ function OrderPage() {
     const [discountAmount, setDiscount] = useState(0);
     const [totalAmount, setTotal] = useState(0);
 
+    const isFirstRender = useRef(true);
+
     useEffect(() => {
-        if (orderId != undefined) handleFetchOrderById();
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        if (orderId != undefined) {
+            const handleFetchOrderById = async () => {
+                try {
+                    const data = await fetchOrderItems(orderId);
+                    setOrder(data);
+                } catch (err) {
+                    console.error(err);
+                }
+            }
+            handleFetchOrderById();
+        }
+        const handleFetchProducts = async () => {
+            try {
+                setProduct([]);
+                let i = 1;
+                while (true) {
+                    const data = await fetchProducts(i, 100);
+                    if (data.length == 0) break;
+                    i++;
+                    setProduct(prevItems => [...prevItems, ...data]);
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
         handleFetchProducts();
+        return;
     }, []);
 
-    const handleFetchOrderById = async () => {
-        try {
-            const data = await fetchOrderItems(orderId);
-            setOrder(data);
-        } catch (err) {
-            console.error(err);
-        }
-    }
-    const handleFetchProducts = async () => {
-        try {
-            const data = await fetchProducts(1, 10);
-            setProduct(data);
 
-        } catch (err) {
-            console.error(err);
-        }
-    }
+
 
     const handleItemAdd = (productId: number, variantId: number) => {
         console.log(variantId + ":" + productId);
@@ -245,6 +169,94 @@ function OrderPage() {
 
     }
 
+    const fetchOrderItems = async (orderId: number): Promise<Item[]> => {
+        const token = localStorage.getItem("jwtToken");
+        const response = await axios.get<OrderResponse>(`${API_BASE_URL}/api/orders/${orderId}`, {
+            params: {
+                orderId,
+            },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        console.log(response.data);
+        return response.data.orderItems.map((item) => ({
+            id: item.id,
+            price: {
+                amount: item.price.amount,
+                currency: item.price.currency,
+            },
+            productVariantId: item.productVariantId,
+            quantity: item.quantity,
+        }));
+    }
+
+    const fetchProducts = async (pageNumber: number, pageSize: number): Promise<ProductResponse[]> => {
+        const token = localStorage.getItem("jwtToken");
+        const response = await axios.get<ProductResponse[]>(`${API_BASE_URL}/api/products?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        console.log(response.data);
+        return response.data;
+    }
+
+    const saveOrder = async (orderId: number, orderItems: Item[]): Promise<void> => {
+
+        const token = localStorage.getItem("jwtToken");
+        const orderResponse = await axios.get<OrderResponse>(`${API_BASE_URL}/api/orders/${orderId}`, {
+            params: {
+                orderId,
+            },
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        console.log(orderResponse.data);
+
+        console.log(JSON.stringify(orderItems));
+        const data = {
+            orderDiscountId: orderResponse.data.orderDiscountId,
+            status: orderResponse.data.status,
+            orderItems: orderItems.map((item) => ({
+                productVariantId: item.productVariantId,
+                quantity: item.quantity,
+            }))
+        }
+
+        console.log(JSON.stringify(data));
+        const updateResponse = await axios.put<void>(`${API_BASE_URL}/api/orders/${orderId}`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        console.log("order status updated" + updateResponse.data);
+        window.location.reload();
+    }
+
+    const createOrder = async (orderItems: Item[]): Promise<void> => {
+        const token = localStorage.getItem("jwtToken");
+
+        const data = {
+            orderItems: orderItems.map(item => ({
+                productVariantId: item.productVariantId,
+                quantity: item.quantity,
+            }))
+        };
+        console.log(JSON.stringify(data));
+
+        const response = await axios.post<void>(`${API_BASE_URL}/api/orders`, data, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+
+        console.log("order created" + response.data);
+    }
 
     const itemList = orderItems.map(item =>
         <>
