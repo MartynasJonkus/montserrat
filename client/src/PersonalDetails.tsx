@@ -93,6 +93,7 @@ const PersonalDetails: React.FC = () => {
   // Handle logout
   const handleLogout = () => {
     localStorage.removeItem("jwtToken")
+    localStorage.removeItem("employeeType")
     sessionStorage.removeItem("jwtToken")
     window.location.href = "/" // Redirect to login page after logout
   }
