@@ -170,7 +170,7 @@ const MerchantManagement: React.FC = () => {
   return (
     <div>
       <Container>
-        <h1>Merchant Management</h1>
+        <h1 className="mt-4">Merchant Management</h1>
         {error && <Alert color="danger">{error}</Alert>}
 
         {/* Merchant List */}

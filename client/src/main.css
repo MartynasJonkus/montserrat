@@ -22,15 +22,12 @@ button:hover {
   flex-direction: column;
 }
 
-#top-nav {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  background-color: #fff;
-  z-index: 1000;
+.nav-item:hover {
+  background-color: #616161;
+  color: #ffffff;
+  cursor: pointer;
 }
 
-.page-content {
-    margin-top: 60px;
-    height: 100%;
+.nav-link {
+  color: #ffffff;
 }

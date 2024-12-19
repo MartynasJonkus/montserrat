@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import TopNav from "./top-nav";
+import TopNav from "./TopNav";
 
 const MainLayout = () => {
   return (
