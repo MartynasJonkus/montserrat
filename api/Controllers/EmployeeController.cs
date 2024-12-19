@@ -16,6 +16,21 @@ namespace api.Controllers
             _employeeService = employeeService;
         }
 
+        [HttpGet("my-info")]
+        public async Task<IActionResult> GetMyInfo()
+        {
+            var userIdClaim = User.FindFirst("UserId");
+
+            if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var userId))
+                return Unauthorized("UserId is missing in the token.");
+
+            var employeeDto = await _employeeService.GetEmployeeAsync(userId);
+            if (employeeDto == null)
+                return NotFound(new { message = "Employee not found." });
+
+            return Ok(employeeDto);
+        }
+
         [HttpGet("{id}")]
         public async Task<IActionResult> GetEmployee(int id)
         {

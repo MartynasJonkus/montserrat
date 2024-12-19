@@ -27,6 +27,7 @@ import EditService from './Catalog/EditService.tsx';
 import EmployeeDetails from './Catalog/EmployeeDetails.tsx';
 import EditEmployee from './Catalog/EditEmployee.tsx';
 import OrderDiscountManagement from './Catalog/OrderDiscountManagement.tsx';
+import PersonalDetails from './PersonalDetails.tsx';
 
 
 
@@ -35,6 +36,7 @@ createRoot(document.getElementById('root')!).render(
         <Router>
             <Routes>
                 <Route path="/" element={<LoginPage />} />
+                <Route path="/personaldetails" element={<PersonalDetails />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/ordercreation" element={<OrderPage />} />
                 <Route path="/reservationcreation" element={<ReservationPage />} />
@@ -55,11 +57,11 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/employeemanagement" element={<EmployeeManagement /> } />
                 <Route path="/employee-details/:employeeId" element={<EmployeeDetails /> } />
                 <Route path="/edit-employee/:employeeId" element={<EditEmployee /> } />
+                <Route path="/merchantmanagement" element={<MerchantManagement /> } />
                 
                 <Route path="/discountmanagement" element={<DiscountManagement /> } />
                 <Route path="/giftcardmanagement" element={<GiftCardManagement /> } />
                 <Route path="/customermanagement" element={<CustomerManagement /> } />
-                <Route path="/merchantmanagement" element={<MerchantManagement /> } />
                 <Route path="/orderdiscountmanagement" element={<OrderDiscountManagement /> } />
             </Routes>
         </Router>

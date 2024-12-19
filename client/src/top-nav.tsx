@@ -7,13 +7,6 @@ function TopNav() {
     <>
       <div id="top-nav">
         <div id="top-nav-left">
-          <div id="dropdown-menu">
-            <div className="circle" />
-            <div id="dropdown-content">
-              <p>Employee details</p>
-            </div>
-          </div>
-
           <button
             onClick={() => navigate("/dashboard")}
             className="page-button"
@@ -93,7 +86,14 @@ function TopNav() {
                 Customer management
               </button>
             </div>
+            
           </div>
+          <button
+                onClick={() => navigate("/personaldetails")}
+                className="page-button"
+              >
+                My Details
+              </button>
         </div>
       </div>
     </>
