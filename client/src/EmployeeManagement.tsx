@@ -12,12 +12,11 @@ interface Employee {
 }
 
 const EmployeeManagement: React.FC = () => {
-  const [employeeTypes, setEmployeeTypes] = useState<Employee[]>([]);
+  const [employees, setEmployees] = useState<Employee[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [viewEmployee, setViewEmployee] = useState<Employee | null>(null);
+  const [editableEmployee, setEditableEmployee] = useState<Employee | null>(null);
 
-  const [newEmployee, setNewEmployee] = useState<Employee>({
-    id: 0,
+  const [newEmployee, setNewEmployee] = useState({
     firstName: '',
     lastName: '',
     employeeType: 0,
@@ -26,7 +25,8 @@ const EmployeeManagement: React.FC = () => {
     status: 0,
   });
 
-  const fetchEmployee = async () => {
+  // Fetch the list of employees
+  const fetchEmployees = async () => {
     const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
     if (!token) {
       setError('No JWT token found. Please log in.');
@@ -43,23 +43,58 @@ const EmployeeManagement: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to fetch employees.');
+        throw new Error(errorData.message || 'Failed to fetch employees');
       }
 
       const data = await response.json();
-      setEmployeeTypes(data);
+      setEmployees(data);
     } catch (err: any) {
       setError(err.message);
     }
   };
 
-  const navigate = useNavigate();
-
-  const handleViewDetailsClick = (employee: Employee) => {
-    setViewEmployee(employee); // Set Employee for viewing details
-    navigate(`/employee-details/${employee.id}`);
+  // Handle the start of editing an employee's details
+  const handleEditClick = (employee: Employee) => {
+    setEditableEmployee(employee); // Set the employee to be edited
   };
 
+  // Handle submitting the updated employee form
+  const handleSaveEmployee = async (employee: Employee) => {
+    const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+    if (!token) {
+      setError('No JWT token found. Please log in.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`http://localhost:5282/api/employee/${employee.id}`, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(employee),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to save employee');
+      }
+
+      fetchEmployees(); // Fetch updated list of employees
+      setEditableEmployee(null); // Stop editing mode
+      alert('Employee updated successfully!');
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  // Handle canceling the edit
+  const handleCancelEdit = () => {
+    setEditableEmployee(null); // Cancel editing
+  };
+
+  // Handle submitting the new employee form
   const handleAddEmployeeSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -69,6 +104,15 @@ const EmployeeManagement: React.FC = () => {
       return;
     }
 
+    const newEmployeeData = {
+      firstName: newEmployee.firstName,
+      lastName: newEmployee.lastName,
+      employeeType: newEmployee.employeeType,
+      username: newEmployee.username,
+      password: newEmployee.password,
+      status: newEmployee.status,
+    };
+
     try {
       const response = await fetch('http://localhost:5282/api/employee', {
         method: 'POST',
@@ -76,16 +120,15 @@ const EmployeeManagement: React.FC = () => {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newEmployee),
+        body: JSON.stringify(newEmployeeData),
       });
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add employee.');
+        throw new Error(errorData.message || 'Failed to add employee');
       }
 
       setNewEmployee({
-        id: 0,
         firstName: '',
         lastName: '',
         employeeType: 0,
@@ -94,13 +137,14 @@ const EmployeeManagement: React.FC = () => {
         status: 0,
       });
 
-      fetchEmployee(); // Refresh employee list
+      fetchEmployees(); // Fetch updated list of employees
       alert('Employee added successfully!');
     } catch (err: any) {
       setError(err.message);
     }
   };
 
+  // Handle deleting an employee
   const handleDeleteEmployee = async (employeeId: number) => {
     const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
     if (!token) {
@@ -119,18 +163,19 @@ const EmployeeManagement: React.FC = () => {
 
       if (!response.ok) {
         const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete employee.');
+        throw new Error(errorData.message || 'Failed to delete employee');
       }
 
-      fetchEmployee(); // Refresh employee list
+      fetchEmployees(); // Fetch updated list of employees
       alert('Employee deleted successfully!');
     } catch (err: any) {
       setError(err.message);
     }
   };
 
+  // UseEffect to fetch employees on component mount
   useEffect(() => {
-    fetchEmployee();
+    fetchEmployees();
   }, []);
 
   return (
@@ -138,32 +183,103 @@ const EmployeeManagement: React.FC = () => {
       <h1>Employee List</h1>
       {error && <p style={{ color: 'red' }}>{error}</p>}
 
-      {employeeTypes.length > 0 ? (
+      {/* Employee List */}
+      {employees.length > 0 ? (
         <table>
           <thead>
             <tr>
               <th>ID</th>
-              <th>Name</th>
-              <th>Surname</th>
-              <th>Type</th>
+              <th>First Name</th>
+              <th>Last Name</th>
+              <th>Employee Type</th>
               <th>Username</th>
               <th>Password</th>
               <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {employeeTypes.map((employee) => (
+            {employees.map((employee) => (
               <tr key={employee.id}>
                 <td>{employee.id}</td>
-                <td>{employee.firstName}</td>
-                <td>{employee.lastName}</td>
-                <td>{employee.employeeType}</td>
-                <td>{employee.username}</td>
-                <td>{employee.password}</td>
-                <td>{employee.status}</td>
                 <td>
-                  <button onClick={() => handleViewDetailsClick(employee)}>View Details</button>
-                  <button onClick={() => handleDeleteEmployee(employee.id)}>Delete</button>
+                  {editableEmployee?.id === employee.id ? (
+                    <input
+                      type="text"
+                      value={editableEmployee.firstName}
+                      onChange={(e) => setEditableEmployee({ ...editableEmployee, firstName: e.target.value })}
+                    />
+                  ) : (
+                    employee.firstName
+                  )}
+                </td>
+                <td>
+                  {editableEmployee?.id === employee.id ? (
+                    <input
+                      type="text"
+                      value={editableEmployee.lastName}
+                      onChange={(e) => setEditableEmployee({ ...editableEmployee, lastName: e.target.value })}
+                    />
+                  ) : (
+                    employee.lastName
+                  )}
+                </td>
+                <td>
+                  {editableEmployee?.id === employee.id ? (
+                    <input
+                      type="number"
+                      value={editableEmployee.employeeType}
+                      onChange={(e) => setEditableEmployee({ ...editableEmployee, employeeType: parseInt(e.target.value) })}
+                    />
+                  ) : (
+                    employee.employeeType
+                  )}
+                </td>
+                <td>
+                  {editableEmployee?.id === employee.id ? (
+                    <input
+                      type="text"
+                      value={editableEmployee.username}
+                      onChange={(e) => setEditableEmployee({ ...editableEmployee, username: e.target.value })}
+                    />
+                  ) : (
+                    employee.username
+                  )}
+                </td>
+                <td>
+                  {editableEmployee?.id === employee.id ? (
+                    <input
+                      type="text"
+                      value={editableEmployee.password}
+                      onChange={(e) => setEditableEmployee({ ...editableEmployee, password: e.target.value })}
+                    />
+                  ) : (
+                    employee.password
+                  )}
+                </td>
+                <td>
+                  {editableEmployee?.id === employee.id ? (
+                    <input
+                      type="number"
+                      value={editableEmployee.status}
+                      onChange={(e) => setEditableEmployee({ ...editableEmployee, status: parseInt(e.target.value) })}
+                    />
+                  ) : (
+                    employee.status
+                  )}
+                </td>
+                <td>
+                  {editableEmployee?.id === employee.id ? (
+                    <>
+                      <button onClick={() => handleSaveEmployee(editableEmployee)}>Save</button>
+                      <button onClick={handleCancelEdit}>Cancel</button>
+                    </>
+                  ) : (
+                    <>
+                      <button onClick={() => handleEditClick(employee)}>Edit</button>
+                      <button onClick={() => handleDeleteEmployee(employee.id)}>Delete</button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
@@ -173,23 +289,11 @@ const EmployeeManagement: React.FC = () => {
         <p>No employees found.</p>
       )}
 
-      {viewEmployee && (
-        <div>
-          <h2>Employee Details</h2>
-          <p><strong>ID:</strong> {viewEmployee.id}</p>
-          <p><strong>Name:</strong> {viewEmployee.firstName}</p>
-          <p><strong>Surname:</strong> {viewEmployee.lastName}</p>
-          <p><strong>Type:</strong> {viewEmployee.employeeType}</p>
-          <p><strong>Username:</strong> {viewEmployee.username}</p>
-          <p><strong>Password:</strong> {viewEmployee.password}</p>
-          <p><strong>Status:</strong> {viewEmployee.status}</p>
-        </div>
-      )}
-
+      {/* Add Employee Form */}
       <h2>Add New Employee</h2>
       <form onSubmit={handleAddEmployeeSubmit}>
         <div>
-          <label>Name:</label>
+          <label>First Name:</label>
           <input
             type="text"
             value={newEmployee.firstName}
@@ -197,7 +301,7 @@ const EmployeeManagement: React.FC = () => {
           />
         </div>
         <div>
-          <label>Surname:</label>
+          <label>Last Name:</label>
           <input
             type="text"
             value={newEmployee.lastName}
@@ -205,7 +309,7 @@ const EmployeeManagement: React.FC = () => {
           />
         </div>
         <div>
-          <label>Type (integer):</label>
+          <label>Employee Type:</label>
           <input
             type="number"
             value={newEmployee.employeeType}
@@ -226,6 +330,14 @@ const EmployeeManagement: React.FC = () => {
             type="text"
             value={newEmployee.password}
             onChange={(e) => setNewEmployee({ ...newEmployee, password: e.target.value })}
+          />
+        </div>
+        <div>
+          <label>Status:</label>
+          <input
+            type="number"
+            value={newEmployee.status}
+            onChange={(e) => setNewEmployee({ ...newEmployee, status: parseInt(e.target.value) })}
           />
         </div>
         <button type="submit">Add Employee</button>
