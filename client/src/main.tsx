@@ -24,6 +24,7 @@ import MerchantManagement from './Catalog/MerchantManagement.tsx';
 import EditProduct from './Catalog/EditProduct.tsx';
 import ServiceDetails from './Catalog/ServiceDetails.tsx';
 import EditService from './Catalog/EditService.tsx';
+import OrderDiscountManagement from './Catalog/OrderDiscountManagement.tsx';
 
 
 createRoot(document.getElementById('root')!).render(
@@ -53,6 +54,7 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/giftcardmanagement" element={<GiftCardManagement /> } />
                 <Route path="/customermanagement" element={<CustomerManagement /> } />
                 <Route path="/merchantmanagement" element={<MerchantManagement /> } />
+                <Route path="/orderdiscountmanagement" element={<OrderDiscountManagement /> } />
             </Routes>
         </Router>
     </StrictMode>,
