@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from "react"
-import { Container, Button, Table } from "reactstrap"
-import TopNav from "../top-nav"
+import { Container, Button, Table, Form, FormGroup, Label, Input, Alert } from "reactstrap"
 import { Status } from "../Enums/Status"
 import { Discount, CreateDiscountDto } from "../Interfaces/Discount"
+import { formatDate } from '../utils/dateUtils'
 
 const DiscountManagement: React.FC = () => {
   const [discounts, setDiscounts] = useState<Discount[]>([])
   const [error, setError] = useState<string | null>(null)
-  const [editableDiscount, setEditableDiscount] = useState<Discount | null>(
-    null
-  )
+  const [editableDiscount, setEditableDiscount] = useState<Discount | null>(null)
 
   const [newDiscount, setNewDiscount] = useState<CreateDiscountDto>({
     title: "",
@@ -27,8 +25,7 @@ const DiscountManagement: React.FC = () => {
 
   // Fetch Discounts
   const fetchDiscounts = async () => {
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -67,8 +64,7 @@ const DiscountManagement: React.FC = () => {
   const handleSaveDiscount = async () => {
     if (!editableDiscount) return
 
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -77,20 +73,17 @@ const DiscountManagement: React.FC = () => {
     try {
       // Normalize the expiresOn date before sending it to the backend
       const normalizedDate = normalizeDateToUTC(editableDiscount.expiresOn)
-      const response = await fetch(
-        `http://localhost:5282/api/discounts/${editableDiscount.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...editableDiscount,
-            expiresOn: normalizedDate,
-          }),
-        }
-      )
+      const response = await fetch(`http://localhost:5282/api/discounts/${editableDiscount.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...editableDiscount,
+          expiresOn: normalizedDate,
+        }),
+      })
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -118,8 +111,7 @@ const DiscountManagement: React.FC = () => {
   const handleAddDiscountSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -162,24 +154,20 @@ const DiscountManagement: React.FC = () => {
 
   // Delete Discount
   const handleDeleteDiscount = async (discountId: number) => {
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:5282/api/discounts/${discountId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      const response = await fetch(`http://localhost:5282/api/discounts/${discountId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -204,20 +192,20 @@ const DiscountManagement: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
-        <h1>Discount Management</h1>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        <h1 className="mt-4">Discount Management</h1>
+        {error && <Alert color="danger">{error}</Alert>}
 
         {/* Discount List */}
         {discounts.length > 0 ? (
-          <Table>
+          <Table striped className="mt-4">
             <thead>
               <tr>
                 <th>ID</th>
                 <th>Title</th>
                 <th>Percentage</th>
                 <th>Status</th>
+                <th>Expires On</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -276,6 +264,7 @@ const DiscountManagement: React.FC = () => {
                       Status[discount.status]
                     )}
                   </td>
+                  <td>{formatDate(discount.expiresOn)}</td>
                   <td>
                     {editableDiscount?.id === discount.id ? (
                       <>
@@ -288,16 +277,10 @@ const DiscountManagement: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <Button
-                          color="warning"
-                          onClick={() => handleEditClick(discount)}
-                        >
+                        <Button color="warning" onClick={() => handleEditClick(discount)}>
                           Edit
                         </Button>
-                        <Button
-                          color="danger"
-                          onClick={() => handleDeleteDiscount(discount.id)}
-                        >
+                        <Button color="danger" onClick={() => handleDeleteDiscount(discount.id)}>
                           Delete
                         </Button>
                       </>
@@ -312,61 +295,52 @@ const DiscountManagement: React.FC = () => {
         )}
 
         {/* Add New Discount Form */}
-        <h2>Add New Discount</h2>
-        <form onSubmit={handleAddDiscountSubmit}>
-          <div>
-            <label>Title:</label>
-            <input
+        <Form className="mt-4" onSubmit={handleAddDiscountSubmit}>
+          <h2>Add New Discount</h2>
+          <FormGroup>
+            <Label for="title">Title</Label>
+            <Input
               type="text"
+              id="title"
               value={newDiscount.title}
-              onChange={(e) =>
-                setNewDiscount({ ...newDiscount, title: e.target.value })
-              }
+              onChange={(e) => setNewDiscount({ ...newDiscount, title: e.target.value })}
             />
-          </div>
-          <div>
-            <label>Percentage:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="percentage">Percentage</Label>
+            <Input
               type="number"
+              id="percentage"
               value={newDiscount.percentage}
-              onChange={(e) =>
-                setNewDiscount({
-                  ...newDiscount,
-                  percentage: parseFloat(e.target.value),
-                })
-              }
+              onChange={(e) => setNewDiscount({ ...newDiscount, percentage: parseFloat(e.target.value) })}
             />
-          </div>
-          <div>
-            <label>Status:</label>
-            <select
+          </FormGroup>
+          <FormGroup>
+            <Label for="expiresOn">Expires On</Label>
+            <Input
+              type="date"
+              id="expiresOn"
+              value={newDiscount.expiresOn}
+              onChange={(e) => setNewDiscount({ ...newDiscount, expiresOn: e.target.value })}
+            />
+          </FormGroup>
+          <FormGroup>
+            <Label for="status">Status</Label>
+            <Input
+              type="select"
+              id="status"
               value={newDiscount.status}
-              onChange={(e) =>
-                setNewDiscount({
-                  ...newDiscount,
-                  status: parseInt(e.target.value),
-                })
-              }
+              onChange={(e) => setNewDiscount({ ...newDiscount, status: parseInt(e.target.value) })}
             >
               <option value={Status.Active}>Active</option>
               <option value={Status.Inactive}>Inactive</option>
               <option value={Status.Archived}>Archived</option>
-            </select>
-          </div>
-          <div>
-            <label>Expires On:</label>
-            <input
-              type="date"
-              value={newDiscount.expiresOn}
-              onChange={(e) =>
-                setNewDiscount({ ...newDiscount, expiresOn: e.target.value })
-              }
-            />
-          </div>
-          <Button type="submit" color="primary">
+            </Input>
+          </FormGroup>
+          <Button color="primary" type="submit">
             Add Discount
           </Button>
-        </form>
+        </Form>
       </Container>
     </div>
   )

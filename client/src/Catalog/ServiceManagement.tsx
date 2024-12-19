@@ -12,7 +12,6 @@ import {
   Row,
   Col,
 } from "reactstrap";
-import TopNav from "../top-nav";
 import { Status } from "../Enums/Status";
 import { Service, CreateServiceDto } from "../Interfaces/Service";
 
@@ -133,7 +132,6 @@ const ServiceManagement: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
         <h1 className="mt-4">Service Management</h1>
 

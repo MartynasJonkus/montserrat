@@ -7,6 +7,7 @@ export interface Employee {
   lastName: string
   employeeType: EmployeeType
   username: string
+  password: string
   createdAt: string
   updatedAt: string
   status: Status

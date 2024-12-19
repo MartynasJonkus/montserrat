@@ -2,6 +2,7 @@ import { Status } from "../Enums/Status"
 
 export interface ProductVariant {
   id: number
+  productId: number
   title: string
   additionalPrice: number
   quantity: number

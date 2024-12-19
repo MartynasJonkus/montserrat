@@ -11,8 +11,8 @@ import {
 } from "reactstrap"
 import { Employee, CreateEmployeeDto } from "../Interfaces/Employee"
 import { Status } from "../Enums/Status"
-import TopNav from "../top-nav"
 import { EmployeeType } from "../Enums/EmployeeType"
+import { useNavigate } from "react-router-dom"
 
 const EmployeeManagement: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([])
@@ -28,6 +28,7 @@ const EmployeeManagement: React.FC = () => {
 
   const [pageNumber, setPageNumber] = useState(1)
   const [pageSize] = useState(10)
+  const navigate = useNavigate()
 
   const fetchEmployees = async () => {
     const token =
@@ -62,6 +63,10 @@ const EmployeeManagement: React.FC = () => {
         setError("An unknown error occurred.")
       }
     }
+  }
+
+  const handleViewDetailsClick = (employee: Employee) => {
+    navigate(`/employee-details/${employee.id}`)
   }
 
   const handleAddEmployeeSubmit = async (e: React.FormEvent) => {
@@ -115,12 +120,11 @@ const EmployeeManagement: React.FC = () => {
 
   useEffect(() => {
     fetchEmployees()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageNumber])
 
   return (
     <div>
-      <TopNav />
       <Container>
         <h1 className="mt-4">Employee Management</h1>
 
@@ -149,7 +153,11 @@ const EmployeeManagement: React.FC = () => {
                   <td>{employee.username}</td>
                   <td>{Status[employee.status]}</td>
                   <td>
-                    <Button size="sm" color="info">
+                    <Button
+                      size="sm"
+                      color="info"
+                      onClick={() => handleViewDetailsClick(employee)}
+                    >
                       View details
                     </Button>
                   </td>
@@ -205,20 +213,6 @@ const EmployeeManagement: React.FC = () => {
             />
           </FormGroup>
           <FormGroup>
-            <Label for="employeeType">Employee Type</Label>
-            <Input
-              type="number"
-              id="employeeType"
-              value={newEmployee.employeeType}
-              onChange={(e) =>
-                setNewEmployee({
-                  ...newEmployee,
-                  employeeType: parseInt(e.target.value, 10),
-                })
-              }
-            />
-          </FormGroup>
-          <FormGroup>
             <Label for="username">Username</Label>
             <Input
               type="text"
@@ -239,6 +233,24 @@ const EmployeeManagement: React.FC = () => {
                 setNewEmployee({ ...newEmployee, password: e.target.value })
               }
             />
+          </FormGroup>
+          <FormGroup>
+            <Label for="employeeType">Employee Type</Label>
+            <Input
+              type="select"
+              id="employeeType"
+              value={newEmployee.employeeType}
+              onChange={(e) =>
+                setNewEmployee({
+                  ...newEmployee,
+                  employeeType: parseInt(e.target.value, 10),
+                })
+              }
+            >
+              <option value={EmployeeType.admin}>Admin</option>
+              <option value={EmployeeType.owner}>Owner</option>
+              <option value={EmployeeType.regular}>Regular</option>
+            </Input>
           </FormGroup>
           <FormGroup>
             <Label for="status">Status</Label>

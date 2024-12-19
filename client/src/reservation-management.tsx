@@ -1,7 +1,8 @@
 import { FaSearch } from "react-icons/fa";
-import TopNav from './top-nav.tsx';
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { ReservationStatus } from "./Enums/ReservationStatus";
+import { formatDate } from "./utils/dateUtils";
 
 const API_BASE_URL = "http://localhost:5282";
 interface ReservationResponse {
@@ -99,9 +100,9 @@ function ReservationMng() {
                 <div className="reservation-detail">ID: {reservation.id}</div>
                 <div className="reservation-detail">Customer ID: {reservation.customerId}</div>
                 <div className="reservation-detail">Employee ID: {reservation.employeeId}</div>
-                <div className="reservation-detail">Start time: {reservation.startTime}</div>
-                <div className="reservation-detail">End time: {reservation.endTime}</div>
-                <div className="reservation-detail">Status: {reservation.status}</div>
+                <div className="reservation-detail">Start time: {formatDate(reservation.startTime)}</div>
+                <div className="reservation-detail">End time: {formatDate(reservation.endTime)}</div>
+                <div className="reservation-detail">Status: {ReservationStatus[reservation.status]}</div>
             </div>
             <div className="active-order-right">
                 <button onClick={() => { handleStatusChange(reservation.id) } } className="page-button">Change status</button>
@@ -112,7 +113,6 @@ function ReservationMng() {
 
     return (
         <>
-            <TopNav />
             <div id="order-mng-container">
                 <div id="order-mng-container-top">
                     <div id="order-mng-title">Reservation management</div>
