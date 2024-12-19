@@ -14,6 +14,12 @@ import ReservationPage from './reservation-page.tsx';
 import ProductManagement from './ProductManagement.tsx'; 
 import ProductDetails from './ProductDetails.tsx';
 import ServiceManagement from './ServiceManagement.tsx';
+import EmployeeManagement from './EmployeeManagement.tsx';
+import DiscountManagement from './DiscountManagement.tsx';
+import GiftCardManagement from './GiftCardManagement.tsx';
+import TaxManagement from './TaxManagement.tsx';
+import CustomerManagement from './CustomerManagement.tsx';
+import MerchantManagement from './MerchantManagement.tsx';
 
 
 createRoot(document.getElementById('root')!).render(
@@ -28,8 +34,14 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/ordermanagement" element={<OrderManagement />} />
                 <Route path="/reservationmanagement" element={<ReservationManagement />} />
                 <Route path="/productmanagement" element={<ProductManagement />} /> 
-                <Route path="/productdetails/:productId" element={<ProductDetails />} />
+                <Route path="/product-details/:productId" element={<ProductDetails />} />
                 <Route path="/servicemanagement" element={<ServiceManagement /> } />
+                <Route path="/employeemanagement" element={<EmployeeManagement /> } />
+                <Route path="/discountmanagement" element={<DiscountManagement /> } />
+                <Route path="/giftcardmanagement" element={<GiftCardManagement /> } />
+                <Route path="/taxmanagement" element={<TaxManagement /> } />
+                <Route path="/customermanagement" element={<CustomerManagement /> } />
+                <Route path="/merchantmanagement" element={<MerchantManagement /> } />
             </Routes>
         </Router>
     </StrictMode>,
