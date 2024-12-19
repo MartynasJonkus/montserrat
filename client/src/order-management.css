@@ -20,7 +20,7 @@
 
 #all-orders-container {
     width: 800px;
-    height: 530px;
+    height: 600px;
     background-color: #CFCFCF;
     padding: 20px;
     border-radius: 5px;
@@ -43,13 +43,13 @@
 
 #all-orders-search svg {
     position: absolute;
-    margin-top: 12px;
+    margin-top: 7px;
     margin-left: 8px;
     color: #666666;
 }
 
 #all-orders-list {
-    height: 480px;
+    height: 520px;
     overflow: auto;
     padding: 10px;
     padding-top: 0px;
