@@ -10,7 +10,6 @@ import {
 import { Merchant } from "./Interfaces/Merchant"
 import { Employee } from "./Interfaces/Employee"
 import { Status } from "./Enums/Status"
-import TopNav from "./top-nav"
 import { EmployeeType } from "./Enums/EmployeeType"
 import { formatDate } from "./utils/dateUtils"
 
@@ -105,16 +104,15 @@ const PersonalDetails: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
-        <h1>Personal Details</h1>
+        <h1 className="mt-4">Personal Details</h1>
         {error && <p style={{ color: "red" }}>{error}</p>}
 
-        <Button color="danger" onClick={handleLogout}>
+        <Button className="mt-4" color="danger" onClick={handleLogout}>
           Logout
         </Button>
 
-        <h2>Employee Info</h2>
+        <h2 className="mt-4">Employee Info</h2>
         {employee ? (
           <Card>
             <CardBody>
@@ -123,7 +121,8 @@ const PersonalDetails: React.FC = () => {
                 <strong>Username:</strong> {employee.username}
               </CardText>
               <CardText>
-                <strong>Employee Type:</strong> {EmployeeType[employee.employeeType]}
+                <strong>Employee Type:</strong>{" "}
+                {EmployeeType[employee.employeeType]}
               </CardText>
               <CardText>
                 <strong>Status:</strong> {Status[employee.status]}
@@ -140,7 +139,7 @@ const PersonalDetails: React.FC = () => {
           <p>Loading employee info...</p>
         )}
 
-        <h2>Merchant Info</h2>
+        <h2 className="mt-4">Merchant Info</h2>
         {merchant ? (
           <Card>
             <CardBody>

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Container, Button, Alert, Row, Col } from "reactstrap";
-import TopNav from "../top-nav";
 import { Status } from "../Enums/Status";
 import { Employee } from "../Interfaces/Employee";
 import { EmployeeType } from "../Enums/EmployeeType";
@@ -69,7 +68,6 @@ const EmployeeDetails: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
         <h1 className="mt-4">Employee Details</h1>
         <hr />

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react"
 import { useNavigate, useParams } from "react-router-dom"
 import { Container, Button, Alert, Row, Col, Table } from "reactstrap"
-import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
 import { Currency } from "../Enums/Currency"
 import { Product } from "../Interfaces/Product"
@@ -66,7 +65,6 @@ const ProductDetails: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
         <h1 className="mt-4">Product Details</h1>
         <hr/>

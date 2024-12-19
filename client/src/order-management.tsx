@@ -1,6 +1,5 @@
 import { FaSearch } from "react-icons/fa";
 import { useNavigate } from "react-router";
-import TopNav from './top-nav.tsx';
 import './order-management.css';
 import { useEffect, useState } from "react";
 import axios from "axios";
@@ -144,7 +143,6 @@ function OrderMng() {
 
     return (
         <>
-            <TopNav />
             <div id="order-mng-container">
                 <div id="order-mng-container-top">
                     <div id="order-mng-title">Order management</div>

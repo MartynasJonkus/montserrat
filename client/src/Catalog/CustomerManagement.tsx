@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Table, Form, FormGroup, Label, Input, Alert, Container, Row, Col } from 'reactstrap';
-import TopNav from "../top-nav"; // Pridėtas TopNav
 
 interface Customer {
   id: number;
@@ -198,7 +197,6 @@ const CustomerManagement: React.FC = () => {
 
   return (
     <div>
-      <TopNav /> {/* Pridėtas TopNav */}
       <Container>
         <h1 className="mt-4">Customer Management</h1>
 

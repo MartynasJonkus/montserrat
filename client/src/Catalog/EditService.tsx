@@ -11,7 +11,6 @@ import {
   Label,
   Input,
 } from "reactstrap"
-import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
 import { Tax } from "../Interfaces/Tax"
 import { Discount } from "../Interfaces/Discount"
@@ -160,7 +159,6 @@ const EditService: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
         <h1>Edit Service</h1>
 

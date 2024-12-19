@@ -2,7 +2,6 @@ import { GoTriangleLeft, GoTriangleRight } from "react-icons/go";
 import { FaSearch, FaUser } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import TopNav from './top-nav.tsx';
 import './dashboard.css';
 
 let weekOffset = 0;
@@ -63,8 +62,6 @@ function Dashboard() {
 
     return (
         <>
-            <TopNav />
-
             <div id="dashboard-container">
                 <div id="dashboard-top">
                     DASHBOARD

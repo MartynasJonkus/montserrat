@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import { Container, Button, Table } from "reactstrap"
-import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
 import { Discount, CreateDiscountDto } from "../Interfaces/Discount"
 
@@ -204,9 +203,8 @@ const DiscountManagement: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
-        <h1>Discount Management</h1>
+        <h1 className="mt-4">Discount Management</h1>
         {error && <p style={{ color: "red" }}>{error}</p>}
 
         {/* Discount List */}

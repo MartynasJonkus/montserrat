@@ -2,7 +2,6 @@ import { FaRegPlusSquare } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { ImCross } from "react-icons/im";
-import TopNav from './top-nav.tsx';
 import './order-page.css';
 import { useLocation } from "react-router-dom";
 import axios from "axios";
@@ -297,8 +296,6 @@ function OrderPage() {
 
     return (
         <>
-            <TopNav />
-
             <div id="order-container">
                 <div id="container-left">
                     <div className="container-top" id="back-to-dashboard">

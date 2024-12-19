@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import { Container, Button, Table } from "reactstrap"
-import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
 import { Tax, CreateTaxDto } from "../Interfaces/Tax"
 import { formatDate } from '../utils/dateUtils';
@@ -154,9 +153,8 @@ const TaxManagement: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
-        <h1>Tax Management</h1>
+        <h1 className="mt-4">Tax Management</h1>
         {error && <p style={{ color: "red" }}>{error}</p>}
 
         {/* Tax List */}

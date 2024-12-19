@@ -11,7 +11,6 @@ import {
   Label,
   Input,
 } from "reactstrap"
-import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
 import { EmployeeType } from "../Enums/EmployeeType"
 import { Employee } from "../Interfaces/Employee"
@@ -101,7 +100,6 @@ const EditEmployee: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
         <h1>Edit Employee</h1>
 

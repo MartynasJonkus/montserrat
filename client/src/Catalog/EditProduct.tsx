@@ -12,7 +12,6 @@ import {
   Input,
   Table,
 } from "reactstrap"
-import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
 import {
   ProductVariant,
@@ -235,7 +234,6 @@ const EditProduct: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
         <h1>Edit Product</h1>
 

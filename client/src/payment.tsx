@@ -1,7 +1,6 @@
 import { GoArrowLeft } from "react-icons/go";
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from "react";
-import TopNav from './top-nav.tsx';
 import './payment.css';
 
 function Payment() {
@@ -69,8 +68,6 @@ function Payment() {
 
     return (
         <>
-            <TopNav />
-
             <div id="payment-container">
                 <div id="payment-container-top">
                     <div id="payment-title">

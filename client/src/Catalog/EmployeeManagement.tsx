@@ -11,7 +11,6 @@ import {
 } from "reactstrap"
 import { Employee, CreateEmployeeDto } from "../Interfaces/Employee"
 import { Status } from "../Enums/Status"
-import TopNav from "../top-nav"
 import { EmployeeType } from "../Enums/EmployeeType"
 import { useNavigate } from "react-router-dom"
 
@@ -126,7 +125,6 @@ const EmployeeManagement: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
         <h1 className="mt-4">Employee Management</h1>
 

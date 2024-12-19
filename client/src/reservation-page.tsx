@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router";
-import TopNav from './top-nav.tsx';
 import './reservation-page.css';
 import { useState } from "react";
 import axios from "axios";
@@ -59,7 +58,6 @@ function ReservationPage() {
 
     return (
         <>
-            <TopNav />
 
             <div id="reservation-create-container">
                 <div id="reservation-container-top">

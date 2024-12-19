@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import { Container, Button, Table } from "reactstrap"
-import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
 import { Merchant, CreateMerchantDto } from "../Interfaces/Merchant"
 
@@ -176,9 +175,8 @@ const MerchantManagement: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
-        <h1>Merchant Management</h1>
+        <h1  className="mt-4">Merchant Management</h1>
         {error && <p style={{ color: "red" }}>{error}</p>}
 
         {/* Merchant List */}

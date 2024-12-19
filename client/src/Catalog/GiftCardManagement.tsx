@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react"
 import { Container, Button, Table } from "reactstrap"
-import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
-import { GiftCard, CreateGiftCardDto, UpdateGiftCardDto } from "../Interfaces/GiftCard"
+import { GiftCard, CreateGiftCardDto } from "../Interfaces/GiftCard"
 
 const GiftCardManagement: React.FC = () => {
   const [giftCards, setGiftCards] = useState<GiftCard[]>([])
@@ -199,9 +198,8 @@ const GiftCardManagement: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
-        <h1>GiftCard Management</h1>
+        <h1 className="mt-4">GiftCard Management</h1>
         {error && <p style={{ color: "red" }}>{error}</p>}
 
         {/* GiftCard List */}

@@ -1,5 +1,4 @@
 import { FaSearch } from "react-icons/fa";
-import TopNav from './top-nav.tsx';
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { ReservationStatus } from "./Enums/ReservationStatus";
@@ -114,7 +113,6 @@ function ReservationMng() {
 
     return (
         <>
-            <TopNav />
             <div id="order-mng-container">
                 <div id="order-mng-container-top">
                     <div id="order-mng-title">Reservation management</div>

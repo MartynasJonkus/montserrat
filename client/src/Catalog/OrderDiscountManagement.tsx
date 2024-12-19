@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import { Container, Button, Table } from "reactstrap"
-import TopNav from "../top-nav"
 import { OrderDiscount, CreateOrderDiscountDto } from "../Interfaces/OrderDiscount"
 import { formatDate } from '../utils/dateUtils';
 
@@ -177,9 +176,8 @@ const OrderDiscountManagement: React.FC = () => {
 
   return (
     <div>
-      <TopNav />
       <Container>
-        <h1>Order Discount Management</h1>
+        <h1 className="mt-4">Order Discount Management</h1>
         {error && <p style={{ color: "red" }}>{error}</p>}
 
         {discounts.length > 0 ? (
