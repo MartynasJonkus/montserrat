@@ -3,6 +3,8 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { ReservationStatus } from "./Enums/ReservationStatus";
 import { formatDate } from "./utils/dateUtils";
+import "./reservation-management.css";
+import { useNavigate } from "react-router-dom";
 
 const API_BASE_URL = "http://localhost:5282";
 interface ReservationResponse {
@@ -40,17 +42,17 @@ const changeStatus = async (reservation: ReservationResponse, newStatus: number)
     window.location.reload();
 }
 
-const deleteReservation = async (reservationId: number): Promise<void> => {
-    const token = localStorage.getItem("jwtToken");
-    const response = await axios.delete<void>(`${API_BASE_URL}/api/reservations/${reservationId}`, {
-        headers: {
-            Authorization: `Bearer ${token}`,
-        },
-    });
+//const deleteReservation = async (reservationId: number): Promise<void> => {
+//    const token = localStorage.getItem("jwtToken");
+//    const response = await axios.delete<void>(`${API_BASE_URL}/api/reservations/${reservationId}`, {
+//        headers: {
+//            Authorization: `Bearer ${token}`,
+//        },
+//    });
 
-    console.log("reservation deleted" + response.data);
-    window.location.reload();
-}
+//    console.log("reservation deleted" + response.data);
+//    window.location.reload();
+//}
 
 const fetchReservationData = async (): Promise<ReservationResponse[]> => {
     const token = localStorage.getItem("jwtToken");
@@ -65,6 +67,7 @@ const fetchReservationData = async (): Promise<ReservationResponse[]> => {
 }
 function ReservationMng() {
     const [reservations, setReservations] = useState<ReservationResponse[]>([]);
+    const navigate = useNavigate();
 
     useEffect(() => {
         handleFetchReservationData();
@@ -94,6 +97,10 @@ function ReservationMng() {
 
     }
 
+    const navigateToCreate = (reservationId: number) => {
+        navigate('/reservationcreation', { state: { id: reservationId } });
+    }
+
     const allReservations = reservations.map(reservation =>
         <div className="all-orders">
             <div className="active-order-left">
@@ -106,7 +113,7 @@ function ReservationMng() {
             </div>
             <div className="active-order-right">
                 <button onClick={() => { handleStatusChange(reservation.id) } } className="page-button">Change status</button>
-                <button onClick={() => { deleteReservation(reservation.id)} } className="page-button">Delete</button>
+                <button onClick={() => { navigateToCreate(reservation.id) } } className="page-button">Edit</button>
             </div>
         </div>
     )
