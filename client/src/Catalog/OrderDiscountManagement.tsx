@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react"
-import { Container, Button, Table } from "reactstrap"
+import { Container, Button, Table, Form, FormGroup, Label, Input, Alert } from "reactstrap"
 import { OrderDiscount, CreateOrderDiscountDto } from "../Interfaces/OrderDiscount"
-import { formatDate } from '../utils/dateUtils';
+import { formatDate } from '../utils/dateUtils'
 
 const OrderDiscountManagement: React.FC = () => {
   const [discounts, setDiscounts] = useState<OrderDiscount[]>([])
@@ -13,8 +13,7 @@ const OrderDiscountManagement: React.FC = () => {
   })
 
   const fetchDiscounts = async () => {
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -43,6 +42,7 @@ const OrderDiscountManagement: React.FC = () => {
       }
     }
   }
+
   const handleEditClick = (discount: OrderDiscount) => {
     setEditableDiscount(discount)
   }
@@ -50,8 +50,7 @@ const OrderDiscountManagement: React.FC = () => {
   const handleSaveDiscount = async () => {
     if (!editableDiscount) return
 
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -86,14 +85,15 @@ const OrderDiscountManagement: React.FC = () => {
       }
     }
   }
+
   const handleCancelEdit = () => {
     setEditableDiscount(null)
   }
+
   const handleAddDiscountSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -138,9 +138,9 @@ const OrderDiscountManagement: React.FC = () => {
   useEffect(() => {
     fetchDiscounts()
   }, [])
+
   const handleDeleteDiscount = async (discountId: number) => {
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -178,10 +178,10 @@ const OrderDiscountManagement: React.FC = () => {
     <div>
       <Container>
         <h1 className="mt-4">Order Discount Management</h1>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <Alert color="danger">{error}</Alert>}
 
         {discounts.length > 0 ? (
-          <Table>
+          <Table striped className="mt-4">
             <thead>
               <tr>
                 <th>ID</th>
@@ -265,30 +265,33 @@ const OrderDiscountManagement: React.FC = () => {
           <p>No discounts found.</p>
         )}
 
-        <h2>Add New Order Discount</h2>
-        <form onSubmit={handleAddDiscountSubmit}>
-          <div>
-            <label>Title:</label>
-            <input
+        {/* Add New Order Discount Form */}
+        <Form className="mt-4" onSubmit={handleAddDiscountSubmit}>
+          <h2>Add New Order Discount</h2>
+          <FormGroup>
+            <Label for="title">Title</Label>
+            <Input
               type="text"
+              id="title"
               value={newDiscount.title}
               onChange={(e) => setNewDiscount({ ...newDiscount, title: e.target.value })}
             />
-          </div>
-          <div>
-            <label>Percentage:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="percentage">Percentage</Label>
+            <Input
               type="number"
+              id="percentage"
               value={newDiscount.percentage}
               onChange={(e) =>
                 setNewDiscount({ ...newDiscount, percentage: parseFloat(e.target.value) })
               }
             />
-          </div>
-          <Button type="submit" color="primary">
+          </FormGroup>
+          <Button color="primary" type="submit">
             Add Order Discount
           </Button>
-        </form>
+        </Form>
       </Container>
     </div>
   )
