@@ -38,6 +38,7 @@ const EditProduct: React.FC = () => {
     quantity: 0,
     status: Status.Active
   })
+  const [editingVariantId, setEditingVariantId] = useState<number | null>(null)
 
   const navigate = useNavigate()
 
@@ -194,7 +195,7 @@ const EditProduct: React.FC = () => {
       localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     try {
       const response = await fetch(
-        `http://localhost:5282/api/products/variants/${variantId}`,
+        `http://localhost:5282/api/variants/${variantId}`,
         {
           method: "PUT",
           headers: {
@@ -209,6 +210,9 @@ const EditProduct: React.FC = () => {
         const errorData = await response.json()
         throw new Error(errorData.message || "Failed to update variant")
       }
+
+      fetchProductDetails()
+      setEditingVariantId(null)
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message)
@@ -218,8 +222,14 @@ const EditProduct: React.FC = () => {
     }
   }
 
-  const handleArchiveVariant = async (variant: ProductVariant) => {
-    handleUpdateVariant(variant.id, { ...variant, status: Status.Archived })
+  const handleEditVariant = (variant: ProductVariant) => {
+    setEditingVariantId(variant.id)
+    setNewVariant({
+      title: variant.title,
+      additionalPrice: variant.additionalPrice,
+      quantity: variant.quantity,
+      status: variant.status,
+    })
   }
 
   return (
@@ -385,23 +395,87 @@ const EditProduct: React.FC = () => {
             {productVariants.map((variant) => (
               <tr key={variant.id}>
                 <td>{variant.id}</td>
-                <td>{variant.title}</td>
-                <td>{variant.additionalPrice} €</td>
-                <td>{variant.quantity}</td>
-                <td>{Status[variant.status]}</td>
                 <td>
-                  <Button
-                    color="warning"
-                    onClick={() => handleUpdateVariant(variant.id, variant)}
-                  >
-                    Edit
-                  </Button>{" "}
-                  <Button
-                    color="danger"
-                    onClick={() => handleArchiveVariant(variant)}
-                  >
-                    Archive
-                  </Button>
+                  {editingVariantId === variant.id ? (
+                    <Input
+                      type="text"
+                      value={newVariant.title}
+                      onChange={(e) =>
+                        setNewVariant({ ...newVariant, title: e.target.value })
+                      }
+                    />
+                  ) : (
+                    variant.title
+                  )}
+                </td>
+                <td>
+                  {editingVariantId === variant.id ? (
+                    <Input
+                      type="number"
+                      value={newVariant.additionalPrice}
+                      onChange={(e) =>
+                        setNewVariant({
+                          ...newVariant,
+                          additionalPrice: parseFloat(e.target.value),
+                        })
+                      }
+                    />
+                  ) : (
+                    variant.additionalPrice
+                  )}
+                </td>
+                <td>
+                  {editingVariantId === variant.id ? (
+                    <Input
+                      type="number"
+                      value={newVariant.quantity}
+                      onChange={(e) =>
+                        setNewVariant({
+                          ...newVariant,
+                          quantity: parseInt(e.target.value),
+                        })
+                      }
+                    />
+                  ) : (
+                    variant.quantity
+                  )}
+                </td>
+                <td>
+                  {editingVariantId === variant.id ? (
+                    <Input
+                      type="select"
+                      value={newVariant.status}
+                      onChange={(e) =>
+                        setNewVariant({
+                          ...newVariant,
+                          status: parseInt(e.target.value),
+                        })
+                      }
+                    >
+                      <option value={Status.Active}>Active</option>
+                      <option value={Status.Inactive}>Inactive</option>
+                      <option value={Status.Archived}>Archived</option>
+                    </Input>
+                  ) : (
+                    Status[variant.status]
+                  )}
+                </td>
+                <td>
+                  {editingVariantId === variant.id ? (
+                    <Button
+                      color="success"
+                      onClick={() => handleUpdateVariant(variant.id, newVariant)}
+                    >
+                      Submit
+                    </Button>
+                  ) : (
+                    <Button
+                      color="warning"
+                      onClick={() => handleEditVariant(variant)}
+                    >
+                      Edit
+                    </Button>
+                  )}
                 </td>
               </tr>
             ))}

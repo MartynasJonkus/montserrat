@@ -14,7 +14,8 @@ import {
 } from "reactstrap"
 import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
-import { Product } from "../Interfaces/Product"
+import { Product } from "../Interfaces/Product" 
+
 
 const ProductManagement: React.FC = () => {
   const [products, setProducts] = useState<Product[]>([])
@@ -26,6 +27,8 @@ const ProductManagement: React.FC = () => {
     weightUnit: "",
     status: 0,
   })
+  const [pageNumber, setPageNumber] = useState(1)
+  const [pageSize] = useState(10) // You can adjust this value
 
   const navigate = useNavigate()
 
@@ -38,7 +41,7 @@ const ProductManagement: React.FC = () => {
     }
 
     try {
-      const response = await fetch("http://localhost:5282/api/products", {
+      const response = await fetch(`http://localhost:5282/api/products?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
@@ -123,9 +126,13 @@ const ProductManagement: React.FC = () => {
     }
   }
 
+  const handlePageChange = (newPageNumber: number) => {
+    setPageNumber(newPageNumber)
+  }
+
   useEffect(() => {
     fetchProducts()
-  }, [])
+  }, [pageNumber])
 
   return (
     <div>
@@ -175,6 +182,24 @@ const ProductManagement: React.FC = () => {
             No products found.
           </Alert>
         )}
+
+        {/* Pagination controls */}
+        <div className="mt-4">
+          <p>Page {pageNumber}</p>
+          <Button
+            color="secondary"
+            onClick={() => handlePageChange(pageNumber - 1)}
+            disabled={pageNumber === 1}
+          >
+            Previous
+          </Button>{" "}
+          <Button
+            color="secondary"
+            onClick={() => handlePageChange(pageNumber + 1)}
+          >
+            Next
+          </Button>
+        </div>
 
         {/* Add Product Form */}
         <h2 className="mt-5">Add New Product</h2>
