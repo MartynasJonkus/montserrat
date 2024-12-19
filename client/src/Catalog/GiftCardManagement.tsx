@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react"
-import { Container, Button, Table } from "reactstrap"
+import { Container, Button, Table, Form, FormGroup, Label, Input, Alert } from "reactstrap"
 import { Status } from "../Enums/Status"
 import { GiftCard, CreateGiftCardDto } from "../Interfaces/GiftCard"
+
 
 const GiftCardManagement: React.FC = () => {
   const [giftCards, setGiftCards] = useState<GiftCard[]>([])
@@ -24,8 +25,7 @@ const GiftCardManagement: React.FC = () => {
 
   // Fetch giftCards
   const fetchGiftCards = async () => {
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -64,8 +64,7 @@ const GiftCardManagement: React.FC = () => {
   const handleSaveGiftCard = async () => {
     if (!editableGiftCard) return
 
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -73,20 +72,17 @@ const GiftCardManagement: React.FC = () => {
 
     try {
       const normalizedDate = normalizeDateToUTC(editableGiftCard.expiresOn)
-      const response = await fetch(
-        `http://localhost:5282/api/giftcards/${editableGiftCard.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            ...editableGiftCard,
-            expiresOn: normalizedDate,
-          }),
-        }
-      )
+      const response = await fetch(`http://localhost:5282/api/giftcards/${editableGiftCard.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          ...editableGiftCard,
+          expiresOn: normalizedDate,
+        }),
+      })
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -114,8 +110,7 @@ const GiftCardManagement: React.FC = () => {
   const handleAddGiftCardSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -157,24 +152,20 @@ const GiftCardManagement: React.FC = () => {
 
   // Delete GiftCard
   const handleDeleteGiftCard = async (giftCardId: number) => {
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:5282/api/giftcards/${giftCardId}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      const response = await fetch(`http://localhost:5282/api/giftcards/${giftCardId}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -200,11 +191,11 @@ const GiftCardManagement: React.FC = () => {
     <div>
       <Container>
         <h1 className="mt-4">GiftCard Management</h1>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <Alert color="danger">{error}</Alert>}
 
         {/* GiftCard List */}
         {giftCards.length > 0 ? (
-          <Table>
+          <Table striped className="mt-4">
             <thead>
               <tr>
                 <th>ID</th>
@@ -298,16 +289,10 @@ const GiftCardManagement: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <Button
-                          color="warning"
-                          onClick={() => handleEditClick(giftCard)}
-                        >
+                        <Button color="warning" onClick={() => handleEditClick(giftCard)}>
                           Edit
                         </Button>
-                        <Button
-                          color="danger"
-                          onClick={() => handleDeleteGiftCard(giftCard.id)}
-                        >
+                        <Button color="danger" onClick={() => handleDeleteGiftCard(giftCard.id)}>
                           Delete
                         </Button>
                       </>
@@ -322,71 +307,61 @@ const GiftCardManagement: React.FC = () => {
         )}
 
         {/* Add New GiftCard Form */}
-        <h2>Add New GiftCard</h2>
-        <form onSubmit={handleAddGiftCardSubmit}>
-          <div>
-            <label>Code:</label>
-            <input
+        <Form className="mt-4" onSubmit={handleAddGiftCardSubmit}>
+          <h2>Add New GiftCard</h2>
+          <FormGroup>
+            <Label for="code">Code</Label>
+            <Input
               type="text"
+              id="code"
               value={newGiftCard.code}
-              onChange={(e) =>
-                setNewGiftCard({ ...newGiftCard, code: e.target.value })
-              }
+              onChange={(e) => setNewGiftCard({ ...newGiftCard, code: e.target.value })}
             />
-          </div>
-          <div>
-            <label>Initial Balance:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="initialBalance">Initial Balance</Label>
+            <Input
               type="number"
+              id="initialBalance"
               value={newGiftCard.initialBalance}
-              onChange={(e) =>
-                setNewGiftCard({
-                  ...newGiftCard,
-                  initialBalance: parseFloat(e.target.value),
-                })
-              }
+              onChange={(e) => setNewGiftCard({ ...newGiftCard, initialBalance: parseFloat(e.target.value) })}
             />
-          </div>
-          <div>
-            <label>Currency:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="currency">Currency</Label>
+            <Input
               type="text"
+              id="currency"
               value={newGiftCard.currency}
-              onChange={(e) =>
-                setNewGiftCard({ ...newGiftCard, currency: e.target.value })
-              }
+              onChange={(e) => setNewGiftCard({ ...newGiftCard, currency: e.target.value })}
             />
-          </div>
-          <div>
-            <label>Expires On:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="expiresOn">Expires On</Label>
+            <Input
               type="date"
+              id="expiresOn"
               value={newGiftCard.expiresOn}
-              onChange={(e) =>
-                setNewGiftCard({ ...newGiftCard, expiresOn: e.target.value })
-              }
+              onChange={(e) => setNewGiftCard({ ...newGiftCard, expiresOn: e.target.value })}
             />
-          </div>
-          <div>
-            <label>Status:</label>
-            <select
+          </FormGroup>
+          <FormGroup>
+            <Label for="status">Status</Label>
+            <Input
+              type="select"
+              id="status"
               value={newGiftCard.status}
-              onChange={(e) =>
-                setNewGiftCard({
-                  ...newGiftCard,
-                  status: parseInt(e.target.value),
-                })
-              }
+              onChange={(e) => setNewGiftCard({ ...newGiftCard, status: parseInt(e.target.value) })}
             >
               <option value={Status.Active}>Active</option>
               <option value={Status.Inactive}>Inactive</option>
               <option value={Status.Archived}>Archived</option>
-            </select>
-          </div>
-          <Button type="submit" color="primary">
+            </Input>
+          </FormGroup>
+          <Button color="primary" type="submit">
             Add GiftCard
           </Button>
-        </form>
+        </Form>
       </Container>
     </div>
   )

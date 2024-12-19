@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react"
-import { Container, Button, Table } from "reactstrap"
+import { Container, Button, Table, Form, FormGroup, Label, Input, Alert } from "reactstrap"
 import { Status } from "../Enums/Status"
 import { Tax, CreateTaxDto } from "../Interfaces/Tax"
-import { formatDate } from '../utils/dateUtils';
+import { formatDate } from '../utils/dateUtils'
 
 const TaxManagement: React.FC = () => {
   const [taxes, setTaxes] = useState<Tax[]>([])
@@ -16,8 +16,7 @@ const TaxManagement: React.FC = () => {
 
   // Fetch the list of taxes
   const fetchTaxes = async () => {
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -56,25 +55,21 @@ const TaxManagement: React.FC = () => {
   const handleSaveTax = async () => {
     if (!editableTax) return
 
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:5282/api/taxes/${editableTax.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(editableTax),
-        }
-      )
+      const response = await fetch(`http://localhost:5282/api/taxes/${editableTax.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editableTax),
+      })
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -102,8 +97,7 @@ const TaxManagement: React.FC = () => {
   const handleAddTaxSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -155,11 +149,11 @@ const TaxManagement: React.FC = () => {
     <div>
       <Container>
         <h1 className="mt-4">Tax Management</h1>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {error && <Alert color="danger">{error}</Alert>}
 
         {/* Tax List */}
         {taxes.length > 0 ? (
-          <Table>
+          <Table striped className="mt-4">
             <thead>
               <tr>
                 <th>ID</th>
@@ -239,14 +233,9 @@ const TaxManagement: React.FC = () => {
                         </Button>
                       </>
                     ) : (
-                      <>
-                        <Button
-                          color="warning"
-                          onClick={() => handleEditClick(tax)}
-                        >
-                          Edit
-                        </Button>
-                      </>
+                      <Button color="warning" onClick={() => handleEditClick(tax)}>
+                        Edit
+                      </Button>
                     )}
                   </td>
                 </tr>
@@ -258,43 +247,43 @@ const TaxManagement: React.FC = () => {
         )}
 
         {/* Add New Tax Form */}
-        <h2>Add New Tax</h2>
-        <form onSubmit={handleAddTaxSubmit}>
-          <div>
-            <label>Title:</label>
-            <input
+        <Form className="mt-4" onSubmit={handleAddTaxSubmit}>
+          <h2>Add New Tax</h2>
+          <FormGroup>
+            <Label for="title">Title</Label>
+            <Input
               type="text"
+              id="title"
               value={newTax.title}
               onChange={(e) => setNewTax({ ...newTax, title: e.target.value })}
             />
-          </div>
-          <div>
-            <label>Percentage:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="percentage">Percentage</Label>
+            <Input
               type="number"
+              id="percentage"
               value={newTax.percentage}
-              onChange={(e) =>
-                setNewTax({ ...newTax, percentage: parseFloat(e.target.value) })
-              }
+              onChange={(e) => setNewTax({ ...newTax, percentage: parseFloat(e.target.value) })}
             />
-          </div>
-          <div>
-            <label>Status:</label>
-            <select
+          </FormGroup>
+          <FormGroup>
+            <Label for="status">Status</Label>
+            <Input
+              type="select"
+              id="status"
               value={newTax.status}
-              onChange={(e) =>
-                setNewTax({ ...newTax, status: parseInt(e.target.value) })
-              }
+              onChange={(e) => setNewTax({ ...newTax, status: parseInt(e.target.value) })}
             >
               <option value={Status.Active}>Active</option>
               <option value={Status.Inactive}>Inactive</option>
               <option value={Status.Archived}>Archived</option>
-            </select>
-          </div>
-          <Button type="submit" color="primary">
+            </Input>
+          </FormGroup>
+          <Button color="primary" type="submit">
             Add Tax
           </Button>
-        </form>
+        </Form>
       </Container>
     </div>
   )
