@@ -31,3 +31,21 @@ button:hover {
 .nav-link {
   color: #ffffff;
 }
+
+.order-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.order-card .card-body {
+  flex-grow: 1;
+}
+
+.order-card {
+  cursor: pointer;
+}
+
+.order-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}

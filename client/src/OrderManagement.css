@@ -1,0 +1,60 @@
+/* order-management.css */
+
+/* Set up container for the page */
+.container {
+    margin-top: 20px;
+}
+
+/* Styling for the order cards */
+.order-card {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 20px;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.order-card:hover {
+    transform: scale(1.01); /* Slight zoom effect on hover */
+}
+
+/* Card header styling - Different background color for the top part */
+.order-card-header {
+    background-color: #f0f0f0; /* Light grey */
+    padding: 10px;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+/* Card body styling */
+.card-body {
+    padding: 15px;
+}
+
+/* Card title styling */
+.card-title {
+    font-size: 1.2em;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* Card text styling */
+.card-text {
+    font-size: 1em;
+    margin-bottom: 5px;
+}
+
+/* Row and column setup for responsive layout */
+.row {
+    margin: 0 -15px; /* Remove gutter space */
+}
+
+.col-md-6 {
+    padding: 0 15px; /* Add padding for each column */
+}
+
+/* Styling for Product info in each item */
+.card-text strong {
+    font-weight: bold;
+    color: #333;
+}
