@@ -12,7 +12,9 @@ import OrderManagement from './order-management.tsx';
 import ReservationManagement from './reservation-management.tsx';
 import ReservationPage from './reservation-page.tsx';
 import ProductManagement from './ProductManagement.tsx'; 
-import ProductDetails from './ProductDetails.tsx'; // Import Product Details
+import ProductDetails from './ProductDetails.tsx';
+import ServiceManagement from './ServiceManagement.tsx';
+
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
@@ -27,6 +29,8 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/reservationmanagement" element={<ReservationManagement />} />
                 <Route path="/productmanagement" element={<ProductManagement />} /> 
                 <Route path="/productdetails/:productId" element={<ProductDetails />} />
+                <Route path="/servicemanagement" element={<ServiceManagement /> } />
+            </Routes>
         </Router>
     </StrictMode>,
 );

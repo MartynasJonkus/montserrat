@@ -27,7 +27,7 @@ const ServiceManagement: React.FC = () => {
   });
 
   const fetchServices = async () => {
-    const token = localStorage.getItem('jwt') || sessionStorage.getItem('jwt');
+      const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
     if (!token) {
       setError('No JWT token found. Please log in.');
       return;
@@ -63,7 +63,7 @@ const ServiceManagement: React.FC = () => {
   const handleAddServiceSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    const token = localStorage.getItem('jwt') || sessionStorage.getItem('jwt');
+      const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
     if (!token) {
       setError('No JWT token found. Please log in.');
       return;
@@ -115,7 +115,7 @@ const ServiceManagement: React.FC = () => {
   };
 
   const handleDeleteService = async (serviceId: number) => {
-    const token = localStorage.getItem('jwt') || sessionStorage.getItem('jwt');
+      const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
     if (!token) {
       setError('No JWT token found. Please log in.');
       return;
