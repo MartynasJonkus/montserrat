@@ -84,25 +84,32 @@ namespace api.Services
                 throw new ArgumentException("Invalid ServiceId");
             }
 
+            var originalStartTime = reservation.StartTime;
+            var originalEndTime = reservation.EndTime;
+
             _mapper.Map(updateReservationDto, reservation);
             reservation.EndTime = reservation.StartTime.AddMinutes(service.DurationMins);
 
-            // Check for overlapping reservations for the same employee
-            var overlappingEmployeeReservations = await _reservationRepository.GetOverlappingReservationsForEmployeeAsync(
-                updateReservationDto.EmployeeId, reservation.StartTime, reservation.EndTime);
-
-            if (overlappingEmployeeReservations.Any())
+            // Only check for overlapping reservations if the time has changed
+            if (originalStartTime != reservation.StartTime || originalEndTime != reservation.EndTime)
             {
-                throw new InvalidOperationException("The employee is already booked for this time slot.");
-            }
+                // Check for overlapping reservations for the same employee
+                var overlappingEmployeeReservations = await _reservationRepository.GetOverlappingReservationsForEmployeeAsync(
+                    updateReservationDto.EmployeeId, reservation.StartTime, reservation.EndTime);
 
-            // Check for overlapping reservations for the same service
-            var overlappingServiceReservations = await _reservationRepository.GetOverlappingReservationsForServiceAsync(
-                updateReservationDto.ServiceId, reservation.StartTime, reservation.EndTime);
+                if (overlappingEmployeeReservations.Any())
+                {
+                    throw new InvalidOperationException("The employee is already booked for this time slot.");
+                }
 
-            if (overlappingServiceReservations.Any())
-            {
-                throw new InvalidOperationException("The service is already booked for this time slot.");
+                // Check for overlapping reservations for the same service
+                var overlappingServiceReservations = await _reservationRepository.GetOverlappingReservationsForServiceAsync(
+                    updateReservationDto.ServiceId, reservation.StartTime, reservation.EndTime);
+
+                if (overlappingServiceReservations.Any())
+                {
+                    throw new InvalidOperationException("The service is already booked for this time slot.");
+                }
             }
 
             await _reservationRepository.UpdateAsync(reservation);
