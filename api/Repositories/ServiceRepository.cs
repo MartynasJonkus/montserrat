@@ -1,4 +1,5 @@
 using api.Data;
+using api.Enums;
 using api.Interfaces.Repositories;
 using api.Models;
 using Microsoft.EntityFrameworkCore;
@@ -20,18 +21,22 @@ namespace api.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<Service>> GetServicesAsync(int merchantId, string? category, int limit)
+        public async Task<IEnumerable<Service>> GetServicesAsync(int merchantId, EmployeeType employeeType, string? category, int pageNumber, int pageSize)
         {
             var query = _context.Services.AsQueryable();
 
-            query = query.Where(s => s.MerchantId == merchantId);
+            if (employeeType != EmployeeType.admin)
+                query = query.Where(c => c.MerchantId == merchantId);
 
             if (!string.IsNullOrEmpty(category))
             {
                 query = query.Where(s => s.Category != null && s.Category.Title == category);
             }
 
-            return await query.Take(limit).ToListAsync();
+            return await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
         }
 
         public async Task<Service?> GetByIdAsync(int serviceId)

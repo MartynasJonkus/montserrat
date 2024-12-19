@@ -10,7 +10,7 @@ function Dashboard() {
     const navigate = useNavigate();
 
     const navigateToOrderCreation = () => {
-        navigate('/ordercreation');
+        navigate('/ordercreation', { state: { id: undefined } });
     }
 
     const navigateToReservationCreation = () => {

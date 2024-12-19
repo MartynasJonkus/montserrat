@@ -73,3 +73,13 @@
     background-color: #AAAAAA;
     margin-bottom: 1px;
 }
+
+.order-detail {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}
+
+.item-list {
+    margin-left: 5px;
+}

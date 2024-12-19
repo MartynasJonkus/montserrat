@@ -1,4 +1,5 @@
 using api.Dtos.Service;
+using api.Enums;
 using api.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -31,16 +32,24 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetServices([FromQuery] string? category = null, [FromQuery] int limit = 10)
+        public async Task<IActionResult> GetServices([FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 10, [FromQuery] string? category = null, [FromQuery] int limit = 10)
         {
-            if (limit <= 0)
-                return BadRequest("Limit must be greater than 0.");
+            if (pageNumber <= 0 || pageSize <= 0)
+                return BadRequest("Page and pageSize must be greater than 0.");
 
             var merchantIdClaim = User.FindFirst("MerchantId");
-            if (merchantIdClaim == null || !int.TryParse(merchantIdClaim.Value, out var merchantId))
-                return Unauthorized("MerchantId is missing or invalid in the token.");
+            var employeeTypeClaim = User.FindFirst("EmployeeType");
 
-            var services = await _serviceService.GetServicesAsync(merchantId, category, limit);
+            if (merchantIdClaim == null || employeeTypeClaim == null)
+                return Unauthorized("MerchantId or EmployeeType is missing in the token.");
+
+            if (!int.TryParse(merchantIdClaim.Value, out var merchantId))
+                return Unauthorized("MerchantId is invalid.");
+
+            if (!Enum.TryParse(employeeTypeClaim.Value, out EmployeeType employeeType))
+                return Unauthorized("EmployeeType is invalid.");
+
+            var services = await _serviceService.GetServicesAsync(merchantId, employeeType, category, pageNumber, pageSize);
             return Ok(services);
         }
 
