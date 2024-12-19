@@ -1,8 +1,103 @@
 import { FaSearch } from "react-icons/fa";
 import TopNav from './top-nav.tsx';
+import axios from "axios";
+import { useEffect, useState } from "react";
 
+const API_BASE_URL = "http://localhost:5282";
+interface ReservationResponse {
+    id: number;
+    customerId: number;
+    serviceId: number;
+    employeeId: number;
+    startTime: string;
+    endTime: string;
+    status: number;
+    sendConfirmation: boolean;
+    createdAt: string;
+    updatedAt: string;
+}
 
+const changeStatus = async (reservation: ReservationResponse, newStatus: number): Promise<void> => {
+    const token = localStorage.getItem("jwtToken");
+
+    const data = {
+        customerId: reservation.customerId,
+        serviceId: reservation.serviceId,
+        employeeId: reservation.employeeId,
+        startTime: reservation.startTime,
+        status: newStatus,
+        sendConfirmation: reservation.sendConfirmation,
+    }
+    console.log(JSON.stringify(data));
+    const response = await axios.put<void>(`${API_BASE_URL}/api/reservations/${reservation.id}`, data, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    console.log("reservation status updated" + response.data);
+    window.location.reload();
+}
+
+const fetchReservationData = async (): Promise<ReservationResponse[]> => {
+    const token = localStorage.getItem("jwtToken");
+    const response = await axios.get<ReservationResponse[]>(`${API_BASE_URL}/api/reservations`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+
+    console.log(response.data);
+    return response.data;
+}
 function ReservationMng() {
+    const [reservations, setReservations] = useState<ReservationResponse[]>([]);
+
+    useEffect(() => {
+        handleFetchReservationData();
+    }, []);
+
+    const handleFetchReservationData = async () => {
+        try {
+            const data = await fetchReservationData();
+            setReservations(data);
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    const handleStatusChange = async (reservationId: number) => {
+        const input = prompt("New reservation status:");
+
+        if (input.length <= 0 || isNaN(input)) {
+            alert("Invalid input");
+        }
+        else {
+            const reservationToEdit = reservations.find((reservation) => reservation.id === reservationId);
+            if (reservationToEdit != undefined) {
+                await changeStatus(reservationToEdit, parseInt(input));
+            }
+        }
+
+    }
+
+    const allReservations = reservations.map(reservation =>
+        <div className="all-orders">
+            <div className="active-order-left">
+                <div className="reservation-detail">ID: {reservation.id}</div>
+                <div className="reservation-detail">Customer ID: {reservation.customerId}</div>
+                <div className="reservation-detail">Employee ID: {reservation.employeeId}</div>
+                <div className="reservation-detail">Start time: {reservation.startTime}</div>
+                <div className="reservation-detail">End time: {reservation.endTime}</div>
+                <div className="reservation-detail">Status: {reservation.status}</div>
+            </div>
+            <div className="active-order-right">
+                <button onClick={() => { }} className="page-button">Edit</button>
+                <button onClick={() => { handleStatusChange(reservation.id) } } className="page-button">Change status</button>
+                <button className="page-button">Delete</button>
+            </div>
+        </div>
+    )
 
     return (
         <>
@@ -19,34 +114,7 @@ function ReservationMng() {
                         </div>
 
                         <div id="all-orders-list">
-                            <div className="all-orders">
-                                <div className="active-order-left">
-                                    <div className="reservation-customer-name">Customer Name</div>
-                                    <div className="reservation-service-name">Reservation Name</div>
-                                    <div className="reservation-date">Reservation date</div>
-                                    <div className="reservation-status">Status</div>
-                                    <div className="reservation-employee">Employee</div>
-                                </div>
-                                <div className="active-order-right">
-                                    <button onClick={() => { }} className="page-button">Edit</button>
-                                    <button className="page-button">Change status</button>
-                                    <button className="page-button">Delete</button>
-                                </div>
-                            </div>
-                            <div className="all-orders">
-                                <div className="active-order-left">
-                                    <div className="reservation-customer-name">Customer Name</div>
-                                    <div className="reservation-service-name">Reservation Name</div>
-                                    <div className="reservation-date">Reservation date</div>
-                                    <div className="reservation-status">Status</div>
-                                    <div className="reservation-employee">Employee</div>
-                                </div>
-                                <div className="active-order-right">
-                                    <button onClick={() => { }} className="page-button">Edit</button>
-                                    <button className="page-button">Change status</button>
-                                    <button className="page-button">Delete</button>
-                                </div>
-                            </div>
+                            {allReservations}
                         </div>
                         
                     </div>
