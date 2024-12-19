@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react"
 import { Container, Button, Table, Form, FormGroup, Label, Input, Alert } from "reactstrap"
-import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
 import { Merchant, CreateMerchantDto } from "../Interfaces/Merchant"
 
