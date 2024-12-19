@@ -6,9 +6,8 @@ import "bootstrap/dist/css/bootstrap.min.css"
 import "./main.css"
 
 import LoginPage from "./Login.tsx"
-import OrderPage from "./order-page.tsx"
+import OrderPage from "./OrderPage.tsx"
 import Payment from "./payment.tsx"
-import Dashboard from "./dashboard.tsx"
 import OrderManagement from "./OrderManagement.tsx"
 import ReservationManagement from "./reservation-management.tsx"
 import ReservationPage from "./reservation-page.tsx"
@@ -29,6 +28,7 @@ import EditEmployee from "./Catalog/EditEmployee.tsx"
 import OrderDiscountManagement from "./Catalog/OrderDiscountManagement.tsx"
 import PersonalDetails from "./PersonalDetails.tsx"
 import Layout from "./Layout.tsx"
+import Dashboard from "./dashboard.tsx"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

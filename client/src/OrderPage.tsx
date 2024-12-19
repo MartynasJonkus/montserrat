@@ -2,66 +2,24 @@ import { FaRegPlusSquare } from "react-icons/fa";
 import { useNavigate } from "react-router";
 import { useEffect, useRef, useState } from "react";
 import { ImCross } from "react-icons/im";
-import './order-page.css';
+import './OrderPage.css';
 import { useLocation } from "react-router-dom";
 import axios from "axios";
+import { Order, OrderItem } from "./Interfaces/Order";
+import { Product } from "./Interfaces/Product";
 
 const API_BASE_URL = "http://localhost:5282";
-interface Item {
-    id: number;
-    price: {
-        amount: number;
-        currency: number;
-    }
-    productVariantId: number;
-    quantity: number;
-}
-interface OrderResponse {
-    id: number;
-    merchantId: number;
-    orderDiscountId?: number;
-    orderItems: Item[];
-    status: number;
-    updatedAt: string;
-}
 
-interface ProductResponse {
-    id: number;
-    merchantId: number;
-    categoryId?: number;
-    discountId?: number;
-    taxId?: number;
-    title: string;
-    price: {
-        amount: number;
-        currency: number;
-    }
-    weight: number;
-    weightUnit: string;
-    createdAt: string;
-    updatedAt: string;
-    status: number;
-    productVariants: [{
-        id: number;
-        productId: number;
-        title: string;
-        additionalPrice: number;
-        quantity: number;
-        createdAt: string;
-        updatedAt: string;
-        status: number;
-    }]
-}
 function OrderPage() {
     const navigate = useNavigate();
     const location = useLocation();
 
     const orderId = location.state.id;
 
-    const [orderItems, setOrder] = useState<Item[]>([]);
-    const [products, setProduct] = useState<ProductResponse[]>([]);
+    const [orderItems, setOrder] = useState<OrderItem[]>([]);
+    const [products, setProduct] = useState<Product[]>([]);
     const [subtotalAmount, setSubtotal] = useState(0);
-    const [discountAmount, setDiscount] = useState(0);
+    const [discountAmount] = useState(0);
     const [totalAmount, setTotal] = useState(0);
 
     const isFirstRender = useRef(true);
@@ -100,10 +58,8 @@ function OrderPage() {
 
         handleFetchProducts();
         return;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-
-
 
     const handleItemAdd = (productId: number, variantId: number) => {
         console.log(variantId + ":" + productId);
@@ -158,7 +114,7 @@ function OrderPage() {
         }
     }
 
-    const handleItemPrice = (item: Item) => {
+    const handleItemPrice = (item: OrderItem) => {
         const price = products.find(product => product.id == item.id)?.productVariants.find(variant => variant.id == item.productVariantId)?.additionalPrice
 
         if (price != undefined) {
@@ -168,9 +124,9 @@ function OrderPage() {
 
     }
 
-    const fetchOrderItems = async (orderId: number): Promise<Item[]> => {
+    const fetchOrderItems = async (orderId: number): Promise<OrderItem[]> => {
         const token = localStorage.getItem("jwtToken");
-        const response = await axios.get<OrderResponse>(`${API_BASE_URL}/api/orders/${orderId}`, {
+        const response = await axios.get<Order>(`${API_BASE_URL}/api/orders/${orderId}`, {
             params: {
                 orderId,
             },
@@ -191,9 +147,9 @@ function OrderPage() {
         }));
     }
 
-    const fetchProducts = async (pageNumber: number, pageSize: number): Promise<ProductResponse[]> => {
+    const fetchProducts = async (pageNumber: number, pageSize: number): Promise<Product[]> => {
         const token = localStorage.getItem("jwtToken");
-        const response = await axios.get<ProductResponse[]>(`${API_BASE_URL}/api/products?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+        const response = await axios.get<Product[]>(`${API_BASE_URL}/api/products?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
@@ -203,10 +159,10 @@ function OrderPage() {
         return response.data;
     }
 
-    const saveOrder = async (orderId: number, orderItems: Item[]): Promise<void> => {
+    const saveOrder = async (orderId: number, orderItems: OrderItem[]): Promise<void> => {
 
         const token = localStorage.getItem("jwtToken");
-        const orderResponse = await axios.get<OrderResponse>(`${API_BASE_URL}/api/orders/${orderId}`, {
+        const orderResponse = await axios.get<Order>(`${API_BASE_URL}/api/orders/${orderId}`, {
             params: {
                 orderId,
             },
@@ -237,7 +193,7 @@ function OrderPage() {
         window.location.reload();
     }
 
-    const createOrder = async (orderItems: Item[]): Promise<void> => {
+    const createOrder = async (orderItems: OrderItem[]): Promise<void> => {
         const token = localStorage.getItem("jwtToken");
 
         const data = {
@@ -311,7 +267,6 @@ function OrderPage() {
                         </div>
                     </div>
                     <div id="container-bottom">
-                        <button onClick={() => { }} id="payment-split">Split</button>
                         <button onClick={() => navigateToPayment()} id="payment-pay">Pay</button>
                     </div>
                 </div>
