@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react"
-import { Container, Button, Table } from "reactstrap"
+import { Container, Button, Table, Form, FormGroup, Label, Input, Alert } from "reactstrap"
+import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
 import { Merchant, CreateMerchantDto } from "../Interfaces/Merchant"
 
@@ -25,8 +26,7 @@ const MerchantManagement: React.FC = () => {
 
   // Fetch the list of merchants
   const fetchMerchants = async () => {
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -65,25 +65,21 @@ const MerchantManagement: React.FC = () => {
   const handleSaveMerchant = async () => {
     if (!editableMerchant) return
 
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:5282/api/merchants/${editableMerchant.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(editableMerchant),
-        }
-      )
+      const response = await fetch(`http://localhost:5282/api/merchants/${editableMerchant.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(editableMerchant),
+      })
 
       if (!response.ok) {
         const errorData = await response.json()
@@ -111,8 +107,7 @@ const MerchantManagement: React.FC = () => {
   const handleAddMerchantSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
 
-    const token =
-      localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
+    const token = localStorage.getItem("jwtToken") || sessionStorage.getItem("jwtToken")
     if (!token) {
       setError("No JWT token found. Please log in.")
       return
@@ -176,12 +171,12 @@ const MerchantManagement: React.FC = () => {
   return (
     <div>
       <Container>
-        <h1  className="mt-4">Merchant Management</h1>
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        <h1>Merchant Management</h1>
+        {error && <Alert color="danger">{error}</Alert>}
 
         {/* Merchant List */}
         {merchants.length > 0 ? (
-          <Table>
+          <Table striped className="mt-4">
             <thead>
               <tr>
                 <th>ID</th>
@@ -381,10 +376,7 @@ const MerchantManagement: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <Button
-                          color="warning"
-                          onClick={() => handleEditClick(merchant)}
-                        >
+                        <Button color="warning" onClick={() => handleEditClick(merchant)}>
                           Edit
                         </Button>
                       </>
@@ -399,44 +391,49 @@ const MerchantManagement: React.FC = () => {
         )}
 
         {/* Add New Merchant Form */}
-        <h2>Add New Merchant</h2>
-        <form onSubmit={handleAddMerchantSubmit}>
-          <div>
-            <label>Name:</label>
-            <input
+        <Form className="mt-4" onSubmit={handleAddMerchantSubmit}>
+          <h2>Add New Merchant</h2>
+          <FormGroup>
+            <Label for="name">Name</Label>
+            <Input
               type="text"
+              id="name"
               value={newMerchant.name}
               onChange={(e) => setNewMerchant({ ...newMerchant, name: e.target.value })}
             />
-          </div>
-          <div>
-            <label>VAT:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="VAT">VAT</Label>
+            <Input
               type="text"
+              id="VAT"
               value={newMerchant.VAT}
               onChange={(e) => setNewMerchant({ ...newMerchant, VAT: e.target.value })}
             />
-          </div>
-          <div>
-            <label>Email:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="email">Email</Label>
+            <Input
               type="email"
+              id="email"
               value={newMerchant.email}
               onChange={(e) => setNewMerchant({ ...newMerchant, email: e.target.value })}
             />
-          </div>
-          <div>
-            <label>Phone:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="phone">Phone</Label>
+            <Input
               type="tel"
+              id="phone"
               value={newMerchant.phone}
               onChange={(e) => setNewMerchant({ ...newMerchant, phone: e.target.value })}
             />
-          </div>
-          <div>
-            <label>Address 1:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="address1">Address 1</Label>
+            <Input
               type="text"
+              id="address1"
               value={newMerchant.address.address1}
               onChange={(e) =>
                 setNewMerchant({
@@ -448,11 +445,12 @@ const MerchantManagement: React.FC = () => {
                 })
               }
             />
-          </div>
-          <div>
-            <label>Address 2:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="address2">Address 2</Label>
+            <Input
               type="text"
+              id="address2"
               value={newMerchant.address.address2 || ""}
               onChange={(e) =>
                 setNewMerchant({
@@ -464,11 +462,12 @@ const MerchantManagement: React.FC = () => {
                 })
               }
             />
-          </div>
-          <div>
-            <label>City:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="city">City</Label>
+            <Input
               type="text"
+              id="city"
               value={newMerchant.address.city}
               onChange={(e) =>
                 setNewMerchant({
@@ -480,11 +479,12 @@ const MerchantManagement: React.FC = () => {
                 })
               }
             />
-          </div>
-          <div>
-            <label>Country:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="country">Country</Label>
+            <Input
               type="text"
+              id="country"
               value={newMerchant.address.country}
               onChange={(e) =>
                 setNewMerchant({
@@ -496,11 +496,12 @@ const MerchantManagement: React.FC = () => {
                 })
               }
             />
-          </div>
-          <div>
-            <label>Country Code:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="countryCode">Country Code</Label>
+            <Input
               type="text"
+              id="countryCode"
               value={newMerchant.address.countryCode}
               onChange={(e) =>
                 setNewMerchant({
@@ -512,11 +513,12 @@ const MerchantManagement: React.FC = () => {
                 })
               }
             />
-          </div>
-          <div>
-            <label>Zip Code:</label>
-            <input
+          </FormGroup>
+          <FormGroup>
+            <Label for="zipCode">Zip Code</Label>
+            <Input
               type="text"
+              id="zipCode"
               value={newMerchant.address.zipCode}
               onChange={(e) =>
                 setNewMerchant({
@@ -528,27 +530,34 @@ const MerchantManagement: React.FC = () => {
                 })
               }
             />
-          </div>
-          <div>
-            <label>Status:</label>
-            <select
+          </FormGroup>
+          <FormGroup>
+            <Label for="status">Status</Label>
+            <Input
+              type="select"
+              id="status"
               value={newMerchant.status}
               onChange={(e) =>
-                setNewMerchant({ ...newMerchant, status: parseInt(e.target.value) })
+                setNewMerchant({
+                  ...newMerchant,
+                  status: parseInt(e.target.value, 10),
+                })
               }
             >
-              <option value={Status.Active}>Active</option>
-              <option value={Status.Inactive}>Inactive</option>
-              <option value={Status.Archived}>Archived</option>
-            </select>
-          </div>
-          <Button type="submit" color="primary">
+              {Object.entries(Status).map(([key, value]) => (
+                <option key={value} value={value}>
+                  {key}
+                </option>
+              ))}
+            </Input>
+          </FormGroup>
+          <Button color="primary" type="submit">
             Add Merchant
           </Button>
-        </form>
+        </Form>
       </Container>
     </div>
-  )
-}
+  );
+};
 
-export default MerchantManagement
+export default MerchantManagement;
