@@ -4,6 +4,7 @@ import TopNav from './top-nav.tsx';
 import './order-management.css';
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { OrderStatus } from "./Enums/OrderStatus";
 
 const API_BASE_URL = "http://localhost:5282";
 
@@ -126,7 +127,7 @@ function OrderMng() {
                 <div className="order-detail">ID: {order.id}</div>
                 <div className="order-detail">Merchant: {order.merchantId}</div>
                 <div className="order-detail">Discount: {order.orderDiscountId}</div>
-                <div className="order-detail">Status: {order.status}</div>
+                <div className="order-detail">Status: {OrderStatus[order.status]}</div>
                 <div className="order-detail">Items: {order.orderItems.map(item => <div className="item-list">ID: {item.productVariantId} x{item.quantity} </div> )} </div>
                 <div className="order-detail">Last updated: {order.updatedAt}</div>
             </div>
