@@ -29,6 +29,7 @@ import OrderDiscountManagement from "./Catalog/OrderDiscountManagement.tsx"
 import PersonalDetails from "./PersonalDetails.tsx"
 import Layout from "./Layout.tsx"
 import Dashboard from "./dashboard.tsx"
+import OrderDetails from "./OrderDetails.tsx"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -39,10 +40,13 @@ createRoot(document.getElementById("root")!).render(
         <Route element={<Layout />}>
           <Route path="/personaldetails" element={<PersonalDetails />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/ordercreation" element={<OrderPage />} />
           <Route path="/reservationcreation" element={<ReservationPage />} />
           <Route path="/payment" element={<Payment />} />
+
           <Route path="/ordermanagement" element={<OrderManagement />} />
+          <Route path="/ordercreation" element={<OrderPage />} />
+          <Route path="/order-details/:orderId" element={<OrderDetails />} />
+
           <Route
             path="/reservationmanagement"
             element={<ReservationManagement />}

@@ -81,13 +81,21 @@ function OrderMng() {
 
   const navigate = useNavigate()
 
-  const navigateToOrderPage = (orderId: number) => {
-    navigate("/ordercreation", { state: { id: orderId } })
+  const navigateToPage = (orderId: number, orderStatus: number) => {
+    // Conditional navigation based on the order status
+    if (orderStatus === OrderStatus.Opened) {
+      //navigate(`/orderpage/${orderId}`) // Opened orders go to OrderPage
+      navigate('/ordercreation', { state: { id: orderId } });
+    } else if (orderStatus === OrderStatus.PartiallyPaid) {
+      navigate(`/payment/${orderId}`) // PartiallyPaid orders go to Payment
+    } else {
+      navigate(`/order-details/${orderId}`) // All other statuses go to OrderDetails
+    }
   }
 
   useEffect(() => {
     handleFetchOrderData()
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Fetch orders data based on current page and other parameters
@@ -132,7 +140,7 @@ function OrderMng() {
           <Col md={6}>
             <Card
               className="order-card"
-              onClick={() => navigateToOrderPage(order.id)}
+              onClick={() => navigateToPage(order.id, order.status)}
             >
               <CardHeader className="order-card-header">
                 <CardTitle tag="h5">Order ID: {order.id}</CardTitle>
@@ -167,10 +175,12 @@ function OrderMng() {
             {orders[index + 1] && (
               <Card
                 className="order-card"
-                onClick={() => navigateToOrderPage(orders[index + 1].id)}
+                onClick={() => navigateToPage(orders[index + 1].id, orders[index + 1].status)}
               >
                 <CardHeader className="order-card-header">
-                  <CardTitle tag="h5">Order ID: {orders[index + 1].id}</CardTitle>
+                  <CardTitle tag="h5">
+                    Order ID: {orders[index + 1].id}
+                  </CardTitle>
                 </CardHeader>
                 <CardBody>
                   <Row>
