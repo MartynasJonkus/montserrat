@@ -13,7 +13,7 @@ interface Item {
         amount: number;
         currency: number;
     }
-    productVariantId: number;
+    productVariant: number;
     quantity: number;
 }
 interface OrderResponse {
@@ -127,7 +127,7 @@ function OrderMng() {
                 <div className="order-detail">Merchant: {order.merchantId}</div>
                 <div className="order-detail">Discount: {order.orderDiscountId}</div>
                 <div className="order-detail">Status: {order.status}</div>
-                <div className="order-detail">Items: {order.orderItems.map(item => <div className="item-list">ID: {item.productVariantId} x{item.quantity} </div> )} </div>
+                <div className="order-detail">Items: {order.orderItems.map(item => <div className="item-list">ID: {item.id} x{item.quantity} </div> )} </div>
                 <div className="order-detail">Last updated: {order.updatedAt}</div>
             </div>
             <div className="active-order-right">

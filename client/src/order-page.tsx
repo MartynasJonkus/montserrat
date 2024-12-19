@@ -14,7 +14,7 @@ interface Item {
         amount: number;
         currency: number;
     }
-    productVariantId: number;
+    productVariant: number;
     quantity: number;
 }
 interface OrderResponse {
@@ -72,7 +72,7 @@ const fetchOrderItems = async (orderId: number): Promise<Item[]> => {
             amount: item.price.amount,
             currency: item.price.currency,
         },
-        productVariantId: item.productVariantId,
+        productVariant: item.productVariant,
         quantity: item.quantity,
     }));
 }
@@ -104,20 +104,16 @@ const saveOrder = async (orderId: number, orderItems: Item[]): Promise<void> => 
             Authorization: `Bearer ${token}`,
         },
     });
-    console.log(orderResponse.data);
 
-    console.log(JSON.stringify(orderItems));
     const data = {
         orderDiscountId: orderResponse.data.orderDiscountId,
         status: orderResponse.data.status,
-        orderItems: orderItems.map((item) => ({
-            productVariantId: item.productVariantId,
-            quantity: item.quantity,
-        }))
+        orderItems: orderItems,
     }
 
-    console.log(JSON.stringify(data));
-
+    console.log("data:" + data.orderItems);
+    console.log("data:" + data.status);
+    console.log("data:" + data.orderDiscountId);
     const updateResponse = await axios.put<void>(`${API_BASE_URL}/api/orders/${orderId}`, data, {
         headers: {
             Authorization: `Bearer ${token}`,
@@ -131,14 +127,10 @@ const saveOrder = async (orderId: number, orderItems: Item[]): Promise<void> => 
 const createOrder = async (orderItems: Item[]): Promise<void> => {
     const token = localStorage.getItem("jwtToken");
 
-    const data = {
-        orderItems: orderItems.map(item => ({
-            productVariantId: item.productVariantId,
-            quantity: item.quantity,
-        }))
-    };
-
-    console.log(JSON.stringify(data));
+    const data = orderItems.map(item => ({
+        productVariant: item.id,
+        quantity: item.quantity,
+    }));
 
     const response = await axios.post<void>(`${API_BASE_URL}/api/orders`, data, {
         headers: {
@@ -184,8 +176,8 @@ function OrderPage() {
         }
     }
 
-    const handleItemAdd = (productId: number, variantId: number) => {
-        console.log(variantId + ":" + productId);
+    const handleItemAdd = (productId: number, variantId?: number) => {
+        console.log("a" + variantId+":"+productId);
         const productToAdd = products.find(product => product.id == productId);
 
         if (productToAdd != undefined) {
@@ -204,10 +196,11 @@ function OrderPage() {
                         amount: productToAdd.price.amount,
                         currency: productToAdd.price.currency,
                     },
-                    productVariantId: variantId,
+                    //add correct variant
+                    productVariant: productToAdd.productVariants[0].id,
                     quantity: 1,
                 }
-                console.log(newItem.id + "variant:" + newItem.productVariantId);
+                console.log(newItem.id + "variant:" + newItem.productVariant);
                 setOrder(prevItems => [...prevItems, newItem]);
             }
         }
@@ -218,47 +211,44 @@ function OrderPage() {
     }
 
     const navigateToPayment = () => {
-        navigate('/payment', { state: { amount: totalAmount, id: orderId } });
+        navigate('/payment', { state: { amount: totalAmount } });
     }
 
     useEffect(() => {
         const sum = orderItems.reduce((aggr, current) => aggr + (current.price.amount * current.quantity), 0);
         setSubtotal(sum);
         setTotal(subtotalAmount - discountAmount);
-    }, [discountAmount, orderItems, subtotalAmount]);
+    }, [discountAmount, orderItems, subtotalAmount]); 
 
 
     const handleSaveOrder = () => {
         if (orderId != undefined) {
-            console.log(JSON.stringify(orderItems));
             saveOrder(orderId, orderItems);
         } else {
             createOrder(orderItems);
         }
     }
-
+    
     const itemList = orderItems.map(item =>
         <>
             <hr />
             <div className="order-product">
                 <div id="order-product-amount">x{item.quantity}</div>
-                <div id="order-product-name">ID: {item.productVariantId}</div>
+                <div id="order-product-name">ID: {item.id}</div>
                 <div id="order-product-price">${item.price.amount}</div>
                 <ImCross onClick={() => handleItemRemove(item.id)} />
             </div>
         </>
     );
 
-    const [selectedValues, setSelectedValues] = useState(0);
 
     const productList = products.map(product =>
-        <div className="item">
-            <div className="item-name">{product.title} <FaRegPlusSquare onClick={() => handleItemAdd(product.id, selectedValues)} /></div>
+        <div onClick={() => handleItemAdd(product.id)} className="item">
+            <div className="item-name">{product.title}</div>
             <div className="item-price">${product.price.amount}</div>
-            <select value={selectedValues} onChange={(e) => setSelectedValues(parseInt(e.target.value))}>
-                <option value="">-</option>
+            <select>
                 {product.productVariants.reverse().map(variant =>
-                    <option value={variant.id}>{variant.title} +${variant.additionalPrice}</option>
+                    <option value={variant.additionalPrice}>{variant.title} +${variant.additionalPrice}</option>
                 )}
             </select>
         </div>
@@ -271,7 +261,7 @@ function OrderPage() {
             <div id="order-container">
                 <div id="container-left">
                     <div className="container-top" id="back-to-dashboard">
-                        <button id="save-order-button" onClick={() => handleSaveOrder()}>Save order</button>
+                        <button id="save-order-button" onClick={() => handleSaveOrder() }>Save order</button>
                     </div>
                     <div id="order-details">
                         <div id="order-top"><b>CURRENT ORDER</b></div>
@@ -296,8 +286,8 @@ function OrderPage() {
                         </div>
                     </div>
                     <div id="container-bottom">
-                        <button onClick={() => { }} id="payment-split">Split</button>
-                        <button onClick={() => navigateToPayment()} id="payment-pay">Pay</button>
+                        <button onClick={() => { } } id="payment-split">Split</button>
+                        <button onClick={() => navigateToPayment()} id="payment-pay">Pay</button>                  
                     </div>
                 </div>
 

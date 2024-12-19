@@ -25,7 +25,7 @@ const ProductManagement: React.FC = () => {
   });
 
   const fetchProducts = async () => {
-      const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+    const token = localStorage.getItem('jwt') || sessionStorage.getItem('jwt');
     if (!token) {
       setError('No JWT token found. Please log in.');
       return;
@@ -60,7 +60,7 @@ const ProductManagement: React.FC = () => {
   const handleAddProductSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-      const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+    const token = localStorage.getItem('jwt') || sessionStorage.getItem('jwt');
     if (!token) {
       setError('No JWT token found. Please log in.');
       return;
@@ -112,7 +112,7 @@ const ProductManagement: React.FC = () => {
   };
 
   const handleDeleteProduct = async (productId: number) => {
-      const token = localStorage.getItem('jwtToken') || sessionStorage.getItem('jwtToken');
+    const token = localStorage.getItem('jwt') || sessionStorage.getItem('jwt');
     if (!token) {
       setError('No JWT token found. Please log in.');
       return;

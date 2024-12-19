@@ -9,7 +9,6 @@ function Payment() {
     const location = useLocation();
 
     const flatPrice = location.state.amount;
-    const orderId = location.state.id;
 
     const [tipAmount, setTip] = useState("0.00");
     function handleClick(percentage:number) {
@@ -23,7 +22,7 @@ function Payment() {
             <div id="payment-container">
                 <div id="payment-container-top">
                     <div id="payment-title">
-                        <GoArrowLeft id="back-arrow" size={30} onClick={() => navigate("/ordercreation", { state: { id: orderId } })} />
+                        <GoArrowLeft id="back-arrow" size={30} onClick={() => navigate("/ordercreation")} />
                         <div id="title-content">
                             <div>Pay Full Amount</div>
                             <div id="title-amount">(${flatPrice.toFixed(2)})</div>
