@@ -2,6 +2,7 @@ import { EmployeeType } from "../Enums/EmployeeType"
 import { Status } from "../Enums/Status"
 
 export interface Employee {
+  password: string
   id: number
   firstName: string
   lastName: string
