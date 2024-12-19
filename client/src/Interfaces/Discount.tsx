@@ -9,3 +9,10 @@ export interface Discount {
   updatedAt: string
   status: Status
 }
+
+export interface CreateDiscountDto {
+  title: string
+  percentage: number
+  expiresOn: string
+  status: Status
+}
