@@ -5,6 +5,7 @@ import './order-management.css';
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { OrderStatus } from "./Enums/OrderStatus";
+import { formatDate } from "./utils/dateUtils";
 
 const API_BASE_URL = "http://localhost:5282";
 
@@ -129,7 +130,7 @@ function OrderMng() {
                 <div className="order-detail">Discount: {order.orderDiscountId}</div>
                 <div className="order-detail">Status: {OrderStatus[order.status]}</div>
                 <div className="order-detail">Items: {order.orderItems.map(item => <div className="item-list">ID: {item.productVariantId} x{item.quantity} </div> )} </div>
-                <div className="order-detail">Last updated: {order.updatedAt}</div>
+                <div className="order-detail">Last updated: {formatDate(order.updatedAt)}</div>
             </div>
             <div className="active-order-right">
                 <button onClick={() => navigateToOrderPage(order.id)} className="page-button">Edit</button>

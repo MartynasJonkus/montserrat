@@ -3,6 +3,7 @@ import { Container, Button, Table } from "reactstrap"
 import TopNav from "../top-nav"
 import { Status } from "../Enums/Status"
 import { Tax, CreateTaxDto } from "../Interfaces/Tax"
+import { formatDate } from '../utils/dateUtils';
 
 const TaxManagement: React.FC = () => {
   const [taxes, setTaxes] = useState<Tax[]>([])
@@ -227,8 +228,8 @@ const TaxManagement: React.FC = () => {
                       Status[tax.status]
                     )}
                   </td>
-                  <td>{tax.createdAt}</td>
-                  <td>{tax.updatedAt}</td>
+                  <td>{formatDate(tax.createdAt)}</td>
+                  <td>{formatDate(tax.updatedAt)}</td>
                   <td>
                     {editableTax?.id === tax.id ? (
                       <>

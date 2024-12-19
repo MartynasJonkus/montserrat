@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react"
 import { Container, Button, Table } from "reactstrap"
 import TopNav from "../top-nav"
 import { OrderDiscount, CreateOrderDiscountDto } from "../Interfaces/OrderDiscount"
+import { formatDate } from '../utils/dateUtils';
 
 const OrderDiscountManagement: React.FC = () => {
   const [discounts, setDiscounts] = useState<OrderDiscount[]>([])
@@ -229,8 +230,8 @@ const OrderDiscountManagement: React.FC = () => {
                       discount.percentage
                     )}
                   </td>
-                  <td>{discount.createdAt}</td>
-                  <td>{discount.updatedAt}</td>
+                  <td>{formatDate(discount.createdAt)}</td>
+                  <td>{formatDate(discount.updatedAt)}</td>
                   <td>
                     {editableDiscount?.id === discount.id ? (
                       <>

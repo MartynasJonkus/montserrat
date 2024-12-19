@@ -12,6 +12,7 @@ import { Employee } from "./Interfaces/Employee"
 import { Status } from "./Enums/Status"
 import TopNav from "./top-nav"
 import { EmployeeType } from "./Enums/EmployeeType"
+import { formatDate } from "./utils/dateUtils"
 
 const PersonalDetails: React.FC = () => {
   const [employee, setEmployee] = useState<Employee | null>(null)
@@ -128,10 +129,10 @@ const PersonalDetails: React.FC = () => {
                 <strong>Status:</strong> {Status[employee.status]}
               </CardText>
               <CardText>
-                <strong>Created At:</strong> {employee.createdAt}
+                <strong>Created At:</strong> {formatDate(employee.createdAt)}
               </CardText>
               <CardText>
-                <strong>Updated At:</strong> {employee.updatedAt}
+                <strong>Updated At:</strong> {formatDate(employee.updatedAt)}
               </CardText>
             </CardBody>
           </Card>
@@ -160,10 +161,10 @@ const PersonalDetails: React.FC = () => {
                 <strong>Status:</strong> {Status[merchant.status]}
               </CardText>
               <CardText>
-                <strong>Created At:</strong> {merchant.createdAt}
+                <strong>Created At:</strong> {formatDate(merchant.createdAt)}
               </CardText>
               <CardText>
-                <strong>Updated At:</strong> {merchant.updatedAt}
+                <strong>Updated At:</strong> {formatDate(merchant.updatedAt)}
               </CardText>
               <CardText>
                 <strong>Address:</strong>
