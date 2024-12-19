@@ -26,11 +26,11 @@ function TopNav() {
                         <div id="dropdown-content">
                             <button onClick={() => navigate("/productmanagement")} className="menu-button">Product management</button>
                             <button onClick={() => navigate("/servicemanagement")} className="menu-button">Service management</button>
-                            <button onClick={() => navigate("/")} className="menu-button">Employee management</button>
-                            <button onClick={() => navigate("/")} className="menu-button">Giftcard management</button>
-                            <button onClick={() => navigate("/")} className="menu-button">Discount management</button>
-                            <button onClick={() => navigate("/")} className="menu-button">Tax management</button>
-                            <button onClick={() => navigate("/")} className="menu-button">Customer management</button>
+                            <button onClick={() => navigate("/employeemanagement")} className="menu-button">Employee management</button>
+                            <button onClick={() => navigate("/giftcardmanagement")} className="menu-button">Giftcard management</button>
+                            <button onClick={() => navigate("/discountmanagement")} className="menu-button">Discount management</button>
+                            <button onClick={() => navigate("/taxmanagement")} className="menu-button">Tax management</button>
+                            <button onClick={() => navigate("/customermanagement")} className="menu-button">Customer management</button>
                         </div>
                     </div>
 

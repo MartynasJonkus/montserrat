@@ -2,6 +2,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './main.css';
 
 import LoginPage from './Login.tsx';
@@ -11,22 +12,23 @@ import Dashboard from './dashboard.tsx';
 import OrderManagement from './order-management.tsx';
 import ReservationManagement from './reservation-management.tsx';
 import ReservationPage from './reservation-page.tsx';
-import ProductManagement from './ProductManagement.tsx'; 
-import ProductDetails from './ProductDetails.tsx';
-import ServiceManagement from './ServiceManagement.tsx';
-import EmployeeManagement from './EmployeeManagement.tsx';
-import DiscountManagement from './DiscountManagement.tsx';
-import GiftCardManagement from './GiftCardManagement.tsx';
-import TaxManagement from './TaxManagement.tsx';
-import CustomerManagement from './CustomerManagement.tsx';
-import MerchantManagement from './MerchantManagement.tsx';
+import ProductManagement from './Catalog/ProductManagement.tsx'; 
+import ProductDetails from './Catalog/ProductDetails.tsx';
+import ServiceManagement from './Catalog/ServiceManagement.tsx';
+import EmployeeManagement from './Catalog/EmployeeManagement.tsx';
+import DiscountManagement from './Catalog/DiscountManagement.tsx';
+import GiftCardManagement from './Catalog/GiftCardManagement.tsx';
+import TaxManagement from './Catalog/TaxManagement.tsx';
+import CustomerManagement from './Catalog/CustomerManagement.tsx';
+import MerchantManagement from './Catalog/MerchantManagement.tsx';
+import EditProduct from './Catalog/EditProduct.tsx';
 
 
 createRoot(document.getElementById('root')!).render(
     <StrictMode>
         <Router>
             <Routes>
-                <Route path="/" element={<LoginPage />} /> {/* Login Page as default */}
+                <Route path="/" element={<LoginPage />} />
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/ordercreation" element={<OrderPage />} />
                 <Route path="/reservationcreation" element={<ReservationPage />} />
@@ -35,6 +37,7 @@ createRoot(document.getElementById('root')!).render(
                 <Route path="/reservationmanagement" element={<ReservationManagement />} />
                 <Route path="/productmanagement" element={<ProductManagement />} /> 
                 <Route path="/product-details/:productId" element={<ProductDetails />} />
+                <Route path="/edit-product/:productId" element={<EditProduct />} />
                 <Route path="/servicemanagement" element={<ServiceManagement /> } />
                 <Route path="/employeemanagement" element={<EmployeeManagement /> } />
                 <Route path="/discountmanagement" element={<DiscountManagement /> } />
