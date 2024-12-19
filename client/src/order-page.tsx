@@ -260,7 +260,7 @@ function OrderPage() {
     const itemList = orderItems.map(item =>
         <>
             <hr />
-            <div className="order-product">
+            <div className="order-product" >
                 <div id="order-product-amount">x{item.quantity}</div>
                 <div id="order-product-name">ID: {item.productVariantId}</div>
                 <div id="order-product-price">${handleItemPrice(item)}</div>
@@ -269,25 +269,13 @@ function OrderPage() {
         </>
     );
 
-    //const [selectedValues, setSelectedValues] = useState(0);
-
-    //const productList = products.map(product =>
-    //    <div className="item">
-    //        <div className="item-name">{product.title} <FaRegPlusSquare onClick={() => handleItemAdd(product.id, selectedValues)} /></div>
-    //        <div className="item-price">${product.price.amount}</div>
-    //        <select value={selectedValues} onChange={(e) => setSelectedValues(parseInt(e.target.value))}>
-    //            <option value="">-</option>
-    //            {product.productVariants.reverse().map(variant =>
-    //                <option value={variant.id}>{variant.title} +${variant.additionalPrice}</option>
-    //            )}
-    //        </select>
-    //    </div>
-    //);
-
     const productList = products.map(product =>
         product.productVariants.reverse().map(variant =>
             <div className="item">
-                <div className="item-name">{product.title} {variant.title} <FaRegPlusSquare onClick={() => handleItemAdd(product.id, variant.id)} /></div>
+                <div className="item-name">
+                    {product.title} {variant.title}
+                    {variant.quantity != 0 ? <FaRegPlusSquare onClick={() => handleItemAdd(product.id, variant.id)} /> : null}
+                </div>
                 <div className="item-price">${product.price.amount + variant.additionalPrice}</div>
             </div>
         )
@@ -320,11 +308,11 @@ function OrderPage() {
                         <div id="price-bottom">
                             <div className="component-name">Total</div>
                             <div className="price-amount">${totalAmount.toFixed(2)}</div>
-                        </div>  
+                        </div>
                     </div>
                     <div id="container-bottom">
                         <button onClick={() => { }} id="payment-split">Split</button>
-                        <button onClick={() => navigateToPayment()} id="payment-pay">Pay</button>             
+                        <button onClick={() => navigateToPayment()} id="payment-pay">Pay</button>
                     </div>
                 </div>
 
