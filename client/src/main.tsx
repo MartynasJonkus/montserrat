@@ -30,6 +30,7 @@ import PersonalDetails from "./PersonalDetails.tsx"
 import Layout from "./Layout.tsx"
 import Dashboard from "./dashboard.tsx"
 import OrderDetails from "./OrderDetails.tsx"
+import OrderPayment from "./OrderPayment.tsx"
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
@@ -45,6 +46,7 @@ createRoot(document.getElementById("root")!).render(
 
           <Route path="/ordermanagement" element={<OrderManagement />} />
           <Route path="/ordercreation" element={<OrderPage />} />
+          <Route path="/order-payment/:orderId" element={<OrderPayment />} />
           <Route path="/order-details/:orderId" element={<OrderDetails />} />
 
           <Route

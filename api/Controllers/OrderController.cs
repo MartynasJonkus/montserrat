@@ -100,5 +100,18 @@ namespace api.Controllers
 
             return Ok(receipt);
         }
+
+        [HttpPut("{orderId}/discount")]
+        public async Task<IActionResult> UpdateOrderDiscount([FromRoute] int orderId, [FromBody] int? orderDiscountId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var orderDto = await _orderService.UpdateOrderDiscount(orderId, orderDiscountId);
+            if (orderDto == null)
+                return NotFound(new { message = "Receipt not found for the order" });
+
+            return Ok(orderDto);
+        }
     }
 }

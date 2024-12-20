@@ -178,7 +178,9 @@ namespace api.Services
             if (order == null)
                 throw new InvalidOperationException($"Order with ID {orderId} not found.");
 
-            var totalPaid = order.Payments.Sum(p => p.TotalAmount) + paymentAmount;
+            var payments = await GetPaymentsByOrderIdAsync(orderId);
+
+            var totalPaid = payments.Sum(payment => payment.TotalAmount);
 
             if (totalPaid >= order.TotalAmount.Amount)
             {
@@ -187,6 +189,10 @@ namespace api.Services
             else if (totalPaid > 0)
             {
                 order.Status = OrderStatus.partiallyPaid;
+            }
+            else if (totalPaid == 0)
+            {
+                order.Status = OrderStatus.opened;
             }
 
             order.UpdatedAt = DateTime.UtcNow;

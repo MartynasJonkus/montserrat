@@ -87,7 +87,7 @@ function OrderMng() {
       //navigate(`/orderpage/${orderId}`) // Opened orders go to OrderPage
       navigate('/ordercreation', { state: { id: orderId } });
     } else if (orderStatus === OrderStatus.PartiallyPaid) {
-      navigate(`/payment/${orderId}`) // PartiallyPaid orders go to Payment
+      navigate(`/order-payment/${orderId}`) // PartiallyPaid orders go to Payment
     } else {
       navigate(`/order-details/${orderId}`) // All other statuses go to OrderDetails
     }
