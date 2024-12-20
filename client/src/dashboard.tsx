@@ -9,7 +9,7 @@ function Dashboard() {
     }
 
     const navigateToReservationCreation = () => {
-        navigate('/reservationcreation');
+        navigate('/reservationcreation', { state: { id: undefined } })
     }
 
     return (

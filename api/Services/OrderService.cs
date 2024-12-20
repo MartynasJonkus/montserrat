@@ -95,6 +95,83 @@ namespace api.Services
             return true;
         }
 
+        public async Task<OrderDto?> UpdateOrderDiscount(int orderId, int? orderDiscountId)
+        {
+            var existingOrder = await _orderRepository.GetOrderByIdAsync(orderId);
+            if (existingOrder == null) return null;
+
+            existingOrder.OrderDiscountId = orderDiscountId;
+            existingOrder.UpdatedAt = DateTime.UtcNow;
+
+            await RecalculateAmount(existingOrder);
+
+            await _orderRepository.UpdateOrderAsync(existingOrder);
+
+            return _mapper.Map<OrderDto>(existingOrder);
+        }
+
+        private async Task RecalculateAmount(Order order){
+            decimal totalAmount = 0;
+
+            foreach (var orderItem in order.OrderItems)
+            {
+                var productVariant = await _productVariantRepository.GetVariantByIdAsync(orderItem.ProductVariantId);
+                
+                if (productVariant == null)
+                    throw new InvalidOperationException($"ProductVariant not found.");
+
+                if (productVariant.Quantity < orderItem.Quantity)
+                    throw new InvalidOperationException($"Not enough stock for ProductVariant with ID {orderItem.ProductVariantId}.");
+
+                var basePrice = productVariant.Product.Price.Amount + productVariant.AdditionalPrice;
+                decimal taxAmount = 0;
+                decimal discountAmount = 0;
+
+                if (productVariant.Product.TaxId.HasValue)
+                {
+                    var tax = await _taxRepository.GetTaxByIdAsync(productVariant.Product.TaxId.Value);
+                    if (tax == null)
+                        throw new InvalidOperationException($"Tax not found for TaxId {productVariant.Product.TaxId.Value}.");
+
+                    taxAmount = basePrice * (tax.Percentage / 100m);
+                }
+
+                if (productVariant.Product.DiscountId.HasValue)
+                {
+                    var discount = await _discountRepository.GetDiscountByIdAsync(productVariant.Product.DiscountId.Value);
+                    if (discount == null)
+                        throw new InvalidOperationException($"Discount not found for DiscountId {productVariant.Product.DiscountId.Value}.");
+
+                    if (discount.Status == Status.active && discount.ExpiresOn > DateTime.UtcNow)
+                    {
+                        discountAmount = basePrice * (discount.Percentage / 100m);
+                    }
+                }
+
+                var finalPrice = basePrice + taxAmount - discountAmount;
+
+                orderItem.Price = new Price
+                {
+                    Amount = finalPrice,
+                    Currency = productVariant.Product.Price.Currency
+                };
+
+                totalAmount += orderItem.Price.Amount * orderItem.Quantity;
+            }
+
+            if(order.OrderDiscountId != null)
+            {
+                var orderDiscount = await _orderDiscountRepository.GetOrderDiscountByIdAsync(order.OrderDiscountId.Value);
+                if (orderDiscount == null)
+                    throw new InvalidOperationException($"OrderDiscount not found.");
+
+                var discountAmount = totalAmount * (orderDiscount.Percentage / 100m);
+                totalAmount -= discountAmount;
+            }
+
+            order.TotalAmount = new Price { Amount = totalAmount, Currency = Currency.EUR };
+        }
+
         private async Task AddOrderItems(Order order, List<CreateOrderItemDto> createOrderItemDtos)
         {
             decimal totalAmount = 0;

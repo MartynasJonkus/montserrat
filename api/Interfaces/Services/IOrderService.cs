@@ -11,5 +11,6 @@ namespace api.Interfaces.Services
         Task<OrderDto> CreateOrderAsync(int merchantId, CreateOrderDto dto);
         Task<OrderDto?> UpdateOrderAsync(int orderId, UpdateOrderDto updateOrderDto);
         Task<bool> DeleteOrderAsync(int orderId);
+        Task<OrderDto?> UpdateOrderDiscount (int orderId, int? orderDiscountId);
     }
 }
